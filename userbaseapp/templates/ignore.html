@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Base App with Bets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        .spreadsheet-cell {
+            padding: 5px 8px;
+            border-right: 1px solid #e5e7eb;
+            min-width: 100px;
+            text-align: left;
+            font-size: 0.9rem;
+            height: 30px;
+            white-space: nowrap;
+        }
+
+        .header-cell {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .row-number-cell {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: center;
+            min-width: 50px;
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            border-right: 2px solid #d1d5db;
+        }
+
+        .data-row:hover .spreadsheet-cell {
+            background-color: #f9fafb;
+        }
+
+        .bet-button {
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 9999px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+
+        .bet-button:hover {
+            background-color: #4338ca;
+        }
+
+        .delete-button {
+            background-color: #ef4444;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .delete-button:hover {
+            background-color: #dc2626;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-8">
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
+                <button id="page-1-btn"
+                    class="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition text-xs sm:text-sm">
+                    Page 1 (Rows 1-12)
+                </button>
+                <button id="page-2-btn"
+                    class="px-3 py-1 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition text-xs sm:text-sm">
+                    Page 2 (Rows 14-23)
+                </button>
+            </div>
+            <div id="user-info-controls"
+                class="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-inner border border-gray-200">
+                <p class="text-gray-700 text-sm sm:text-base font-medium">
+                    Welcome, <span class="font-semibold text-indigo-700">{{ request.user.get_username }}</span>
+                </p>
+                <a href="{% url 'userbaseapp:logout' %}"
+                    class="px-3 py-1 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition text-sm">Logout</a>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
+            <div class="overflow-x-auto">
+                <table id="spreadsheet-table" class="min-w-full divide-y divide-gray-200 border-collapse table-auto">
+                    <thead>
+                        <tr>
+                            <th class="row-number-cell border-b-2 border-gray-300"></th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">A</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">B</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">C</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">D</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">E</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">F</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">G</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">H</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">I</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">J</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spreadsheet-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="betModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
+        <div class="bg-white w-96 rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalTitle" class="text-lg font-semibold text-gray-800">Place a Bet</h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+            </div>
+
+            <div class="border-b mb-4 flex">
+                <button id="placeTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a
+                    Bet</button>
+                <button id="historyTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-indigo-600">History</button>
+            </div>
+
+            <div id="placeContent">
+                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Enter amount (multiples of 10):</label>
+                <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." 
+                    min="10" max="10000" step="10"
+                    class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                <p class="text-xs text-gray-500 mb-4">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
+                <button id="confirmBet"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
+            </div>
+
+            <div id="historyContent" class="hidden">
+                <ul id="historyList" class="space-y-2 text-gray-700 text-sm max-h-64 overflow-y-auto"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tbody = document.getElementById('spreadsheet-body');
+            const numCols = 10;
+            const page1Btn = document.getElementById('page-1-btn');
+            const page2Btn = document.getElementById('page-2-btn');
+            const modal = document.getElementById('betModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const confirmBet = document.getElementById('confirmBet');
+            const historyList = document.getElementById('historyList');
+            const placeTab = document.getElementById('placeTab');
+            const historyTab = document.getElementById('historyTab');
+            const placeContent = document.getElementById('placeContent');
+            const historyContent = document.getElementById('historyContent');
+            const customAmountInput = document.getElementById('customAmount');
+
+            const allColumnData = [
+                [128, 137, 146, 236, 245, 290, 380, 470, 489, 560, 579, 678, 100, 119, 155, 227, 335, 344, 399, 588, 669, 777],
+                [129, 138, 147, 156, 237, 246, 345, 390, 480, 570, 589, 679, 110, 200, 228, 255, 336, 499, 660, 688, 778, 444],
+                [120, 139, 148, 157, 238, 247, 256, 346, 490, 580, 670, 689, 166, 229, 300, 337, 355, 445, 599, 779, 788, 111],
+                [130, 149, 158, 167, 239, 248, 257, 347, 356, 590, 680, 789, 112, 220, 266, 338, 400, 446, 455, 699, 770, 888],
+                [140, 159, 168, 230, 249, 258, 267, 348, 357, 456, 690, 780, 113, 122, 177, 339, 366, 447, 500, 799, 889, 555],
+                [123, 150, 169, 178, 240, 259, 268, 349, 358, 367, 457, 790, 114, 277, 330, 448, 466, 556, 600, 880, 899, 222],
+                [124, 160, 179, 250, 269, 278, 340, 359, 368, 458, 467, 890, 115, 133, 188, 223, 377, 449, 557, 566, 700, 999],
+                [125, 134, 170, 189, 260, 279, 350, 369, 378, 459, 468, 567, 116, 224, 233, 288, 440, 477, 558, 800, 990, 666],
+                [126, 135, 180, 234, 270, 289, 360, 379, 450, 469, 478, 568, 117, 144, 199, 225, 388, 559, 577, 667, 900, 333],
+                [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 559, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
+            ];
+
+            let currentNumber = null;
+            let bets = {};
+
+            // Get CSRF token
+            function getCSRFToken() {
+                const cookieValue = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('csrftoken='))
+                    ?.split('=')[1];
+                return cookieValue;
+            }
+
+            // Load bets from backend
+            async function loadBets() {
+                try {
+                    const response = await fetch('/user/load-bets/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.bets) {
+                        bets = data.bets;
+                        renderPage(1); // Re-render to show loaded bets
+                    }
+                } catch (error) {
+                    console.error('Error loading bets:', error);
+                }
+            }
+
+            function renderPage(page) {
+                tbody.innerHTML = '';
+                let start = page === 1 ? 0 : 13;
+                let end = page === 1 ? 11 : 22;
+
+                const active = ['bg-indigo-600', 'text-white'];
+                const inactive = ['bg-gray-300', 'text-gray-800'];
+                if (page === 1) {
+                    page1Btn.classList.add(...active);
+                    page1Btn.classList.remove(...inactive);
+                    page2Btn.classList.add(...inactive);
+                    page2Btn.classList.remove(...active);
+                } else {
+                    page2Btn.classList.add(...active);
+                    page2Btn.classList.remove(...inactive);
+                    page1Btn.classList.add(...inactive);
+                    page1Btn.classList.remove(...active);
+                }
+
+                for (let i = start; i <= end; i++) {
+                    const row = document.createElement('tr');
+                    const rowNum = document.createElement('td');
+                    rowNum.textContent = i + 1;
+                    rowNum.classList.add('spreadsheet-cell', 'row-number-cell');
+                    row.appendChild(rowNum);
+
+                    for (let j = 0; j < numCols; j++) {
+                        const cell = document.createElement('td');
+                        cell.classList.add('spreadsheet-cell', 'text-gray-700');
+                        const dataIndex = i > 12 ? i - 1 : i;
+                        const value = allColumnData[j][dataIndex];
+
+                        if (value) {
+                            const span = document.createElement('span');
+                            span.textContent = value;
+
+                            const plus = document.createElement('button');
+                            plus.textContent = '+';
+                            plus.classList.add('bet-button');
+                            plus.onclick = () => openModal(value);
+
+                            const total = document.createElement('span');
+                            total.classList.add('ml-2', 'text-sm', 'font-semibold', 'text-green-600');
+                            total.id = `bet-total-${value}`;
+                            if (bets[value]?.total) total.textContent = `₹${bets[value].total}`;
+
+                            cell.append(span, plus, total);
+                        }
+
+                        row.appendChild(cell);
+                    }
+
+                    tbody.appendChild(row);
+                }
+            }
+
+            function openModal(number) {
+                currentNumber = number;
+                modal.classList.remove('hidden');
+                modalTitle.textContent = `Place a Bet on ${number}`;
+                customAmountInput.value = '';
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                renderHistory();
+            }
+
+            function closeModalFn() {
+                modal.classList.add('hidden');
+            }
+
+            function updateBetTotal(number) {
+                const totalElement = document.getElementById(`bet-total-${number}`);
+                if (totalElement) {
+                    if (bets[number]?.total) {
+                        totalElement.textContent = `₹${bets[number].total}`;
+                    } else {
+                        totalElement.textContent = '';
+                    }
+                }
+            }
+
+            async function deleteBet(index) {
+                if (!bets[currentNumber]) return;
+
+                const betToDelete = bets[currentNumber].history[index];
+                const deletedAmount = betToDelete.amount;
+                const betId = betToDelete.id;
+
+                // Delete from backend
+                try {
+                    const response = await fetch('/user/delete-bet/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                        body: JSON.stringify({ bet_id: betId })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        // Update local state
+                        bets[currentNumber].history.splice(index, 1);
+                        bets[currentNumber].total -= deletedAmount;
+
+                        if (bets[currentNumber].history.length === 0) {
+                            delete bets[currentNumber];
+                        }
+
+                        updateBetTotal(currentNumber);
+                        renderHistory();
+                    } else {
+                        alert('Error deleting bet: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error deleting bet:', error);
+                    alert('Failed to delete bet');
+                }
+            }
+
+            function renderHistory() {
+                historyList.innerHTML = '';
+                const history = bets[currentNumber]?.history || [];
+                if (history.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'No bets yet.';
+                    li.classList.add('text-gray-500', 'italic');
+                    historyList.appendChild(li);
+                } else {
+                    history.forEach((bet, i) => {
+                        const li = document.createElement('li');
+                        li.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-50', 'p-2', 'rounded');
+
+                        const betText = document.createElement('span');
+                        betText.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.classList.add('delete-button');
+                        deleteBtn.onclick = () => deleteBet(i);
+
+                        li.appendChild(betText);
+                        li.appendChild(deleteBtn);
+                        historyList.appendChild(li);
+                    });
+                }
+            }
+
+            confirmBet.onclick = async () => {
+                const amount = parseFloat(customAmountInput.value);
+                
+                // Validation
+                if (!amount || amount <= 0) {
+                    alert('Please enter a valid amount');
+                    return;
+                }
+                
+                if (amount < 10) {
+                    alert('Minimum bet amount is ₹10');
+                    return;
+                }
+                
+                if (amount > 10000) {
+                    alert('Maximum bet amount is ₹10,000');
+                    return;
+                }
+                
+                if (amount % 10 !== 0) {
+                    alert('Amount must be a multiple of 10');
+                    return;
+                }
+
+                console.log('Placing bet:', { number: currentNumber, amount: amount });
+                console.log('CSRF Token:', getCSRFToken());
+
+                // Send data to backend
+                try {
+                    const response = await fetch('/user/place-bet/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                        body: JSON.stringify({
+                            number: currentNumber.toString(),
+                            amount: amount
+                        })
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response:', await response.clone().text());
+
+                    const data = await response.json();
+                    console.log('Parsed data:', data);
+                    
+                    if (data.bet_id || data.success) {
+                        // Update local UI
+                        if (!bets[currentNumber]) bets[currentNumber] = { total: 0, history: [] };
+                        bets[currentNumber].total += amount;
+                        bets[currentNumber].history.push({
+                            id: data.bet_id,
+                            amount: amount
+                        });
+
+                        updateBetTotal(currentNumber);
+                        renderHistory();
+                        closeModalFn();
+                        console.log('✅ Bet saved successfully:', data);
+                    } else {
+                        console.error('Error in response:', data);
+                        alert('Error saving bet: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Request failed:', error);
+                    alert('Failed to save bet. Check console for details.');
+                }
+            };
+
+            placeTab.onclick = () => {
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            };
+
+            historyTab.onclick = () => {
+                placeContent.classList.add('hidden');
+                historyContent.classList.remove('hidden');
+                historyTab.classList.add('border-indigo-600', 'text-indigo-600');
+                placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                renderHistory();
+            };
+
+            closeModal.onclick = closeModalFn;
+            modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
+
+            page1Btn.onclick = () => renderPage(1);
+            page2Btn.onclick = () => renderPage(2);
+            
+            // Load bets on page load
+            await loadBets();
+        });
+    </script>
+</body>
+
+</html>

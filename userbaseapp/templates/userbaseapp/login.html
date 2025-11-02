@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and basic body styling */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Style for the modal overlay */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5', /* Indigo 600 */
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Login Card -->
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl transition duration-300 hover:shadow-3xl">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-extrabold text-gray-900">Sign In to Your Account</h1>
+            <p class="mt-2 text-sm text-gray-500">Welcome back! Please enter your details.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition duration-150 shadow-sm">
+            </div>
+
+            <button type="submit"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-150">
+                Sign In
+            </button>
+        </form>
+
+    </div>
+
+    <!-- QR Code Modal (Hidden by default) -->
+    <div id="qr-modal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay transition-opacity duration-300"
+        aria-modal="true" role="dialog">
+
+        <!-- Modal Backdrop -->
+        <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+
+        <!-- Modal Content -->
+        <div
+            class="bg-white rounded-xl shadow-3xl p-6 m-4 max-w-sm w-full z-10 transform transition-all duration-300 scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900">Scan to Log In</h3>
+                <button id="close-modal-btn" type="button"
+                    class="text-gray-400 hover:text-gray-600 transition duration-150" aria-label="Close modal">
+                    <!-- Close Icon (SVG) -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-4 text-center">Use your mobile app to scan the code below.</p>
+
+            <!-- QR Code Placeholder Image -->
+            <div class="flex justify-center">
+                <!-- Demo QR Code Image Placeholder -->
+                <img id="qr-image" src="https://placehold.co/180x180/000000/FFFFFF/png?text=QR+Code+Demo"
+                    alt="Demo QR Code" class="rounded-lg border-4 border-gray-100 shadow-md">
+            </div>
+
+            <p class="text-xs text-red-500 mt-4 text-center">Note: This is a demo image and is not functional.</p>
+
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle the modal visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrButton = document.getElementById('qr-button');
+            const qrModal = document.getElementById('qr-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalContent = qrModal.querySelector('div.z-10'); // Get the actual modal content box
+
+            // Function to show the modal
+            const showModal = () => {
+                qrModal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden'); // Prevent background scrolling
+            };
+
+            // Function to hide the modal
+            const hideModal = () => {
+                qrModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            };
+
+            // Event listener for the QR button
+            qrButton.addEventListener('click', showModal);
+
+            // Event listener for the close button inside the modal
+            closeModalBtn.addEventListener('click', hideModal);
+
+            // Event listener to close the modal when clicking outside of the content
+            qrModal.addEventListener('click', (event) => {
+                // Only hide if the click target is the modal overlay itself, not the content
+                if (event.target === qrModal || event.target.classList.contains('modal-overlay')) {
+                    hideModal();
+                }
+            });
+
+            // Prevent form submission for this demo
+            const form = document.querySelector('form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Login attempt prevented for demo purposes.');
+            });
+        });
+    </script>
+</body>
+
+</html>
