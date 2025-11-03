@@ -108,12 +108,12 @@
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
                 <button id="page-1-btn"
-                    class="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition text-xs sm:text-sm">
-                    All SP
+                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                    <strong>All SP</strong>
                 </button>
                 <button id="page-2-btn"
-                    class="px-3 py-1 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition text-xs sm:text-sm">
-                    All DP
+                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                    <strong>All DP</strong>
                 </button>
             </div>
             <div id="user-info-controls"
@@ -146,7 +146,25 @@
                     </thead>
                     <tbody id="spreadsheet-body"></tbody>
                 </table>
-            </div>
+            </div> <!-- end of .overflow-x-auto / table wrapper -->
+        </div> <!-- end of .bg-white rounded-xl ... -->
+
+        <!-- NEW: All-SP / All-DP buttons placed after the table with updated design -->
+        <div id="all-buttons-container" class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-end px-4 sm:px-0">
+            <button id="all-sp-btn"
+                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                Place Bet on ALL SP
+            </button>
+            <button id="all-dp-btn"
+                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                Place Bet on ALL DP
+            </button>
+
+            <!-- NEW: Jodi Vagar button -->
+            <button id="jodi-btn"
+                class="text-white bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                Jodi Vagar
+            </button>
         </div>
     </div>
 
@@ -193,6 +211,10 @@
 
                 <button id="confirmBet"
                     class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
+
+                <!-- Undo last bulk (hidden by default) -->
+                <button id="undoBulkBtn"
+                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo Last Bulk</button>
             </div>
 
             <div id="historyContent" class="hidden">
@@ -240,6 +262,10 @@
             let bets = {};
             let isAllSPMode = false;
             let isAllDPMode = false;
+
+            // New: stack of bulk actions for undo (LIFO). Each action: { type:'SP'|'DP', entries:[{number,id,amount}] }
+            let bulkActions = [];
+            let currentBulkViewType = null; // 'SP' or 'DP' when modal opened via All button
 
             // Get CSRF token
             function getCSRFToken() {
@@ -472,6 +498,9 @@
                         }
                     }
 
+                    // track entries created by this bulk action
+                    const placedEntries = [];
+
                     for (const num of allSPNumbers) {
                         try {
                             const response = await fetch('/user/place-bet/', {
@@ -490,13 +519,23 @@
                             if (data.bet_id || data.success) {
                                 if (!bets[num]) bets[num] = { total: 0, history: [] };
                                 bets[num].total += amount;
-                                bets[num].history.push({ id: data.bet_id, amount });
+                                const betEntry = { id: data.bet_id || data.id || null, amount };
+                                bets[num].history.push(betEntry);
                                 updateBetTotal(num);
+
+                                // store created id & number (only if server returned id)
+                                if (betEntry.id) placedEntries.push({ number: num, id: betEntry.id, amount });
                             }
                         } catch (err) {
                             console.error('Error placing bet for', num, err);
                         }
                     }
+
+                    // push bulk action to stack so user can undo this exact placement
+                    if (placedEntries.length > 0) {
+                        bulkActions.push({ type: 'SP', entries: placedEntries.slice() });
+                    }
+                    updateUndoButton();
 
                     closeModalFn();
                     alert(`✅ Bet of ₹${amount} placed on all ${allSPNumbers.length} SP numbers!`);
@@ -514,6 +553,8 @@
                             if (value) allDPNumbers.push(value);
                         }
                     }
+
+                    const placedEntries = [];
 
                     for (const num of allDPNumbers) {
                         try {
@@ -533,13 +574,20 @@
                             if (data.bet_id || data.success) {
                                 if (!bets[num]) bets[num] = { total: 0, history: [] };
                                 bets[num].total += amount;
-                                bets[num].history.push({ id: data.bet_id, amount });
+                                const betEntry = { id: data.bet_id || data.id || null, amount };
+                                bets[num].history.push(betEntry);
                                 updateBetTotal(num);
+                                if (betEntry.id) placedEntries.push({ number: num, id: betEntry.id, amount });
                             }
                         } catch (err) {
                             console.error('Error placing bet for', num, err);
                         }
                     }
+
+                    if (placedEntries.length > 0) {
+                        bulkActions.push({ type: 'DP', entries: placedEntries.slice() });
+                    }
+                    updateUndoButton();
 
                     closeModalFn();
                     alert(`✅ Bet of ₹${amount} placed on all ${allDPNumbers.length} DP numbers!`);
@@ -610,16 +658,15 @@
                 renderPage(2);
             };
 
-            // ✅ Create "Place Bet on ALL SP" button
-            const allSPBtn = document.createElement('button');
-            allSPBtn.textContent = 'Place Bet on ALL SP';
-            allSPBtn.className =
-                'px-3 py-1 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition text-xs sm:text-sm';
-            document.getElementById('pagination-buttons').appendChild(allSPBtn);
+            // REPLACE dynamic creation with references to static buttons placed after the table
+            const allSPBtn = document.getElementById('all-sp-btn');
+            const allDPBtn = document.getElementById('all-dp-btn');
 
+            // Handlers already defined below — keep existing onclick logic (no change needed)
             allSPBtn.onclick = () => {
                 isAllSPMode = true;
                 isAllDPMode = false;
+                currentBulkViewType = 'SP';
                 modal.classList.remove('hidden');
                 modalTitle.textContent = 'Place a Bet on ALL SP Numbers (120 numbers)';
                 customAmountInput.value = '';
@@ -628,18 +675,89 @@
                 historyContent.classList.add('hidden');
                 placeTab.classList.add('border-indigo-600', 'text-indigo-600');
                 historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-            };
 
-            // ✅ Create "Place Bet on ALL DP" button
-            const allDPBtn = document.createElement('button');
-            allDPBtn.textContent = 'Place Bet on ALL DP';
-            allDPBtn.className =
-                'px-3 py-1 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition text-xs sm:text-sm';
-            document.getElementById('pagination-buttons').appendChild(allDPBtn);
+                updateUndoButton(); // show/hide Undo based on last action
+
+                // Add history view for all SP numbers
+                historyTab.onclick = async () => {
+                    placeContent.classList.add('hidden');
+                    historyContent.classList.remove('hidden');
+                    historyTab.classList.add('border-indigo-600', 'text-indigo-600');
+                    placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
+
+                    // Build list of SP numbers (rows 0-11)
+                    historyList.innerHTML = '';
+                    const allSPNumbers = [];
+                    for (let j = 0; j < 10; j++) {
+                        for (let i = 0; i <= 11; i++) {
+                            const num = allColumnData[j][i];
+                            if (num) allSPNumbers.push(num);
+                        }
+                    }
+
+                    // Flatten combined history with references to original number + index
+                    const allHistory = [];
+                    allSPNumbers.forEach(num => {
+                        const h = bets[num]?.history || [];
+                        h.forEach((bet, idx) => {
+                            allHistory.push({ number: num, betId: bet.id, amount: bet.amount, idx });
+                        });
+                    });
+
+                    if (allHistory.length === 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'No bets placed on SP numbers yet.';
+                        li.classList.add('text-gray-500', 'italic');
+                        historyList.appendChild(li);
+                    return;
+                }
+
+                    // Add Delete All button for bulk deletion
+                    const headerLi = document.createElement('li');
+                    headerLi.className = 'flex justify-between items-center mb-2';
+                    const headerText = document.createElement('span');
+                    headerText.textContent = `All SP bets (${allHistory.length})`;
+                    headerText.className = 'font-semibold';
+                    const deleteAllBtn = document.createElement('button');
+                    deleteAllBtn.className = 'delete-button';
+                    deleteAllBtn.textContent = 'Delete All SP Bets';
+                    deleteAllBtn.onclick = async () => {
+                        if (!confirm('Delete ALL SP bets shown here? This will remove them from all numbers.')) return;
+                        // group by number and delete sequentially
+                        await deleteAllForNumbers([...new Set(allHistory.map(h => h.number))]);
+                        renderPage(1);
+                        renderHistory(); // refresh (will show none)
+                    };
+                    headerLi.appendChild(headerText);
+                    headerLi.appendChild(deleteAllBtn);
+                    historyList.appendChild(headerLi);
+
+                    // Render combined items
+                    allHistory.forEach((entry, i) => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center py-2 border-b';
+                        const span = document.createElement('span');
+                        span.textContent = `Number ${entry.number}: ₹${entry.amount}`;
+                        const btn = document.createElement('button');
+                        btn.className = 'delete-button';
+                        btn.textContent = 'Delete';
+                        btn.onclick = async () => {
+                            // entry.idx is index inside bets[entry.number].history when captured
+                            await deleteBet(entry.idx, entry.number);
+                            // re-open history tab to refresh aggregated view
+                            historyTab.onclick();
+                        };
+                        li.appendChild(span);
+                        li.appendChild(btn);
+                        historyList.appendChild(li);
+                    });
+                };
+            };
 
             allDPBtn.onclick = () => {
                 isAllSPMode = false;
                 isAllDPMode = true;
+                currentBulkViewType = 'DP';
                 modal.classList.remove('hidden');
                 modalTitle.textContent = 'Place a Bet on ALL DP Numbers (100 numbers)';
                 customAmountInput.value = '';
@@ -648,12 +766,234 @@
                 historyContent.classList.add('hidden');
                 placeTab.classList.add('border-indigo-600', 'text-indigo-600');
                 historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+
+                updateUndoButton();
+
+                // Add history view for all DP numbers
+                historyTab.onclick = async () => {
+                    placeContent.classList.add('hidden');
+                    historyContent.classList.remove('hidden');
+                    historyTab.classList.add('border-indigo-600', 'text-indigo-600');
+                    placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
+
+                    // Build list of DP numbers (rows 12-21)
+                    historyList.innerHTML = '';
+                    const allDPNumbers = [];
+                    for (let j = 0; j < 10; j++) {
+                        for (let i = 12; i <= 21; i++) {
+                            const num = allColumnData[j][i];
+                            if (num) allDPNumbers.push(num);
+                        }
+                    }
+
+                    const allHistory = [];
+                    allDPNumbers.forEach(num => {
+                        const h = bets[num]?.history || [];
+                        h.forEach((bet, idx) => {
+                            allHistory.push({ number: num, betId: bet.id, amount: bet.amount, idx });
+                        });
+                    });
+
+                    if (allHistory.length === 0) {
+                        const li = document.createElement('li');
+                        li.textContent = 'No bets placed on DP numbers yet.';
+                        li.classList.add('text-gray-500', 'italic');
+                        historyList.appendChild(li);
+                        return;
+                    }
+
+                    // Add Delete All button for DP
+                    const headerLi = document.createElement('li');
+                    headerLi.className = 'flex justify-between items-center mb-2';
+                    const headerText = document.createElement('span');
+                    headerText.textContent = `All DP bets (${allHistory.length})`;
+                    headerText.className = 'font-semibold';
+                    const deleteAllBtn = document.createElement('button');
+                    deleteAllBtn.className = 'delete-button';
+                    deleteAllBtn.textContent = 'Delete All DP Bets';
+                    deleteAllBtn.onclick = async () => {
+                        if (!confirm('Delete ALL DP bets shown here? This will remove them from all numbers.')) return;
+                        await deleteAllForNumbers([...new Set(allHistory.map(h => h.number))]);
+                        renderPage(2);
+                        historyTab.onclick();
+                    };
+                    headerLi.appendChild(headerText);
+                    headerLi.appendChild(deleteAllBtn);
+                    historyList.appendChild(headerLi);
+
+                    allHistory.forEach(entry => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center py-2 border-b';
+                        const span = document.createElement('span');
+                        span.textContent = `Number ${entry.number}: ₹${entry.amount}`;
+                        const btn = document.createElement('button');
+                        btn.className = 'delete-button';
+                        btn.textContent = 'Delete';
+                        btn.onclick = async () => {
+                            await deleteBet(entry.idx, entry.number);
+                            historyTab.onclick();
+                        };
+                        li.appendChild(span);
+                        li.appendChild(btn);
+                        historyList.appendChild(li);
+                    });
+                };
             };
+
+            // Reference undo button
+            const undoBulkBtn = document.getElementById('undoBulkBtn');
+
+            function updateUndoButton() {
+                const last = bulkActions[bulkActions.length - 1];
+                if (!last) {
+                    undoBulkBtn.classList.add('hidden');
+                    return;
+                }
+                // Show undo only when modal is opened for same bulk type (SP/DP)
+                if (currentBulkViewType && last.type === currentBulkViewType) {
+                    undoBulkBtn.classList.remove('hidden');
+                } else {
+                    undoBulkBtn.classList.add('hidden');
+                }
+            }
+
+            // Undo function: deletes only bet ids created by the last bulk action
+            async function undoLastBulk() {
+                if (bulkActions.length === 0) return;
+                if (!confirm('Undo last bulk placement? This will remove only bets created by that bulk action.')) return;
+
+                const last = bulkActions.pop(); // remove last action
+                // sequentially delete each bet created by last action
+                for (const entry of last.entries) {
+                    try {
+                        const resp = await fetch('/user/delete-bet/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken(),
+                            },
+                            body: JSON.stringify({ bet_id: entry.id })
+                        });
+                        const data = await resp.json();
+                        if (data.success) {
+                            // remove from local store if present
+                            const hist = bets[entry.number]?.history;
+                            if (hist) {
+                                const idx = hist.findIndex(h => h.id === entry.id);
+                                if (idx !== -1) {
+                                    bets[entry.number].total = (bets[entry.number].total || 0) - hist[idx].amount;
+                                    hist.splice(idx, 1);
+                                }
+                                if (!bets[entry.number].history || bets[entry.number].history.length === 0) {
+                                    delete bets[entry.number];
+                                }
+                            }
+                            updateBetTotal(entry.number);
+                        } else {
+                            console.warn('Undo delete failed for', entry.id, data.error);
+                        }
+                    } catch (err) {
+                        console.error('Error undoing bet id', entry.id, err);
+                    }
+                }
+
+                // Refresh UI
+                renderPage(isAllSPMode ? 1 : (isAllDPMode ? 2 : 1));
+                renderHistory();
+                updateUndoButton();
+                alert('Undo completed for last bulk action.');
+            }
+
+            // Hook undo button
+            undoBulkBtn.onclick = undoLastBulk;
+
+            // Update the deleteBet function to handle the number parameter
+            async function deleteBet(index, number = null) {
+                const targetNumber = number || currentNumber;
+                if (!bets[targetNumber]) return;
+
+                // Ensure index is valid
+                if (index < 0 || index >= bets[targetNumber].history.length) return;
+
+                const betToDelete = bets[targetNumber].history[index];
+                const deletedAmount = betToDelete.amount;
+                const betId = betToDelete.id;
+
+                try {
+                    const response = await fetch('/user/delete-bet/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                        body: JSON.stringify({ bet_id: betId })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        // remove the bet from local store
+                        bets[targetNumber].history.splice(index, 1);
+                        bets[targetNumber].total = (bets[targetNumber].total || 0) - deletedAmount;
+                        if (bets[targetNumber].history.length === 0) {
+                            delete bets[targetNumber];
+                        }
+                        updateBetTotal(targetNumber);
+                        // If currently viewing single-number history, refresh that view
+                        if (targetNumber === currentNumber) renderHistory();
+                    } else {
+                        alert('Error deleting bet: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error deleting bet:', error);
+                    alert('Failed to delete bet');
+                }
+            }
+
+            // Delete all bets for an array of numbers (sequentially)
+            async function deleteAllForNumbers(numbers) {
+                for (const num of numbers) {
+                    if (!bets[num] || !bets[num].history) continue;
+                    // clone ids because we'll mutate history during deletes
+                    const ids = bets[num].history.map(b => b.id);
+                    for (const id of ids) {
+                        try {
+                            const response = await fetch('/user/delete-bet/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                },
+                                body: JSON.stringify({ bet_id: id })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                // find the index of this id in current history (may shift)
+                                const idx = bets[num].history.findIndex(b => b.id === id);
+                                if (idx !== -1) {
+                                    const deletedAmount = bets[num].history[idx].amount;
+                                    bets[num].history.splice(idx, 1);
+                                    bets[num].total = (bets[num].total || 0) - deletedAmount;
+                                }
+                            } else {
+                                console.warn('Failed to delete bet id', id, data.error);
+                            }
+                        } catch (err) {
+                            console.error('Error deleting bet id', id, err);
+                        }
+                    }
+                    // cleanup if no history left
+                    if (!bets[num] || !bets[num].history || bets[num].history.length === 0) {
+                        delete bets[num];
+                    }
+                    updateBetTotal(num);
+                }
+                // refresh visible UI
+                renderPage(isAllSPMode ? 1 : 2);
+            }
 
             // Load bets on page load
             await loadBets();
         });
     </script>
 </body>
-
 </html>
