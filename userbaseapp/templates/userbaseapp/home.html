@@ -109,11 +109,11 @@
             <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
                 <button id="page-1-btn"
                     class="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition text-xs sm:text-sm">
-                    Page 1 (Rows 1-12)
+                    All SP
                 </button>
                 <button id="page-2-btn"
                     class="px-3 py-1 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition text-xs sm:text-sm">
-                    Page 2 (Rows 14-23)
+                    All DP
                 </button>
             </div>
             <div id="user-info-controls"
@@ -175,7 +175,7 @@
                     <button class="amount-button" data-amount="2.5">₹2.5</button>
                     <button class="amount-button" data-amount="5">₹5</button>
                 </div>
-                
+
                 <div class="relative my-4">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300"></div>
@@ -185,12 +185,12 @@
                     </div>
                 </div>
 
-                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples of 10):</label>
-                <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." 
-                    min="10" max="10000" step="10"
+                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples
+                    of 10):</label>
+                <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000" step="10"
                     class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                 <p class="text-xs text-gray-500 mb-4">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
-                
+
                 <button id="confirmBet"
                     class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
             </div>
@@ -205,10 +205,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const tbody = document.getElementById('spreadsheet-body');
             const numCols = 10;
-            // Row labels (must match total data rows length -- here 22 -> A..V)
             const rowLabels = [
-                'A','B','C','D','E','F','G','H','I','J',
-                'K','L','M','N','O','P','Q','R','S','T','U','V'
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'
             ];
             const page1Btn = document.getElementById('page-1-btn');
             const page2Btn = document.getElementById('page-2-btn');
@@ -239,6 +238,8 @@
 
             let currentNumber = null;
             let bets = {};
+            let isAllSPMode = false;
+            let isAllDPMode = false;
 
             // Get CSRF token
             function getCSRFToken() {
@@ -261,7 +262,7 @@
                     const data = await response.json();
                     if (data.bets) {
                         bets = data.bets;
-                        renderPage(1); // Re-render to show loaded bets
+                        renderPage(1);
                     }
                 } catch (error) {
                     console.error('Error loading bets:', error);
@@ -273,7 +274,7 @@
                 btn.onclick = () => {
                     amountButtons.forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
-                    customAmountInput.value = ''; // Clear custom input when quick button is selected
+                    customAmountInput.value = '';
                 };
             });
 
@@ -303,9 +304,7 @@
 
                 for (let i = start; i <= end; i++) {
                     const row = document.createElement('tr');
-                    // compute dataIndex used to read column arrays (preserve existing skip logic)
                     const dataIndex = i > 12 ? i - 1 : i;
-                    // label row using letter that corresponds to dataIndex
                     const rowNum = document.createElement('td');
                     rowNum.textContent = rowLabels[dataIndex] || (dataIndex + 1);
                     rowNum.classList.add('spreadsheet-cell', 'row-number-cell');
@@ -375,7 +374,6 @@
                 const deletedAmount = betToDelete.amount;
                 const betId = betToDelete.id;
 
-                // Delete from backend
                 try {
                     const response = await fetch('/user/delete-bet/', {
                         method: 'POST',
@@ -388,7 +386,6 @@
 
                     const data = await response.json();
                     if (data.success) {
-                        // Update local state
                         bets[currentNumber].history.splice(index, 1);
                         bets[currentNumber].total -= deletedAmount;
 
@@ -437,44 +434,121 @@
 
             confirmBet.onclick = async () => {
                 let amount = 0;
-                
-                // Check if a quick button is selected
+
                 const selectedButton = document.querySelector('.amount-button.selected');
                 if (selectedButton) {
                     amount = parseFloat(selectedButton.dataset.amount);
                 } else {
-                    // Use custom input
                     amount = parseFloat(customAmountInput.value);
                 }
-                
-                // Validation
+
                 if (!amount || amount <= 0) {
                     alert('Please select a quick amount or enter a custom amount');
                     return;
                 }
-                
-                // Validate custom amounts (multiples of 10)
+
                 if (!selectedButton) {
                     if (amount < 10) {
                         alert('Minimum custom bet amount is ₹10');
                         return;
                     }
-                    
                     if (amount > 10000) {
                         alert('Maximum custom bet amount is ₹10,000');
                         return;
                     }
-                    
                     if (amount % 10 !== 0) {
                         alert('Custom amount must be a multiple of 10');
                         return;
                     }
                 }
 
-                console.log('Placing bet:', { number: currentNumber, amount: amount });
-                console.log('CSRF Token:', getCSRFToken());
+                // ✅ All SP Mode - Place bet on all 120 SP numbers (rows 0-11)
+                if (isAllSPMode) {
+                    const allSPNumbers = [];
+                    for (let j = 0; j < 10; j++) {
+                        for (let i = 0; i <= 11; i++) {
+                            const value = allColumnData[j][i];
+                            if (value) allSPNumbers.push(value);
+                        }
+                    }
 
-                // Send data to backend
+                    for (const num of allSPNumbers) {
+                        try {
+                            const response = await fetch('/user/place-bet/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                },
+                                body: JSON.stringify({
+                                    number: num.toString(),
+                                    amount: amount,
+                                }),
+                            });
+
+                            const data = await response.json();
+                            if (data.bet_id || data.success) {
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += amount;
+                                bets[num].history.push({ id: data.bet_id, amount });
+                                updateBetTotal(num);
+                            }
+                        } catch (err) {
+                            console.error('Error placing bet for', num, err);
+                        }
+                    }
+
+                    closeModalFn();
+                    alert(`✅ Bet of ₹${amount} placed on all ${allSPNumbers.length} SP numbers!`);
+                    isAllSPMode = false;
+                    renderPage(1);
+                    return;
+                }
+
+                // ✅ All DP Mode - Place bet on all 100 DP numbers (rows 13-22, which map to dataIndex 12-21)
+                if (isAllDPMode) {
+                    const allDPNumbers = [];
+                    for (let j = 0; j < 10; j++) {
+                        for (let i = 12; i <= 21; i++) {
+                            const value = allColumnData[j][i];
+                            if (value) allDPNumbers.push(value);
+                        }
+                    }
+
+                    for (const num of allDPNumbers) {
+                        try {
+                            const response = await fetch('/user/place-bet/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken(),
+                                },
+                                body: JSON.stringify({
+                                    number: num.toString(),
+                                    amount: amount,
+                                }),
+                            });
+
+                            const data = await response.json();
+                            if (data.bet_id || data.success) {
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += amount;
+                                bets[num].history.push({ id: data.bet_id, amount });
+                                updateBetTotal(num);
+                            }
+                        } catch (err) {
+                            console.error('Error placing bet for', num, err);
+                        }
+                    }
+
+                    closeModalFn();
+                    alert(`✅ Bet of ₹${amount} placed on all ${allDPNumbers.length} DP numbers!`);
+                    isAllDPMode = false;
+                    renderPage(2);
+                    return;
+                }
+
+                // ✅ Normal single-number bet
                 try {
                     const response = await fetch('/user/place-bet/', {
                         method: 'POST',
@@ -484,31 +558,20 @@
                         },
                         body: JSON.stringify({
                             number: currentNumber.toString(),
-                            amount: amount
-                        })
+                            amount: amount,
+                        }),
                     });
-                    
-                    console.log('Response status:', response.status);
-                    console.log('Response:', await response.clone().text());
 
                     const data = await response.json();
-                    console.log('Parsed data:', data);
-                    
+
                     if (data.bet_id || data.success) {
-                        // Update local UI
                         if (!bets[currentNumber]) bets[currentNumber] = { total: 0, history: [] };
                         bets[currentNumber].total += amount;
-                        bets[currentNumber].history.push({
-                            id: data.bet_id,
-                            amount: amount
-                        });
-
+                        bets[currentNumber].history.push({ id: data.bet_id, amount });
                         updateBetTotal(currentNumber);
                         renderHistory();
                         closeModalFn();
-                        console.log('✅ Bet saved successfully:', data);
                     } else {
-                        console.error('Error in response:', data);
                         alert('Error saving bet: ' + (data.error || 'Unknown error'));
                     }
                 } catch (error) {
@@ -535,9 +598,58 @@
             closeModal.onclick = closeModalFn;
             modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
 
-            page1Btn.onclick = () => renderPage(1);
-            page2Btn.onclick = () => renderPage(2);
-            
+            // Normal page switches
+            page1Btn.onclick = () => {
+                isAllSPMode = false;
+                isAllDPMode = false;
+                renderPage(1);
+            };
+            page2Btn.onclick = () => {
+                isAllSPMode = false;
+                isAllDPMode = false;
+                renderPage(2);
+            };
+
+            // ✅ Create "Place Bet on ALL SP" button
+            const allSPBtn = document.createElement('button');
+            allSPBtn.textContent = 'Place Bet on ALL SP';
+            allSPBtn.className =
+                'px-3 py-1 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition text-xs sm:text-sm';
+            document.getElementById('pagination-buttons').appendChild(allSPBtn);
+
+            allSPBtn.onclick = () => {
+                isAllSPMode = true;
+                isAllDPMode = false;
+                modal.classList.remove('hidden');
+                modalTitle.textContent = 'Place a Bet on ALL SP Numbers (120 numbers)';
+                customAmountInput.value = '';
+                amountButtons.forEach(b => b.classList.remove('selected'));
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            };
+
+            // ✅ Create "Place Bet on ALL DP" button
+            const allDPBtn = document.createElement('button');
+            allDPBtn.textContent = 'Place Bet on ALL DP';
+            allDPBtn.className =
+                'px-3 py-1 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition text-xs sm:text-sm';
+            document.getElementById('pagination-buttons').appendChild(allDPBtn);
+
+            allDPBtn.onclick = () => {
+                isAllSPMode = false;
+                isAllDPMode = true;
+                modal.classList.remove('hidden');
+                modalTitle.textContent = 'Place a Bet on ALL DP Numbers (100 numbers)';
+                customAmountInput.value = '';
+                amountButtons.forEach(b => b.classList.remove('selected'));
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            };
+
             // Load bets on page load
             await loadBets();
         });
