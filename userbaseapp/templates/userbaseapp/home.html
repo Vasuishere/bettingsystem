@@ -100,7 +100,6 @@
             color: white;
         }
 
-        /* Toast Notification Styles */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -144,10 +143,6 @@
             border-left-color: #f59e0b;
         }
 
-        .toast.info {
-            border-left-color: #3b82f6;
-        }
-
         .toast-icon {
             width: 40px;
             height: 40px;
@@ -173,11 +168,6 @@
             color: #d97706;
         }
 
-        .toast.info .toast-icon {
-            background-color: #dbeafe;
-            color: #2563eb;
-        }
-
         .toast-content {
             flex: 1;
         }
@@ -198,10 +188,6 @@
 
         .toast.warning .toast-title {
             color: #d97706;
-        }
-
-        .toast.info .toast-title {
-            color: #2563eb;
         }
 
         .toast-message {
@@ -234,23 +220,21 @@
 
 <body class="bg-gray-50 min-h-screen font-sans">
 
-    <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
 
     <div class="max-w-7xl mx-auto p-4 sm:p-8">
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
                 <button id="page-1-btn"
-                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All SP</strong>
                 </button>
                 <button id="page-2-btn"
-                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                    class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All DP</strong>
                 </button>
             </div>
-            <div id="user-info-controls"
-                class="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-inner border border-gray-200">
+            <div class="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-inner border border-gray-200">
                 <p class="text-gray-700 text-sm sm:text-base font-medium">
                     Welcome, <span class="font-semibold text-indigo-700">{{ request.user.get_username }}</span>
                 </p>
@@ -282,18 +266,17 @@
             </div>
         </div>
 
-        <!-- All-SP / All-DP / Jodi Vagar buttons -->
-        <div id="all-buttons-container" class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-end px-4 sm:px-0">
+        <div class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-end px-4 sm:px-0">
             <button id="all-sp-btn"
-                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Place Bet on ALL SP
             </button>
             <button id="all-dp-btn"
-                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Place Bet on ALL DP
             </button>
             <button id="jodi-btn"
-                class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Jodi Vagar
             </button>
         </div>
@@ -308,7 +291,14 @@
             </div>
 
             <div class="space-y-4">
-                <!-- Column Selection -->
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
+                    <select id="jodiType" class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="5">Jodi Vagar 5 </option>
+                        <option value="7">Jodi Vagar 7 </option>
+                        <option value="12">Jodi Vagar 12 </option>
+                    </select>
+                </div>
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
                     <select id="jodiColumn" class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -325,17 +315,8 @@
                     </select>
                 </div>
 
-                <!-- Type Selection -->
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
-                    <select id="jodiType" class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="5">Jodi Vagar 5 (First 5 numbers)</option>
-                        <option value="7">Jodi Vagar 7 (Last 7 numbers)</option>
-                        <option value="12">Jodi Vagar 12 (All 12 numbers)</option>
-                    </select>
-                </div>
+                
 
-                <!-- Amount Selection -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
                     <div class="grid grid-cols-4 gap-2 mb-4">
@@ -360,14 +341,12 @@
                     <p class="text-xs text-gray-500 mt-1">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="space-y-2 pt-2">
                     <div class="flex gap-2">
                         <button id="cancelJodiBtn" class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
                         <button id="confirmJodiBtn" class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place Bet</button>
                     </div>
                     
-                    <!-- Undo Last Jodi Vagar Button -->
                     <button id="undoJodiModalBtn" class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition hidden">
                         Undo Last Jodi Vagar
                     </button>
@@ -377,8 +356,7 @@
     </div>
 
     <!-- Regular Bet Modal -->
-    <div id="betModal"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
+    <div id="betModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
         <div class="bg-white w-96 rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="modalTitle" class="text-lg font-semibold text-gray-800">Place a Bet</h2>
@@ -387,8 +365,7 @@
 
             <div class="border-b mb-4 flex">
                 <button id="placeTab"
-                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a
-                    Bet</button>
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a Bet</button>
                 <button id="historyTab"
                     class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-indigo-600">History</button>
             </div>
@@ -411,8 +388,7 @@
                     </div>
                 </div>
 
-                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples
-                    of 10):</label>
+                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples of 10):</label>
                 <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000" step="10"
                     class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                 <p class="text-xs text-gray-500 mb-4">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
@@ -420,14 +396,8 @@
                 <button id="confirmBet"
                     class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
 
-                <!-- Undo buttons -->
                 <button id="undoBulkBtn"
-                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo
-                    Last Bulk</button>
-                
-                <button id="undoJodiBtn"
-                    class="w-full mt-2 bg-orange-500 text-white py-2 rounded-md font-semibold hover:bg-orange-600 transition hidden">Undo
-                    Last Jodi Vagar</button>
+                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo Last Bulk</button>
             </div>
 
             <div id="historyContent" class="hidden">
@@ -438,99 +408,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Toast Notification Function
-            function showToast(title, message, type = 'success') {
-                const toastContainer = document.getElementById('toastContainer');
-                
-                // Create toast element
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                
-                // Icon based on type
-                let icon = '';
-                switch(type) {
-                    case 'success':
-                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                        break;
-                    case 'error':
-                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-                        break;
-                    case 'warning':
-                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-                        break;
-                    case 'info':
-                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-                        break;
-                }
-                
-                toast.innerHTML = `
-                    <div class="toast-icon">${icon}</div>
-                    <div class="toast-content">
-                        <div class="toast-title">${title}</div>
-                        <div class="toast-message">${message}</div>
-                    </div>
-                    <button class="toast-close">&times;</button>
-                `;
-                
-                toastContainer.appendChild(toast);
-                
-                // Trigger animation
-                setTimeout(() => toast.classList.add('show'), 10);
-                
-                // Auto dismiss after 3 seconds
-                const timeoutId = setTimeout(() => {
-                    removeToast(toast);
-                }, 3000);
-                
-                // Close button
-                const closeBtn = toast.querySelector('.toast-close');
-                closeBtn.onclick = () => {
-                    clearTimeout(timeoutId);
-                    removeToast(toast);
-                };
-            }
-            
-            function removeToast(toast) {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.remove();
-                }, 400);
-            }
-
-            const tbody = document.getElementById('spreadsheet-body');
-            const numCols = 10;
-            const rowLabels = [
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'
-            ];
-            const page1Btn = document.getElementById('page-1-btn');
-            const page2Btn = document.getElementById('page-2-btn');
-            const modal = document.getElementById('betModal');
-            const closeModal = document.getElementById('closeModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const confirmBet = document.getElementById('confirmBet');
-            const historyList = document.getElementById('historyList');
-            const placeTab = document.getElementById('placeTab');
-            const historyTab = document.getElementById('historyTab');
-            const placeContent = document.getElementById('placeContent');
-            const historyContent = document.getElementById('historyContent');
-            const customAmountInput = document.getElementById('customAmount');
-            const amountButtons = document.querySelectorAll('.amount-button');
-            
-            // Jodi Vagar numbers for each column
-            const jodiVagarNumbers = {
-                1: [137, 146, 470, 579, 380, 119, 155, 227, 335, 399, 588, 669],
-                2: [147, 246, 480, 138, 570, 228, 255, 336, 499, 688, 660, 200],
-                3: [139, 148, 157, 247, 580, 166, 229, 300, 337, 377, 599, 779],
-                4: [149, 248, 680, 257, 158, 220, 266, 338, 446, 699, 770, 400],
-                5: [159, 258, 357, 168, 249, 113, 177, 339, 366, 447, 799, 500],
-                6: [169, 268, 240, 358, 259, 114, 277, 330, 448, 466, 880, 600],
-                7: [179, 359, 250, 269, 368, 115, 133, 188, 377, 449, 557, 700],
-                8: [279, 260, 350, 369, 468, 116, 224, 288, 440, 477, 558, 800],
-                9: [379, 270, 469, 450, 360, 117, 144, 199, 225, 388, 559, 577],
-                10: [136, 280, 460, 370, 479, 118, 226, 244, 299, 488, 550, 668]
+            // API Endpoints
+            const API = {
+                PLACE_BET: '/user/place-bet/',
+                PLACE_BULK: '/user/place-bulk-bet/',
+                LOAD_BETS: '/user/load-bets/',
+                DELETE_BET: '/user/delete-bet/',
+                UNDO_BULK: '/user/undo-bulk-action/',
+                GET_LAST_BULK: '/user/get-last-bulk-action/'
             };
 
+            const rowLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
             const allColumnData = [
                 [128, 137, 146, 236, 245, 290, 380, 470, 489, 560, 579, 678, 100, 119, 155, 227, 335, 344, 399, 588, 669, 777],
                 [129, 138, 147, 156, 237, 246, 345, 390, 480, 570, 589, 679, 110, 200, 228, 255, 336, 499, 660, 688, 778, 444],
@@ -544,71 +432,204 @@
                 [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 559, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
             ];
 
-            let currentNumber = null;
             let bets = {};
-            let isAllSPMode = false;
-            let isAllDPMode = false;
-            let bulkActions = [];
-            let currentBulkViewType = null;
+            let currentNumber = null;
+            let currentBulkType = null;
+            let lastBulkAction = null;
 
-            // Get CSRF token
+            const tbody = document.getElementById('spreadsheet-body');
+            const page1Btn = document.getElementById('page-1-btn');
+            const page2Btn = document.getElementById('page-2-btn');
+            const modal = document.getElementById('betModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const confirmBet = document.getElementById('confirmBet');
+            const historyList = document.getElementById('historyList');
+            const placeTab = document.getElementById('placeTab');
+            const historyTab = document.getElementById('historyTab');
+            const placeContent = document.getElementById('placeContent');
+            const historyContent = document.getElementById('historyContent');
+            const customAmountInput = document.getElementById('customAmount');
+            const amountButtons = document.querySelectorAll('.amount-button');
+            const undoBulkBtn = document.getElementById('undoBulkBtn');
+            const jodiModal = document.getElementById('jodiVagarModal');
+            const jodiBtn = document.getElementById('jodi-btn');
+            const closeJodiModal = document.getElementById('closeJodiModal');
+            const cancelJodiBtn = document.getElementById('cancelJodiBtn');
+            const confirmJodiBtn = document.getElementById('confirmJodiBtn');
+            const jodiAmountButtons = document.querySelectorAll('.jodi-amount-button');
+            const jodiCustomAmount = document.getElementById('jodiCustomAmount');
+            const undoJodiModalBtn = document.getElementById('undoJodiModalBtn');
+
             function getCSRFToken() {
-                const cookieValue = document.cookie
-                    .split('; ')
-                    .find(row => row.startsWith('csrftoken='))
-                    ?.split('=')[1];
-                return cookieValue;
+                return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
             }
 
-            // Load bets from backend
+            function showToast(title, message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icons = {
+                    success: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+                    error: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+                    warning: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+                };
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">${icons[type] || icons.success}</div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="toast-close">&times;</button>
+                `;
+                
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                const timeoutId = setTimeout(() => removeToast(toast), 3000);
+                toast.querySelector('.toast-close').onclick = () => {
+                    clearTimeout(timeoutId);
+                    removeToast(toast);
+                };
+            }
+            
+            function removeToast(toast) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }
+
             async function loadBets() {
                 try {
-                    const response = await fetch('/user/load-bets/', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                    const data = await response.json();
-                    if (data.bets) {
+                    const res = await fetch(API.LOAD_BETS);
+                    const data = await res.json();
+                    if (data.success) {
                         bets = data.bets;
                         renderPage(1);
                     }
-                } catch (error) {
-                    console.error('Error loading bets:', error);
+                } catch (err) {
+                    console.error('Error loading bets:', err);
                 }
             }
 
-            // Quick amount button selection
-            amountButtons.forEach(btn => {
-                btn.onclick = () => {
-                    amountButtons.forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    customAmountInput.value = '';
-                };
-            });
+            async function getLastBulkAction() {
+                try {
+                    const res = await fetch(API.GET_LAST_BULK);
+                    const data = await res.json();
+                    lastBulkAction = data.has_action ? data.action : null;
+                    updateUndoButton();
+                } catch (err) {
+                    console.error('Error getting last bulk:', err);
+                }
+            }
 
-            customAmountInput.addEventListener('input', () => {
-                amountButtons.forEach(b => b.classList.remove('selected'));
-            });
+            async function placeSingleBet(number, amount) {
+                const res = await fetch(API.PLACE_BET, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                    body: JSON.stringify({ number, amount })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (!bets[number]) bets[number] = { total: 0, history: [] };
+                    bets[number].total += parseFloat(amount);
+                    bets[number].history.push({ id: data.bet_id, amount: parseFloat(amount) });
+                    updateBetTotal(number);
+                }
+                return data;
+            }
+
+            async function placeBulkBet(type, amount, column = null, jodiType = null) {
+                const payload = { type, amount };
+                if (type === 'JODI') {
+                    payload.column = column;
+                    payload.jodi_type = jodiType;
+                }
+                const res = await fetch(API.PLACE_BULK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    data.bets.forEach(bet => {
+                        const num = bet.number;
+                        if (!bets[num]) bets[num] = { total: 0, history: [] };
+                        bets[num].total += parseFloat(bet.amount);
+                        bets[num].history.push({ id: bet.id, amount: parseFloat(bet.amount) });
+                        updateBetTotal(num);
+                    });
+                    lastBulkAction = { id: data.bulk_action_id, type, total_bets: data.total_bets };
+                }
+                return data;
+            }
+
+            async function deleteBet(betId, number) {
+                const res = await fetch(API.DELETE_BET, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                    body: JSON.stringify({ bet_id: betId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const hist = bets[number]?.history;
+                    if (hist) {
+                        const idx = hist.findIndex(h => h.id === betId);
+                        if (idx !== -1) {
+                            bets[number].total -= hist[idx].amount;
+                            hist.splice(idx, 1);
+                        }
+                        if (hist.length === 0) delete bets[number];
+                    }
+                    updateBetTotal(number);
+                }
+                return data;
+            }
+
+            async function undoBulkAction() {
+                if (!lastBulkAction) return showToast('Error', 'No bulk action to undo', 'warning');
+                if (!confirm(`Undo last ${lastBulkAction.type} bulk action (${lastBulkAction.total_bets} bets)?`)) return;
+
+                const res = await fetch(API.UNDO_BULK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                    body: JSON.stringify({ bulk_action_id: lastBulkAction.id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Success', data.message, 'success');
+                    await loadBets();
+                    lastBulkAction = null;
+                    await getLastBulkAction();
+                    closeModalFn();
+                    closeJodiModalFn();
+                } else {
+                    showToast('Error', data.message || 'Failed to undo', 'error');
+                }
+            }
+
+            function updateBetTotal(number) {
+                const el = document.getElementById(`bet-total-${number}`);
+                if (el) {
+                    el.textContent = bets[number]?.total ? `₹${bets[number].total}` : '';
+                }
+            }
 
             function renderPage(page) {
                 tbody.innerHTML = '';
-                let start = page === 1 ? 0 : 13;
-                let end = page === 1 ? 11 : 22;
+                const start = page === 1 ? 0 : 13;
+                const end = page === 1 ? 11 : 22;
 
-                const active = ['bg-indigo-600', 'text-white'];
-                const inactive = ['bg-gray-300', 'text-gray-800'];
                 if (page === 1) {
-                    page1Btn.classList.add(...active);
-                    page1Btn.classList.remove(...inactive);
-                    page2Btn.classList.add(...inactive);
-                    page2Btn.classList.remove(...active);
+                    page1Btn.classList.add('bg-indigo-600', 'text-white');
+                    page1Btn.classList.remove('bg-gray-300', 'text-gray-800');
+                    page2Btn.classList.add('bg-gray-300', 'text-gray-800');
+                    page2Btn.classList.remove('bg-indigo-600', 'text-white');
                 } else {
-                    page2Btn.classList.add(...active);
-                    page2Btn.classList.remove(...inactive);
-                    page1Btn.classList.add(...inactive);
-                    page1Btn.classList.remove(...active);
+                    page2Btn.classList.add('bg-indigo-600', 'text-white');
+                    page2Btn.classList.remove('bg-gray-300', 'text-gray-800');
+                    page1Btn.classList.add('bg-gray-300', 'text-gray-800');
+                    page1Btn.classList.remove('bg-indigo-600', 'text-white');
                 }
 
                 for (let i = start; i <= end; i++) {
@@ -619,7 +640,7 @@
                     rowNum.classList.add('spreadsheet-cell', 'row-number-cell');
                     row.appendChild(rowNum);
 
-                    for (let j = 0; j < numCols; j++) {
+                    for (let j = 0; j < 10; j++) {
                         const cell = document.createElement('td');
                         cell.classList.add('spreadsheet-cell', 'text-gray-700');
                         const value = allColumnData[j][dataIndex];
@@ -640,17 +661,15 @@
 
                             cell.append(span, plus, total);
                         }
-
                         row.appendChild(cell);
                     }
-
                     tbody.appendChild(row);
                 }
             }
 
             function openModal(number) {
                 currentNumber = number;
-                currentBulkViewType = null; // Reset bulk view type for regular bets
+                currentBulkType = null;
                 modal.classList.remove('hidden');
                 modalTitle.textContent = `Place a Bet on ${number}`;
                 customAmountInput.value = '';
@@ -659,7 +678,7 @@
                 historyContent.classList.add('hidden');
                 placeTab.classList.add('border-indigo-600', 'text-indigo-600');
                 historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton(); // Show Jodi undo button if last action was Jodi
+                updateUndoButton();
                 renderHistory();
             }
 
@@ -667,53 +686,8 @@
                 modal.classList.add('hidden');
             }
 
-            function updateBetTotal(number) {
-                const totalElement = document.getElementById(`bet-total-${number}`);
-                if (totalElement) {
-                    if (bets[number]?.total) {
-                        totalElement.textContent = `₹${bets[number].total}`;
-                    } else {
-                        totalElement.textContent = '';
-                    }
-                }
-            }
-
-            async function deleteBet(index, number = null) {
-                const targetNumber = number || currentNumber;
-                if (!bets[targetNumber]) return;
-
-                if (index < 0 || index >= bets[targetNumber].history.length) return;
-
-                const betToDelete = bets[targetNumber].history[index];
-                const deletedAmount = betToDelete.amount;
-                const betId = betToDelete.id;
-
-                try {
-                    const response = await fetch('/user/delete-bet/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCSRFToken(),
-                        },
-                        body: JSON.stringify({ bet_id: betId })
-                    });
-
-                    const data = await response.json();
-                    if (data.success) {
-                        bets[targetNumber].history.splice(index, 1);
-                        bets[targetNumber].total = (bets[targetNumber].total || 0) - deletedAmount;
-                        if (bets[targetNumber].history.length === 0) {
-                            delete bets[targetNumber];
-                        }
-                        updateBetTotal(targetNumber);
-                        if (targetNumber === currentNumber) renderHistory();
-                    } else {
-                        showToast('Error', data.error || 'Failed to delete bet', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error deleting bet:', error);
-                    showToast('Failed', 'Failed to delete bet. Please try again', 'error');
-                }
+            function closeJodiModalFn() {
+                jodiModal.classList.add('hidden');
             }
 
             function renderHistory() {
@@ -728,552 +702,45 @@
                     history.forEach((bet, i) => {
                         const li = document.createElement('li');
                         li.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-50', 'p-2', 'rounded');
-
-                        const betText = document.createElement('span');
-                        betText.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
-
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.textContent = 'Delete';
-                        deleteBtn.classList.add('delete-button');
-                        deleteBtn.onclick = () => deleteBet(i);
-
-                        li.appendChild(betText);
-                        li.appendChild(deleteBtn);
+                        const text = document.createElement('span');
+                        text.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
+                        const delBtn = document.createElement('button');
+                        delBtn.textContent = 'Delete';
+                        delBtn.classList.add('delete-button');
+                        delBtn.onclick = async () => {
+                            await deleteBet(bet.id, currentNumber);
+                            renderHistory();
+                        };
+                        li.append(text, delBtn);
                         historyList.appendChild(li);
                     });
                 }
             }
-
-            confirmBet.onclick = async () => {
-                let amount = 0;
-
-                const selectedButton = document.querySelector('.amount-button.selected');
-                if (selectedButton) {
-                    amount = parseFloat(selectedButton.dataset.amount);
-                } else {
-                    amount = parseFloat(customAmountInput.value);
-                }
-
-                if (!amount || amount <= 0) {
-                    showToast('Invalid Amount', 'Please select a quick amount or enter a custom amount', 'warning');
-                    return;
-                }
-
-                if (!selectedButton) {
-                    if (amount < 10) {
-                        showToast('Amount Too Low', 'Minimum custom bet amount is ₹10', 'warning');
-                        return;
-                    }
-                    if (amount > 10000) {
-                        showToast('Amount Too High', 'Maximum custom bet amount is ₹10,000', 'warning');
-                        return;
-                    }
-                    if (amount % 10 !== 0) {
-                        showToast('Invalid Amount', 'Custom amount must be a multiple of 10', 'warning');
-                        return;
-                    }
-                }
-
-                // All SP Mode
-                if (isAllSPMode) {
-                    const allSPNumbers = [];
-                    for (let j = 0; j < 10; j++) {
-                        for (let i = 0; i <= 11; i++) {
-                            const value = allColumnData[j][i];
-                            if (value) allSPNumbers.push(value);
-                        }
-                    }
-
-                    const placedEntries = [];
-
-                    for (const num of allSPNumbers) {
-                        try {
-                            const response = await fetch('/user/place-bet/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRFToken': getCSRFToken(),
-                                },
-                                body: JSON.stringify({
-                                    number: num.toString(),
-                                    amount: amount,
-                                }),
-                            });
-
-                            const data = await response.json();
-                            if (data.bet_id || data.success) {
-                                if (!bets[num]) bets[num] = { total: 0, history: [] };
-                                bets[num].total += amount;
-                                const betEntry = { id: data.bet_id || data.id || null, amount };
-                                bets[num].history.push(betEntry);
-                                updateBetTotal(num);
-
-                                if (betEntry.id) placedEntries.push({ number: num, id: betEntry.id, amount });
-                            }
-                        } catch (err) {
-                            console.error('Error placing bet for', num, err);
-                        }
-                    }
-
-                    if (placedEntries.length > 0) {
-                        bulkActions.push({ type: 'SP', entries: placedEntries.slice() });
-                    }
-                    updateUndoButton();
-
-                    closeModalFn();
-                    showToast('Success!', `Bet of ₹${amount} placed on all ${allSPNumbers.length} SP numbers`, 'success');
-                    isAllSPMode = false;
-                    renderPage(1);
-                    return;
-                }
-
-                // All DP Mode
-                if (isAllDPMode) {
-                    const allDPNumbers = [];
-                    for (let j = 0; j < 10; j++) {
-                        for (let i = 12; i <= 21; i++) {
-                            const value = allColumnData[j][i];
-                            if (value) allDPNumbers.push(value);
-                        }
-                    }
-
-                    const placedEntries = [];
-
-                    for (const num of allDPNumbers) {
-                        try {
-                            const response = await fetch('/user/place-bet/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRFToken': getCSRFToken(),
-                                },
-                                body: JSON.stringify({
-                                    number: num.toString(),
-                                    amount: amount,
-                                }),
-                            });
-
-                            const data = await response.json();
-                            if (data.bet_id || data.success) {
-                                if (!bets[num]) bets[num] = { total: 0, history: [] };
-                                bets[num].total += amount;
-                                const betEntry = { id: data.bet_id || data.id || null, amount };
-                                bets[num].history.push(betEntry);
-                                updateBetTotal(num);
-                                if (betEntry.id) placedEntries.push({ number: num, id: betEntry.id, amount });
-                            }
-                        } catch (err) {
-                            console.error('Error placing bet for', num, err);
-                        }
-                    }
-
-                    if (placedEntries.length > 0) {
-                        bulkActions.push({ type: 'DP', entries: placedEntries.slice() });
-                    }
-                    updateUndoButton();
-
-                    closeModalFn();
-                    showToast('Success!', `Bet of ₹${amount} placed on all ${allDPNumbers.length} DP numbers`, 'success');
-                    isAllDPMode = false;
-                    renderPage(2);
-                    return;
-                }
-
-                // Normal single-number bet
-                try {
-                    const response = await fetch('/user/place-bet/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCSRFToken(),
-                        },
-                        body: JSON.stringify({
-                            number: currentNumber.toString(),
-                            amount: amount,
-                        }),
-                    });
-
-                    const data = await response.json();
-
-                    if (data.bet_id || data.success) {
-                        if (!bets[currentNumber]) bets[currentNumber] = { total: 0, history: [] };
-                        bets[currentNumber].total += amount;
-                        bets[currentNumber].history.push({ id: data.bet_id, amount });
-                        updateBetTotal(currentNumber);
-                        renderHistory();
-                        closeModalFn();
-                    } else {
-                        showToast('Error', data.error || 'Unknown error occurred', 'error');
-                    }
-                } catch (error) {
-                    console.error('Request failed:', error);
-                    showToast('Failed', 'Failed to save bet. Please try again', 'error');
-                }
-            };
-
-            placeTab.onclick = () => {
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton(); // Update undo button visibility when switching to place tab
-            };
-
-            historyTab.onclick = () => {
-                placeContent.classList.add('hidden');
-                historyContent.classList.remove('hidden');
-                historyTab.classList.add('border-indigo-600', 'text-indigo-600');
-                placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                renderHistory();
-            };
-
-            closeModal.onclick = closeModalFn;
-            modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
-
-            page1Btn.onclick = () => {
-                isAllSPMode = false;
-                isAllDPMode = false;
-                renderPage(1);
-            };
-            page2Btn.onclick = () => {
-                isAllSPMode = false;
-                isAllDPMode = false;
-                renderPage(2);
-            };
-
-            const allSPBtn = document.getElementById('all-sp-btn');
-            const allDPBtn = document.getElementById('all-dp-btn');
-
-            allSPBtn.onclick = () => {
-                isAllSPMode = true;
-                isAllDPMode = false;
-                currentBulkViewType = 'SP';
-                modal.classList.remove('hidden');
-                modalTitle.textContent = 'Place a Bet on ALL SP Numbers (120 numbers)';
-                customAmountInput.value = '';
-                amountButtons.forEach(b => b.classList.remove('selected'));
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
-
-                historyTab.onclick = async () => {
-                    placeContent.classList.add('hidden');
-                    historyContent.classList.remove('hidden');
-                    historyTab.classList.add('border-indigo-600', 'text-indigo-600');
-                    placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
-
-                    historyList.innerHTML = '';
-                    const allSPNumbers = [];
-                    for (let j = 0; j < 10; j++) {
-                        for (let i = 0; i <= 11; i++) {
-                            const num = allColumnData[j][i];
-                            if (num) allSPNumbers.push(num);
-                        }
-                    }
-
-                    const allHistory = [];
-                    allSPNumbers.forEach(num => {
-                        const h = bets[num]?.history || [];
-                        h.forEach((bet, idx) => {
-                            allHistory.push({ number: num, betId: bet.id, amount: bet.amount, idx });
-                        });
-                    });
-
-                    if (allHistory.length === 0) {
-                        const li = document.createElement('li');
-                        li.textContent = 'No bets placed on SP numbers yet.';
-                        li.classList.add('text-gray-500', 'italic');
-                        historyList.appendChild(li);
-                        return;
-                    }
-
-                    const headerLi = document.createElement('li');
-                    headerLi.className = 'flex justify-between items-center mb-2';
-                    const headerText = document.createElement('span');
-                    headerText.textContent = `All SP bets (${allHistory.length})`;
-                    headerText.className = 'font-semibold';
-                    const deleteAllBtn = document.createElement('button');
-                    deleteAllBtn.className = 'delete-button';
-                    deleteAllBtn.textContent = 'Delete All SP Bets';
-                    deleteAllBtn.onclick = async () => {
-                        if (!confirm('Delete ALL SP bets shown here? This will remove them from all numbers.')) return;
-                        await deleteAllForNumbers([...new Set(allHistory.map(h => h.number))]);
-                        renderPage(1);
-                        renderHistory();
-                    };
-                    headerLi.appendChild(headerText);
-                    headerLi.appendChild(deleteAllBtn);
-                    historyList.appendChild(headerLi);
-
-                    allHistory.forEach((entry, i) => {
-                        const li = document.createElement('li');
-                        li.className = 'flex justify-between items-center py-2 border-b';
-                        const span = document.createElement('span');
-                        span.textContent = `Number ${entry.number}: ₹${entry.amount}`;
-                        const btn = document.createElement('button');
-                        btn.className = 'delete-button';
-                        btn.textContent = 'Delete';
-                        btn.onclick = async () => {
-                            await deleteBet(entry.idx, entry.number);
-                            historyTab.onclick();
-                        };
-                        li.appendChild(span);
-                        li.appendChild(btn);
-                        historyList.appendChild(li);
-                    });
-                };
-            };
-
-            allDPBtn.onclick = () => {
-                isAllSPMode = false;
-                isAllDPMode = true;
-                currentBulkViewType = 'DP';
-                modal.classList.remove('hidden');
-                modalTitle.textContent = 'Place a Bet on ALL DP Numbers (100 numbers)';
-                customAmountInput.value = '';
-                amountButtons.forEach(b => b.classList.remove('selected'));
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
-
-                historyTab.onclick = async () => {
-                    placeContent.classList.add('hidden');
-                    historyContent.classList.remove('hidden');
-                    historyTab.classList.add('border-indigo-600', 'text-indigo-600');
-                    placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
-
-                    historyList.innerHTML = '';
-                    const allDPNumbers = [];
-                    for (let j = 0; j < 10; j++) {
-                        for (let i = 12; i <= 21; i++) {
-                            const num = allColumnData[j][i];
-                            if (num) allDPNumbers.push(num);
-                        }
-                    }
-
-                    const allHistory = [];
-                    allDPNumbers.forEach(num => {
-                        const h = bets[num]?.history || [];
-                        h.forEach((bet, idx) => {
-                            allHistory.push({ number: num, betId: bet.id, amount: bet.amount, idx });
-                        });
-                    });
-
-                    if (allHistory.length === 0) {
-                        const li = document.createElement('li');
-                        li.textContent = 'No bets placed on DP numbers yet.';
-                        li.classList.add('text-gray-500', 'italic');
-                        historyList.appendChild(li);
-                        return;
-                    }
-
-                    const headerLi = document.createElement('li');
-                    headerLi.className = 'flex justify-between items-center mb-2';
-                    const headerText = document.createElement('span');
-                    headerText.textContent = `All DP bets (${allHistory.length})`;
-                    headerText.className = 'font-semibold';
-                    const deleteAllBtn = document.createElement('button');
-                    deleteAllBtn.className = 'delete-button';
-                    deleteAllBtn.textContent = 'Delete All DP Bets';
-                    deleteAllBtn.onclick = async () => {
-                        if (!confirm('Delete ALL DP bets shown here? This will remove them from all numbers.')) return;
-                        await deleteAllForNumbers([...new Set(allHistory.map(h => h.number))]);
-                        renderPage(2);
-                        historyTab.onclick();
-                    };
-                    headerLi.appendChild(headerText);
-                    headerLi.appendChild(deleteAllBtn);
-                    historyList.appendChild(headerLi);
-
-                    allHistory.forEach(entry => {
-                        const li = document.createElement('li');
-                        li.className = 'flex justify-between items-center py-2 border-b';
-                        const span = document.createElement('span');
-                        span.textContent = `Number ${entry.number}: ₹${entry.amount}`;
-                        const btn = document.createElement('button');
-                        btn.className = 'delete-button';
-                        btn.textContent = 'Delete';
-                        btn.onclick = async () => {
-                            await deleteBet(entry.idx, entry.number);
-                            historyTab.onclick();
-                        };
-                        li.appendChild(span);
-                        li.appendChild(btn);
-                        historyList.appendChild(li);
-                    });
-                };
-            };
-
-            const undoBulkBtn = document.getElementById('undoBulkBtn');
-            const undoJodiBtn = document.getElementById('undoJodiBtn');
-            const undoJodiModalBtn = document.getElementById('undoJodiModalBtn');
 
             function updateUndoButton() {
-                const last = bulkActions[bulkActions.length - 1];
-                
                 undoBulkBtn.classList.add('hidden');
-                undoJodiBtn.classList.add('hidden');
+                undoJodiModalBtn.classList.add('hidden');
                 
-                if (!last) return;
-
-                if (last.type === 'JODI') {
-                    undoJodiBtn.classList.remove('hidden');
-                    return;
-                }
-                
-                if (currentBulkViewType && last.type === currentBulkViewType) {
-                    undoBulkBtn.classList.remove('hidden');
-                }
-            }
-
-            function updateJodiModalUndoButton() {
-                const last = bulkActions[bulkActions.length - 1];
-                
-                if (last && last.type === 'JODI') {
-                    undoJodiModalBtn.classList.remove('hidden');
-                } else {
-                    undoJodiModalBtn.classList.add('hidden');
-                }
-            }
-
-            async function undoLastBulk() {
-                if (bulkActions.length === 0) return;
-                if (!confirm('Undo last bulk placement? This will remove only bets created by that bulk action.')) return;
-
-                const last = bulkActions.pop();
-                for (const entry of last.entries) {
-                    try {
-                        const resp = await fetch('/user/delete-bet/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': getCSRFToken(),
-                            },
-                            body: JSON.stringify({ bet_id: entry.id })
-                        });
-                        const data = await resp.json();
-                        if (data.success) {
-                            const hist = bets[entry.number]?.history;
-                            if (hist) {
-                                const idx = hist.findIndex(h => h.id === entry.id);
-                                if (idx !== -1) {
-                                    bets[entry.number].total = (bets[entry.number].total || 0) - hist[idx].amount;
-                                    hist.splice(idx, 1);
-                                }
-                                if (!bets[entry.number].history || bets[entry.number].history.length === 0) {
-                                    delete bets[entry.number];
-                                }
-                            }
-                            updateBetTotal(entry.number);
-                        } else {
-                            console.warn('Undo delete failed for', entry.id, data.error);
-                        }
-                    } catch (err) {
-                        console.error('Error undoing bet id', entry.id, err);
+                if (lastBulkAction) {
+                    if (lastBulkAction.type === 'JODI') {
+                        undoJodiModalBtn.classList.remove('hidden');
+                    } else if (currentBulkType && lastBulkAction.type === currentBulkType) {
+                        undoBulkBtn.classList.remove('hidden');
                     }
                 }
-
-                renderPage(isAllSPMode ? 1 : (isAllDPMode ? 2 : 1));
-                renderHistory();
-                updateUndoButton();
-                updateJodiModalUndoButton();
-                showToast('Success!', 'Bulk action undone successfully', 'success');
             }
 
-            undoBulkBtn.onclick = undoLastBulk;
-            
-            undoJodiBtn.onclick = async () => {
-                if (bulkActions.length === 0) return;
-                const last = bulkActions[bulkActions.length - 1];
-                if (last.type !== 'JODI') return;
-                
-                const details = last.details || {};
-                const confirmMsg = `Undo last Jodi Vagar ${details.jodiType} bet (Column ${details.column}, ₹${details.amount})?\nThis will remove ${last.entries.length} bets.`;
-                
-                if (!confirm(confirmMsg)) return;
+            amountButtons.forEach(btn => {
+                btn.onclick = () => {
+                    amountButtons.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    customAmountInput.value = '';
+                };
+            });
 
-                await undoLastBulk();
-            };
-
-            undoJodiModalBtn.onclick = async () => {
-                if (bulkActions.length === 0) return;
-                const last = bulkActions[bulkActions.length - 1];
-                if (last.type !== 'JODI') return;
-                
-                const details = last.details || {};
-                const confirmMsg = `Undo last Jodi Vagar ${details.jodiType} bet (Column ${details.column}, ₹${details.amount})?\nThis will remove ${last.entries.length} bets.`;
-                
-                if (!confirm(confirmMsg)) return;
-
-                await undoLastBulk();
-                closeJodiModalFn();
-            };
-
-            async function deleteAllForNumbers(numbers) {
-                for (const num of numbers) {
-                    if (!bets[num] || !bets[num].history) continue;
-                    const ids = bets[num].history.map(b => b.id);
-                    for (const id of ids) {
-                        try {
-                            const response = await fetch('/user/delete-bet/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRFToken': getCSRFToken(),
-                                },
-                                body: JSON.stringify({ bet_id: id })
-                            });
-                            const data = await response.json();
-                            if (data.success) {
-                                const idx = bets[num].history.findIndex(b => b.id === id);
-                                if (idx !== -1) {
-                                    const deletedAmount = bets[num].history[idx].amount;
-                                    bets[num].history.splice(idx, 1);
-                                    bets[num].total = (bets[num].total || 0) - deletedAmount;
-                                }
-                            } else {
-                                console.warn('Failed to delete bet id', id, data.error);
-                            }
-                        } catch (err) {
-                            console.error('Error deleting bet id', id, err);
-                        }
-                    }
-                    if (!bets[num] || !bets[num].history || bets[num].history.length === 0) {
-                        delete bets[num];
-                    }
-                    updateBetTotal(num);
-                }
-                renderPage(isAllSPMode ? 1 : 2);
-            }
-
-            await loadBets();
-
-            // Jodi Vagar Modal Setup
-            const jodiModal = document.getElementById('jodiVagarModal');
-            const jodiBtn = document.getElementById('jodi-btn');
-            const closeJodiModal = document.getElementById('closeJodiModal');
-            const cancelJodiBtn = document.getElementById('cancelJodiBtn');
-            const confirmJodiBtn = document.getElementById('confirmJodiBtn');
-            const jodiAmountButtons = document.querySelectorAll('.jodi-amount-button');
-            const jodiCustomAmount = document.getElementById('jodiCustomAmount');
-
-            jodiBtn.onclick = () => {
-                jodiModal.classList.remove('hidden');
-                jodiCustomAmount.value = '';
-                jodiAmountButtons.forEach(b => b.classList.remove('selected'));
-                updateJodiModalUndoButton(); // Show/hide undo button in Jodi modal
-            };
-
-            const closeJodiModalFn = () => {
-                jodiModal.classList.add('hidden');
-            };
-            closeJodiModal.onclick = closeJodiModalFn;
-            cancelJodiBtn.onclick = closeJodiModalFn;
-            jodiModal.addEventListener('click', e => { if (e.target === jodiModal) closeJodiModalFn(); });
+            customAmountInput.addEventListener('input', () => {
+                amountButtons.forEach(b => b.classList.remove('selected'));
+            });
 
             jodiAmountButtons.forEach(btn => {
                 btn.onclick = () => {
@@ -1287,99 +754,151 @@
                 jodiAmountButtons.forEach(b => b.classList.remove('selected'));
             });
 
+            confirmBet.onclick = async () => {
+                let amount = 0;
+                const selected = document.querySelector('.amount-button.selected');
+                if (selected) {
+                    amount = parseFloat(selected.dataset.amount);
+                } else {
+                    amount = parseFloat(customAmountInput.value);
+                }
+
+                if (!amount || amount <= 0) {
+                    return showToast('Invalid Amount', 'Please select or enter an amount', 'warning');
+                }
+
+                if (!selected) {
+                    if (amount < 10) return showToast('Amount Too Low', 'Minimum is ₹10', 'warning');
+                    if (amount > 10000) return showToast('Amount Too High', 'Maximum is ₹10,000', 'warning');
+                    if (amount % 10 !== 0) return showToast('Invalid Amount', 'Must be multiple of 10', 'warning');
+                }
+
+                if (currentBulkType) {
+                    const result = await placeBulkBet(currentBulkType, amount);
+                    if (result.success) {
+                        showToast('Success!', `${result.total_bets} bets placed successfully`, 'success');
+                        closeModalFn();
+                        renderPage(currentBulkType === 'SP' ? 1 : 2);
+                        await getLastBulkAction();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place bets', 'error');
+                    }
+                } else {
+                    const result = await placeSingleBet(currentNumber, amount);
+                    if (result.success) {
+                        renderHistory();
+                        closeModalFn();
+                        showToast('Success!', `Bet of ₹${amount} placed on ${currentNumber}`, 'success');
+                    } else {
+                        showToast('Error', result.error || 'Failed to place bet', 'error');
+                    }
+                }
+            };
+
+            placeTab.onclick = () => {
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                updateUndoButton();
+            };
+
+            historyTab.onclick = () => {
+                placeContent.classList.add('hidden');
+                historyContent.classList.remove('hidden');
+                historyTab.classList.add('border-indigo-600', 'text-indigo-600');
+                placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                renderHistory();
+            };
+
+            closeModalBtn.onclick = closeModalFn;
+            modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
+
+            page1Btn.onclick = () => {
+                currentBulkType = null;
+                renderPage(1);
+            };
+
+            page2Btn.onclick = () => {
+                currentBulkType = null;
+                renderPage(2);
+            };
+
+            document.getElementById('all-sp-btn').onclick = () => {
+                currentBulkType = 'SP';
+                modal.classList.remove('hidden');
+                modalTitle.textContent = 'Place Bet on ALL SP (120 numbers)';
+                customAmountInput.value = '';
+                amountButtons.forEach(b => b.classList.remove('selected'));
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                updateUndoButton();
+            };
+
+            document.getElementById('all-dp-btn').onclick = () => {
+                currentBulkType = 'DP';
+                modal.classList.remove('hidden');
+                modalTitle.textContent = 'Place Bet on ALL DP (100 numbers)';
+                customAmountInput.value = '';
+                amountButtons.forEach(b => b.classList.remove('selected'));
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                updateUndoButton();
+            };
+
+            jodiBtn.onclick = () => {
+                jodiModal.classList.remove('hidden');
+                jodiCustomAmount.value = '';
+                jodiAmountButtons.forEach(b => b.classList.remove('selected'));
+                updateUndoButton();
+            };
+
+            closeJodiModal.onclick = closeJodiModalFn;
+            cancelJodiBtn.onclick = closeJodiModalFn;
+            jodiModal.addEventListener('click', e => { if (e.target === jodiModal) closeJodiModalFn(); });
+
             confirmJodiBtn.onclick = async () => {
                 const column = parseInt(document.getElementById('jodiColumn').value);
-                const type = parseInt(document.getElementById('jodiType').value);
+                const jodiType = parseInt(document.getElementById('jodiType').value);
                 
                 let amount = 0;
-                const selectedButton = document.querySelector('.jodi-amount-button.selected');
-                if (selectedButton) {
-                    amount = parseFloat(selectedButton.dataset.amount);
+                const selected = document.querySelector('.jodi-amount-button.selected');
+                if (selected) {
+                    amount = parseFloat(selected.dataset.amount);
                 } else {
                     amount = parseFloat(jodiCustomAmount.value);
                 }
 
                 if (!amount || amount <= 0) {
-                    showToast('Invalid Amount', 'Please select a quick amount or enter a custom amount', 'warning');
-                    return;
+                    return showToast('Invalid Amount', 'Please select or enter an amount', 'warning');
                 }
 
-                if (!selectedButton) {
-                    if (amount < 10) {
-                        showToast('Amount Too Low', 'Minimum custom bet amount is ₹10', 'warning');
-                        return;
-                    }
-                    if (amount > 10000) {
-                        showToast('Amount Too High', 'Maximum custom bet amount is ₹10,000', 'warning');
-                        return;
-                    }
-                    if (amount % 10 !== 0) {
-                        showToast('Invalid Amount', 'Custom amount must be a multiple of 10', 'warning');
-                        return;
-                    }
+                if (!selected) {
+                    if (amount < 10) return showToast('Amount Too Low', 'Minimum is ₹10', 'warning');
+                    if (amount > 10000) return showToast('Amount Too High', 'Maximum is ₹10,000', 'warning');
+                    if (amount % 10 !== 0) return showToast('Invalid Amount', 'Must be multiple of 10', 'warning');
                 }
 
-                const columnNumbers = jodiVagarNumbers[column];
-                if (!columnNumbers || columnNumbers.length === 0) {
-                    showToast('Not Available', 'Numbers for this column are not available yet. Please try another column', 'warning');
-                    return;
+                const result = await placeBulkBet('JODI', amount, column, jodiType);
+                if (result.success) {
+                    showToast('Success!', `Jodi Vagar ${jodiType} bet placed on ${result.total_bets} numbers`, 'success');
+                    closeJodiModalFn();
+                    renderPage(1);
+                    await getLastBulkAction();
+                } else {
+                    showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
                 }
-
-                let selectedNumbers = [];
-                if (type === 5) {
-                    selectedNumbers = columnNumbers.slice(0, 5);
-                } else if (type === 7) {
-                    selectedNumbers = columnNumbers.slice(-7);
-                } else if (type === 12) {
-                    selectedNumbers = columnNumbers;
-                }
-
-                const placedEntries = [];
-
-                for (const num of selectedNumbers) {
-                    try {
-                        const response = await fetch('/user/place-bet/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': getCSRFToken(),
-                            },
-                            body: JSON.stringify({
-                                number: num.toString(),
-                                amount: amount,
-                            }),
-                        });
-
-                        const data = await response.json();
-                        if (data.bet_id || data.success) {
-                            if (!bets[num]) bets[num] = { total: 0, history: [] };
-                            bets[num].total += amount;
-                            const betEntry = { id: data.bet_id || data.id || null, amount };
-                            bets[num].history.push(betEntry);
-                            updateBetTotal(num);
-
-                            if (betEntry.id) {
-                                placedEntries.push({ number: num, id: betEntry.id, amount });
-                            }
-                        }
-                    } catch (err) {
-                        console.error('Error placing Jodi Vagar bet for', num, err);
-                    }
-                }
-
-                if (placedEntries.length > 0) {
-                    bulkActions.push({ 
-                        type: 'JODI', 
-                        entries: placedEntries.slice(),
-                        details: { column, jodiType: type, amount }
-                    });
-                }
-
-                closeJodiModalFn();
-                updateJodiModalUndoButton(); // Update undo button for next open
-                showToast('Success!', `Jodi Vagar ${type} bet of ₹${amount} placed on ${selectedNumbers.length} numbers from Column ${column}`, 'success');
-                renderPage(1);
             };
+
+            undoBulkBtn.onclick = undoBulkAction;
+            undoJodiModalBtn.onclick = undoBulkAction;
+
+            await loadBets();
+            await getLastBulkAction();
         });
     </script>
 </body>
