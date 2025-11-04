@@ -51,6 +51,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+STATICFILES_DIRS = [
+        BASE_DIR / 'userbaseapp' / 'static',
+]
+
+
 CSRF_COOKIE_HTTPONLY = False
 ROOT_URLCONF = 'mymainserver.urls'
 AUTH_USER_MODEL = 'userbaseapp.CustomUser'
