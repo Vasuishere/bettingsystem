@@ -99,10 +99,143 @@
             background-color: #4f46e5;
             color: white;
         }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 420px;
+            pointer-events: auto;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-left: 4px solid;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left-color: #22c55e;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast.info {
+            border-left-color: #3b82f6;
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .toast.error .toast-icon {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast.warning .toast-icon {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .toast.info .toast-icon {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .toast.success .toast-title {
+            color: #16a34a;
+        }
+
+        .toast.error .toast-title {
+            color: #dc2626;
+        }
+
+        .toast.warning .toast-title {
+            color: #d97706;
+        }
+
+        .toast.info .toast-title {
+            color: #2563eb;
+        }
+
+        .toast-message {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .toast-close:hover {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen font-sans">
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <div class="max-w-7xl mx-auto p-4 sm:p-8">
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -228,9 +361,16 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-2 pt-2">
-                    <button id="cancelJodiBtn" class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
-                    <button id="confirmJodiBtn" class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place Bet</button>
+                <div class="space-y-2 pt-2">
+                    <div class="flex gap-2">
+                        <button id="cancelJodiBtn" class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
+                        <button id="confirmJodiBtn" class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place Bet</button>
+                    </div>
+                    
+                    <!-- Undo Last Jodi Vagar Button -->
+                    <button id="undoJodiModalBtn" class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition hidden">
+                        Undo Last Jodi Vagar
+                    </button>
                 </div>
             </div>
         </div>
@@ -298,6 +438,65 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // Toast Notification Function
+            function showToast(title, message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                // Icon based on type
+                let icon = '';
+                switch(type) {
+                    case 'success':
+                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        break;
+                    case 'error':
+                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+                        break;
+                    case 'warning':
+                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+                        break;
+                    case 'info':
+                        icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+                        break;
+                }
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">${icon}</div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="toast-close">&times;</button>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Trigger animation
+                setTimeout(() => toast.classList.add('show'), 10);
+                
+                // Auto dismiss after 3 seconds
+                const timeoutId = setTimeout(() => {
+                    removeToast(toast);
+                }, 3000);
+                
+                // Close button
+                const closeBtn = toast.querySelector('.toast-close');
+                closeBtn.onclick = () => {
+                    clearTimeout(timeoutId);
+                    removeToast(toast);
+                };
+            }
+            
+            function removeToast(toast) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            }
+
             const tbody = document.getElementById('spreadsheet-body');
             const numCols = 10;
             const rowLabels = [
@@ -509,11 +708,11 @@
                         updateBetTotal(targetNumber);
                         if (targetNumber === currentNumber) renderHistory();
                     } else {
-                        alert('Error deleting bet: ' + (data.error || 'Unknown error'));
+                        showToast('Error', data.error || 'Failed to delete bet', 'error');
                     }
                 } catch (error) {
                     console.error('Error deleting bet:', error);
-                    alert('Failed to delete bet');
+                    showToast('Failed', 'Failed to delete bet. Please try again', 'error');
                 }
             }
 
@@ -556,21 +755,21 @@
                 }
 
                 if (!amount || amount <= 0) {
-                    alert('Please select a quick amount or enter a custom amount');
+                    showToast('Invalid Amount', 'Please select a quick amount or enter a custom amount', 'warning');
                     return;
                 }
 
                 if (!selectedButton) {
                     if (amount < 10) {
-                        alert('Minimum custom bet amount is ₹10');
+                        showToast('Amount Too Low', 'Minimum custom bet amount is ₹10', 'warning');
                         return;
                     }
                     if (amount > 10000) {
-                        alert('Maximum custom bet amount is ₹10,000');
+                        showToast('Amount Too High', 'Maximum custom bet amount is ₹10,000', 'warning');
                         return;
                     }
                     if (amount % 10 !== 0) {
-                        alert('Custom amount must be a multiple of 10');
+                        showToast('Invalid Amount', 'Custom amount must be a multiple of 10', 'warning');
                         return;
                     }
                 }
@@ -622,7 +821,7 @@
                     updateUndoButton();
 
                     closeModalFn();
-                    alert(`✅ Bet of ₹${amount} placed on all ${allSPNumbers.length} SP numbers!`);
+                    showToast('Success!', `Bet of ₹${amount} placed on all ${allSPNumbers.length} SP numbers`, 'success');
                     isAllSPMode = false;
                     renderPage(1);
                     return;
@@ -674,7 +873,7 @@
                     updateUndoButton();
 
                     closeModalFn();
-                    alert(`✅ Bet of ₹${amount} placed on all ${allDPNumbers.length} DP numbers!`);
+                    showToast('Success!', `Bet of ₹${amount} placed on all ${allDPNumbers.length} DP numbers`, 'success');
                     isAllDPMode = false;
                     renderPage(2);
                     return;
@@ -704,11 +903,11 @@
                         renderHistory();
                         closeModalFn();
                     } else {
-                        alert('Error saving bet: ' + (data.error || 'Unknown error'));
+                        showToast('Error', data.error || 'Unknown error occurred', 'error');
                     }
                 } catch (error) {
                     console.error('Request failed:', error);
-                    alert('Failed to save bet. Check console for details.');
+                    showToast('Failed', 'Failed to save bet. Please try again', 'error');
                 }
             };
 
@@ -717,6 +916,7 @@
                 historyContent.classList.add('hidden');
                 placeTab.classList.add('border-indigo-600', 'text-indigo-600');
                 historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                updateUndoButton(); // Update undo button visibility when switching to place tab
             };
 
             historyTab.onclick = () => {
@@ -910,6 +1110,7 @@
 
             const undoBulkBtn = document.getElementById('undoBulkBtn');
             const undoJodiBtn = document.getElementById('undoJodiBtn');
+            const undoJodiModalBtn = document.getElementById('undoJodiModalBtn');
 
             function updateUndoButton() {
                 const last = bulkActions[bulkActions.length - 1];
@@ -926,6 +1127,16 @@
                 
                 if (currentBulkViewType && last.type === currentBulkViewType) {
                     undoBulkBtn.classList.remove('hidden');
+                }
+            }
+
+            function updateJodiModalUndoButton() {
+                const last = bulkActions[bulkActions.length - 1];
+                
+                if (last && last.type === 'JODI') {
+                    undoJodiModalBtn.classList.remove('hidden');
+                } else {
+                    undoJodiModalBtn.classList.add('hidden');
                 }
             }
 
@@ -969,7 +1180,8 @@
                 renderPage(isAllSPMode ? 1 : (isAllDPMode ? 2 : 1));
                 renderHistory();
                 updateUndoButton();
-                alert('Undo completed for last bulk action.');
+                updateJodiModalUndoButton();
+                showToast('Success!', 'Bulk action undone successfully', 'success');
             }
 
             undoBulkBtn.onclick = undoLastBulk;
@@ -985,7 +1197,20 @@
                 if (!confirm(confirmMsg)) return;
 
                 await undoLastBulk();
-                alert('Jodi Vagar bet undone successfully!');
+            };
+
+            undoJodiModalBtn.onclick = async () => {
+                if (bulkActions.length === 0) return;
+                const last = bulkActions[bulkActions.length - 1];
+                if (last.type !== 'JODI') return;
+                
+                const details = last.details || {};
+                const confirmMsg = `Undo last Jodi Vagar ${details.jodiType} bet (Column ${details.column}, ₹${details.amount})?\nThis will remove ${last.entries.length} bets.`;
+                
+                if (!confirm(confirmMsg)) return;
+
+                await undoLastBulk();
+                closeJodiModalFn();
             };
 
             async function deleteAllForNumbers(numbers) {
@@ -1040,6 +1265,7 @@
                 jodiModal.classList.remove('hidden');
                 jodiCustomAmount.value = '';
                 jodiAmountButtons.forEach(b => b.classList.remove('selected'));
+                updateJodiModalUndoButton(); // Show/hide undo button in Jodi modal
             };
 
             const closeJodiModalFn = () => {
@@ -1074,28 +1300,28 @@
                 }
 
                 if (!amount || amount <= 0) {
-                    alert('Please select a quick amount or enter a custom amount');
+                    showToast('Invalid Amount', 'Please select a quick amount or enter a custom amount', 'warning');
                     return;
                 }
 
                 if (!selectedButton) {
                     if (amount < 10) {
-                        alert('Minimum custom bet amount is ₹10');
+                        showToast('Amount Too Low', 'Minimum custom bet amount is ₹10', 'warning');
                         return;
                     }
                     if (amount > 10000) {
-                        alert('Maximum custom bet amount is ₹10,000');
+                        showToast('Amount Too High', 'Maximum custom bet amount is ₹10,000', 'warning');
                         return;
                     }
                     if (amount % 10 !== 0) {
-                        alert('Custom amount must be a multiple of 10');
+                        showToast('Invalid Amount', 'Custom amount must be a multiple of 10', 'warning');
                         return;
                     }
                 }
 
                 const columnNumbers = jodiVagarNumbers[column];
                 if (!columnNumbers || columnNumbers.length === 0) {
-                    alert('Numbers for this column are not available yet. Please try another column.');
+                    showToast('Not Available', 'Numbers for this column are not available yet. Please try another column', 'warning');
                     return;
                 }
 
@@ -1150,7 +1376,8 @@
                 }
 
                 closeJodiModalFn();
-                alert(`✅ Jodi Vagar ${type} bet of ₹${amount} placed on ${selectedNumbers.length} numbers from Column ${column}!`);
+                updateJodiModalUndoButton(); // Update undo button for next open
+                showToast('Success!', `Jodi Vagar ${type} bet of ₹${amount} placed on ${selectedNumbers.length} numbers from Column ${column}`, 'success');
                 renderPage(1);
             };
         });
