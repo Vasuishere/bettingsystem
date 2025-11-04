@@ -79,7 +79,8 @@
             background-color: #dc2626;
         }
 
-        .amount-button, .jodi-amount-button {
+        .amount-button,
+        .jodi-amount-button {
             padding: 8px 16px;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
@@ -89,12 +90,14 @@
             font-weight: 500;
         }
 
-        .amount-button:hover, .jodi-amount-button:hover {
+        .amount-button:hover,
+        .jodi-amount-button:hover {
             border-color: #4f46e5;
             background-color: #eef2ff;
         }
 
-        .amount-button.selected, .jodi-amount-button.selected {
+        .amount-button.selected,
+        .jodi-amount-button.selected {
             border-color: #4f46e5;
             background-color: #4f46e5;
             color: white;
@@ -215,6 +218,36 @@
             background-color: #f3f4f6;
             color: #4b5563;
         }
+
+        /* Update the Jodi Vagar Modal style */
+        #jodiVagarModal {
+            height: 600px;
+            max-height: 80vh;
+        }
+
+        /* Modal Header - Fixed */
+        #jodiVagarModal .modal-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Tab Navigation - Fixed */
+        #jodiVagarModal .tab-navigation {
+            position: sticky;
+            top: 4rem;
+            z-index: 10;
+            background-color: white;
+        }
+
+        /* Scrollable Content Area */
+        #jodiVagarModal .scrollable-content {
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
     </style>
 </head>
 
@@ -283,80 +316,117 @@
     </div>
 
     <!-- Jodi Vagar Modal -->
-    <div id="jodiVagarModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-96 rounded-2xl shadow-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
+    <div id="jodiVagarModal"
+        class="hidden fixed inset-0 flex justify-center flex-start padding-top-10 z-50">
+        <div id="jodiVagarModal" class="bg-white w-96 rounded-2xl shadow-2xl p-6" style="height: 600px; max-height: 140vh">
+            <!-- Modal Header - Fixed -->
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white pb-4 border-b">
                 <h2 class="text-xl font-semibold text-gray-800">Jodi Vagar</h2>
                 <button id="closeJodiModal" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
             </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
-                    <select id="jodiType" class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="5">Jodi Vagar 5 </option>
-                        <option value="7">Jodi Vagar 7 </option>
-                        <option value="12">Jodi Vagar 12 </option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                    <select id="jodiColumn" class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <option value="1">Column 1</option>
-                        <option value="2">Column 2</option>
-                        <option value="3">Column 3</option>
-                        <option value="4">Column 4</option>
-                        <option value="5">Column 5</option>
-                        <option value="6">Column 6</option>
-                        <option value="7">Column 7</option>
-                        <option value="8">Column 8</option>
-                        <option value="9">Column 9</option>
-                        <option value="10">Column 10</option>
-                    </select>
-                </div>
+            <!-- Tab Navigation - Fixed -->
+            <div class="border-b mb-4 flex sticky top-16 bg-white z-10">
+                <button id="jodiPlaceTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-purple-600 text-purple-600">
+                    Place a Bet
+                </button>
+                <button id="jodiHistoryTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-600">
+                    History
+                </button>
+            </div>
 
-                
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
-                    <div class="grid grid-cols-4 gap-2 mb-4">
-                        <button class="jodi-amount-button" data-amount="1">₹1</button>
-                        <button class="jodi-amount-button" data-amount="2">₹2</button>
-                        <button class="jodi-amount-button" data-amount="2.5">₹2.5</button>
-                        <button class="jodi-amount-button" data-amount="5">₹5</button>
-                    </div>
-
-                    <div class="relative my-4">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
+            <!-- Scrollable Content Area -->
+            <div class="overflow-y-auto" style="height: calc(100% - 120px)">
+                <!-- Place Bet Content -->
+                <div id="jodiPlaceContent" class="px-1">
+                    <div class="space-y-4">
+                        <!-- Your existing form content here -->
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
+                            <select id="jodiType"
+                                class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="5">Jodi Vagar 5</option>
+                                <option value="7">Jodi Vagar 7</option>
+                                <option value="12">Jodi Vagar 12</option>
+                            </select>
                         </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500">OR</span>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                            <select id="jodiColumn"
+                                class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="1">Column 1</option>
+                                <option value="2">Column 2</option>
+                                <option value="3">Column 3</option>
+                                <option value="4">Column 4</option>
+                                <option value="5">Column 5</option>
+                                <option value="6">Column 6</option>
+                                <option value="7">Column 7</option>
+                                <option value="8">Column 8</option>
+                                <option value="9">Column 9</option>
+                                <option value="10">Column 10</option>
+                            </select>
+                        </div>
+
+
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
+                            <div class="grid grid-cols-4 gap-2 mb-4">
+                                <button class="jodi-amount-button" data-amount="1">₹1</button>
+                                <button class="jodi-amount-button" data-amount="2">₹2</button>
+                                <button class="jodi-amount-button" data-amount="2.5">₹2.5</button>
+                                <button class="jodi-amount-button" data-amount="5">₹5</button>
+                            </div>
+
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-white text-gray-500">OR</span>
+                                </div>
+                            </div>
+
+                            <label for="jodiCustomAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount
+                                (multiples of 10):</label>
+                            <input type="number" id="jodiCustomAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000"
+                                step="10"
+                                class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                            <p class="text-xs text-gray-500 mt-1">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
+                        </div>
+
+                        <div class="space-y-2 pt-2">
+                            <div class="flex gap-2">
+                                <button id="cancelJodiBtn"
+                                    class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
+                                <button id="confirmJodiBtn"
+                                    class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place
+                                    Bet</button>
+                            </div>
+
+                            <button id="undoJodiModalBtn"
+                                class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition hidden">
+                                Undo Last Jodi Vagar
+                            </button>
                         </div>
                     </div>
-
-                    <label for="jodiCustomAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples of 10):</label>
-                    <input type="number" id="jodiCustomAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000" step="10"
-                        class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
-                    <p class="text-xs text-gray-500 mt-1">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
                 </div>
 
-                <div class="space-y-2 pt-2">
-                    <div class="flex gap-2">
-                        <button id="cancelJodiBtn" class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
-                        <button id="confirmJodiBtn" class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place Bet</button>
+                <!-- History Content -->
+                <div id="jodiHistoryContent" class="hidden px-1">
+                    <div class="p-4 text-center text-gray-500">
+                        No history available
                     </div>
-                    
-                    <button id="undoJodiModalBtn" class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition hidden">
-                        Undo Last Jodi Vagar
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Regular Bet Modal -->
-    <div id="betModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
+    <div id="betModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
         <div class="bg-white w-96 rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="modalTitle" class="text-lg font-semibold text-gray-800">Place a Bet</h2>
@@ -365,7 +435,8 @@
 
             <div class="border-b mb-4 flex">
                 <button id="placeTab"
-                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a Bet</button>
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a
+                    Bet</button>
                 <button id="historyTab"
                     class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-indigo-600">History</button>
             </div>
@@ -388,7 +459,8 @@
                     </div>
                 </div>
 
-                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples of 10):</label>
+                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples
+                    of 10):</label>
                 <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000" step="10"
                     class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                 <p class="text-xs text-gray-500 mb-4">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
@@ -397,7 +469,8 @@
                     class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
 
                 <button id="undoBulkBtn"
-                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo Last Bulk</button>
+                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo
+                    Last Bulk</button>
             </div>
 
             <div id="historyContent" class="hidden">
@@ -469,13 +542,13 @@
                 const container = document.getElementById('toastContainer');
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
-                
+
                 const icons = {
                     success: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
                     error: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
                     warning: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
                 };
-                
+
                 toast.innerHTML = `
                     <div class="toast-icon">${icons[type] || icons.success}</div>
                     <div class="toast-content">
@@ -484,7 +557,7 @@
                     </div>
                     <button class="toast-close">&times;</button>
                 `;
-                
+
                 container.appendChild(toast);
                 setTimeout(() => toast.classList.add('show'), 10);
                 const timeoutId = setTimeout(() => removeToast(toast), 3000);
@@ -493,7 +566,7 @@
                     removeToast(toast);
                 };
             }
-            
+
             function removeToast(toast) {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
@@ -720,7 +793,7 @@
             function updateUndoButton() {
                 undoBulkBtn.classList.add('hidden');
                 undoJodiModalBtn.classList.add('hidden');
-                
+
                 if (lastBulkAction) {
                     if (lastBulkAction.type === 'JODI') {
                         undoJodiModalBtn.classList.remove('hidden');
@@ -864,7 +937,7 @@
             confirmJodiBtn.onclick = async () => {
                 const column = parseInt(document.getElementById('jodiColumn').value);
                 const jodiType = parseInt(document.getElementById('jodiType').value);
-                
+
                 let amount = 0;
                 const selected = document.querySelector('.jodi-amount-button.selected');
                 if (selected) {
@@ -896,6 +969,27 @@
 
             undoBulkBtn.onclick = undoBulkAction;
             undoJodiModalBtn.onclick = undoBulkAction;
+
+            // Get tab elements
+            const jodiPlaceTab = document.getElementById('jodiPlaceTab');
+            const jodiHistoryTab = document.getElementById('jodiHistoryTab');
+            const jodiPlaceContent = document.getElementById('jodiPlaceContent');
+            const jodiHistoryContent = document.getElementById('jodiHistoryContent');
+
+            // Tab switching logic
+            jodiPlaceTab.onclick = () => {
+                jodiPlaceContent.classList.remove('hidden');
+                jodiHistoryContent.classList.add('hidden');
+                jodiPlaceTab.classList.add('border-purple-600', 'text-purple-600');
+                jodiHistoryTab.classList.remove('border-purple-600', 'text-purple-600');
+            };
+
+            jodiHistoryTab.onclick = () => {
+                jodiPlaceContent.classList.add('hidden');
+                jodiHistoryContent.classList.remove('hidden');
+                jodiHistoryTab.classList.add('border-purple-600', 'text-purple-600');
+                jodiPlaceTab.classList.remove('border-purple-600', 'text-purple-600');
+            };
 
             await loadBets();
             await getLastBulkAction();

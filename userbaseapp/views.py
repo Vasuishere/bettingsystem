@@ -167,11 +167,11 @@ def place_bulk_bet(request):
             all_jodi_numbers = JODI_VAGAR_NUMBERS[column]
             
             if jodi_type == 5:
-                numbers = [str(n) for n in all_jodi_numbers[:5]]
+                numbers = [str(n) for n in all_jodi_numbers[:5]]  # First 5 numbers
             elif jodi_type == 7:
-                numbers = [str(n) for n in all_jodi_numbers[-7:]]
+                numbers = [str(n) for n in all_jodi_numbers[-7:]]  # Last 7 numbers
             elif jodi_type == 12:
-                numbers = [str(n) for n in all_jodi_numbers]
+                numbers = [str(n) for n in all_jodi_numbers]  # All 12 numbers
             else:
                 return JsonResponse({'error': 'Invalid jodi_type'}, status=400)
         else:
