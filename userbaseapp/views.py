@@ -7,6 +7,7 @@ from .models import CustomUser, Bet, BulkBetAction
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
+from django.db.models import Sum
 from decimal import Decimal
 import json
 
@@ -182,6 +183,8 @@ def place_bulk_bet(request):
                 numbers = [str(n) for n in all_jodi_numbers]  # All 12 numbers
             else:
                 return JsonResponse({'error': 'Invalid jodi_type'}, status=400)
+        elif bet_type == 'DADAR':
+            numbers = get_dadar_numbers()  # This will get the fixed Dadar numbers
         else:
             return JsonResponse({'error': 'Invalid bet type'}, status=400)
 
@@ -369,3 +372,18 @@ def get_bet_summary(request):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def get_bet_total(request):
+    try:
+        total_amount = Bet.objects.filter(user=request.user).aggregate(Sum('amount'))['amount__sum'] or 0
+        return JsonResponse({
+            'success': True,
+            'total_amount': total_amount
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })

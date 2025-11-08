@@ -607,7 +607,8 @@
                 LOAD_BETS: '/user/load-bets/',
                 DELETE_BET: '/user/delete-bet/',
                 UNDO_BULK: '/user/undo-bulk-action/',
-                GET_LAST_BULK: '/user/get-last-bulk-action/'
+                GET_LAST_BULK: '/user/get-last-bulk-action/',
+                GET_BET_TOTAL: '/user/get-bet-total/',
             };
 
             const rowLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
@@ -802,10 +803,25 @@
                     await loadBets();
                     lastBulkAction = null;
                     await getLastBulkAction();
+                    await updateTotalAmount();
                     closeModalFn();
                     closeJodiModalFn();
+                    closeDadarModalFn();
                 } else {
                     showToast('Error', data.message || 'Failed to undo', 'error');
+                }
+            }
+
+            async function updateTotalAmount() {
+                try {
+                    const res = await fetch(API.GET_BET_TOTAL);
+                    const data = await res.json();
+                    if (data.success) {
+                        const totalElement = document.getElementById('totalBalance');
+                        totalElement.textContent = `₹${parseFloat(data.total_amount).toLocaleString('en-IN')}`;
+                    }
+                } catch (err) {
+                    console.error('Error fetching total amount:', err);
                 }
             }
 
@@ -999,6 +1015,7 @@
                         closeModalFn();
                         renderPage(currentBulkType === 'SP' ? 1 : 2);
                         await getLastBulkAction();
+                        await updateTotalAmount();
                     } else {
                         showToast('Error', result.error || 'Failed to place bets', 'error');
                     }
@@ -1008,6 +1025,7 @@
                         renderHistory();
                         closeModalFn();
                         showToast('Success!', `Bet of ₹${amount} placed on ${currentNumber}`, 'success');
+                        await updateTotalAmount();
                     } else {
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
@@ -1076,6 +1094,13 @@
                 updateUndoButton();
             };
 
+            dadarBtn.onclick = () => {
+                dadarModal.classList.remove('hidden');
+                dadarCustomAmount.value = '';
+                dadarAmountButtons.forEach(b => b.classList.remove('selected'));
+                updateUndoButton();
+            };
+
             closeJodiModal.onclick = closeJodiModalFn;
             cancelJodiBtn.onclick = closeJodiModalFn;
             jodiModal.addEventListener('click', e => { if (e.target === jodiModal) closeJodiModalFn(); });
@@ -1108,6 +1133,7 @@
                     closeJodiModalFn();
                     renderPage(1);
                     await getLastBulkAction();
+                    await updateTotalAmount();
                 } else {
                     showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
                 }
@@ -1138,6 +1164,7 @@
                     closeDadarModalFn();
                     renderPage(1);
                     await getLastBulkAction();
+                    await updateTotalAmount();
                 } else {
                     showToast('Error', result.error || 'Failed to place Dadar bet', 'error');
                 }
@@ -1170,6 +1197,7 @@
 
             await loadBets();
             await getLastBulkAction();
+            await updateTotalAmount();
         });
     </script>
 </body>
