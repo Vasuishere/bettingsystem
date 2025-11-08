@@ -23,9 +23,14 @@ JODI_VAGAR_NUMBERS = {
     8: [279, 260, 350, 369, 468, 116, 224, 288, 440, 477, 558, 800],
     9: [379, 270, 469, 450, 360, 117, 144, 199, 225, 388, 559, 577],
     10: [136, 280, 460, 370, 479, 118, 226, 244, 299, 488, 550, 668]
+    
 }
 
-# All column data (moved from JavaScript)
+
+
+DADAR_NUMBERS = [678, 345, 120, 789, 456, 123, 890, 567, 234, 190]
+
+
 ALL_COLUMN_DATA = [
     [128, 137, 146, 236, 245, 290, 380, 470, 489, 560, 579, 678, 100, 119, 155, 227, 335, 344, 399, 588, 669, 777],
     [129, 138, 147, 156, 237, 246, 345, 390, 480, 570, 589, 679, 110, 200, 228, 255, 336, 499, 660, 688, 778, 444],
@@ -55,6 +60,9 @@ def get_dp_numbers():
         dp_numbers.extend([str(num) for num in col[12:22]])
     return dp_numbers
 
+def get_dadar_numbers():
+    """Get all Dadar numbers (10 numbers)"""
+    return [str(num) for num in DADAR_NUMBERS]
 
 def index(request):
     return render(request, 'userbaseapp/index.html')
