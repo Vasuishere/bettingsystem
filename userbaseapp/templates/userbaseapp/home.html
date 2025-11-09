@@ -79,8 +79,7 @@
             background-color: #dc2626;
         }
 
-        .amount-button,
-        .jodi-amount-button {
+        .amount-button {
             padding: 8px 16px;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
@@ -90,14 +89,12 @@
             font-weight: 500;
         }
 
-        .amount-button:hover,
-        .jodi-amount-button:hover {
+        .amount-button:hover {
             border-color: #4f46e5;
             background-color: #eef2ff;
         }
 
-        .amount-button.selected,
-        .jodi-amount-button.selected {
+        .amount-button.selected {
             border-color: #4f46e5;
             background-color: #4f46e5;
             color: white;
@@ -219,51 +216,16 @@
             color: #4b5563;
         }
 
-        /* Update the Jodi Vagar Modal style */
-        /* Fix modal to be scrollable with fixed header */
         .modal-content {
             max-height: 85vh;
             display: flex;
             flex-direction: column;
         }
 
-
-
         .modal-body-scrollable {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
-        }
-
-        .dadar-amount-button {
-            padding: 8px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background-color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .dadar-amount-button:hover {
-            border-color: #f97316;
-            background-color: #fff7ed;
-        }
-
-        .dadar-amount-button.selected {
-            border-color: #f97316;
-            background-color: #f97316;
-            color: white;
-        }
-
-        /* Modal Header - Fixed */
-        #jodiVagarModal .modal-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: white;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
         }
     </style>
 </head>
@@ -342,70 +304,74 @@
         </div>
     </div>
 
-    <!-- Jodi Vagar Modal -->
-    <div id="jodiVagarModal"
+    <!-- Universal Modal -->
+    <div id="universalModal"
         class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
         <div class="bg-white w-96 rounded-2xl shadow-2xl modal-content"
             style="max-height: 85vh; display: flex; flex-direction: column;">
             <!-- Modal Header - Fixed -->
             <div class="p-6 pb-4 flex-shrink-0">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Jodi Vagar</h2>
-                    <button id="closeJodiModal"
+                    <h2 id="modalTitle" class="text-xl font-semibold text-gray-800">Place a Bet</h2>
+                    <button id="closeModal"
                         class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
                 </div>
 
                 <!-- Tab Navigation -->
                 <div class="border-b flex">
-                    <button id="jodiPlaceTab"
-                        class="flex-1 py-2 text-center font-semibold border-b-2 border-purple-600 text-purple-600">
+                    <button id="placeTab"
+                        class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">
                         Place a Bet
                     </button>
-                    <button id="jodiHistoryTab"
-                        class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-purple-600">
+                    <button id="historyTab"
+                        class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-indigo-600">
                         History
                     </button>
                 </div>
             </div>
+
             <!-- Scrollable Content Area -->
             <div class="px-6 pb-6 overflow-y-auto flex-1" style="min-height: 0;">
                 <!-- Place Bet Content -->
-                <div id="jodiPlaceContent">
+                <div id="placeContent">
                     <div class="space-y-4">
-                        <!-- Your existing form content here -->
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
-                            <select id="jodiType"
-                                class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="5">Jodi Vagar 5</option>
-                                <option value="7">Jodi Vagar 7</option>
-                                <option value="12">Jodi Vagar 12</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                            <select id="jodiColumn"
-                                class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="1">Column 1</option>
-                                <option value="2">Column 2</option>
-                                <option value="3">Column 3</option>
-                                <option value="4">Column 4</option>
-                                <option value="5">Column 5</option>
-                                <option value="6">Column 6</option>
-                                <option value="7">Column 7</option>
-                                <option value="8">Column 8</option>
-                                <option value="9">Column 9</option>
-                                <option value="10">Column 10</option>
-                            </select>
+                        <!-- Additional Options (Jodi specific) -->
+                        <div id="jodiOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
+                                <select id="jodiType"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="5">Jodi Vagar 5</option>
+                                    <option value="7">Jodi Vagar 7</option>
+                                    <option value="12">Jodi Vagar 12</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                                <select id="jodiColumn"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="1">Column 1</option>
+                                    <option value="2">Column 2</option>
+                                    <option value="3">Column 3</option>
+                                    <option value="4">Column 4</option>
+                                    <option value="5">Column 5</option>
+                                    <option value="6">Column 6</option>
+                                    <option value="7">Column 7</option>
+                                    <option value="8">Column 8</option>
+                                    <option value="9">Column 9</option>
+                                    <option value="10">Column 10</option>
+                                </select>
+                            </div>
                         </div>
 
+                        <!-- Amount Selection -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
                             <div class="grid grid-cols-4 gap-2 mb-4">
-                                <button class="jodi-amount-button" data-amount="1">₹1</button>
-                                <button class="jodi-amount-button" data-amount="2">₹2</button>
-                                <button class="jodi-amount-button" data-amount="2.5">₹2.5</button>
-                                <button class="jodi-amount-button" data-amount="5">₹5</button>
+                                <button class="amount-button" data-amount="1">₹1</button>
+                                <button class="amount-button" data-amount="2">₹2</button>
+                                <button class="amount-button" data-amount="2.5">₹2.5</button>
+                                <button class="amount-button" data-amount="5">₹5</button>
                             </div>
 
                             <div class="relative my-4">
@@ -417,176 +383,40 @@
                                 </div>
                             </div>
 
-                            <label for="jodiCustomAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom
-                                amount
-                                (multiples of 10):</label>
-                            <input type="number" id="jodiCustomAmount" placeholder="e.g. 10, 50, 100..." min="10"
+                            <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom
+                                amount (multiples of 10):</label>
+                            <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." min="10"
                                 max="10000" step="10"
-                                class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+                                class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                             <p class="text-xs text-gray-500 mt-1">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
                         </div>
 
+                        <!-- Action Buttons -->
                         <div class="space-y-2 pt-2">
                             <div class="flex gap-2">
-                                <button id="cancelJodiBtn"
+                                <button id="cancelBtn"
                                     class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
-                                <button id="confirmJodiBtn"
-                                    class="flex-1 px-4 py-2 bg-purple-600 rounded-lg text-white font-semibold hover:bg-purple-700 transition">Place
+                                <button id="confirmBtn"
+                                    class="flex-1 px-4 py-2 bg-indigo-600 rounded-lg text-white font-semibold hover:bg-indigo-700 transition">Place
                                     Bet</button>
                             </div>
 
-                            <button id="undoJodiModalBtn"
-                                class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition hidden">
-                                Undo Last Jodi Vagar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- History Content -->
-                <div id="jodiHistoryContent" class="hidden">
-                    <div class="p-4 text-center text-gray-500">
-                        No history available
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Dadar Modal -->
-    <div id="dadarModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white w-96 rounded-2xl shadow-2xl modal-content" 
-            style="max-height: 85vh; display: flex; flex-direction: column;">
-            <!-- Modal Header - Fixed -->
-            <div class="p-6 pb-4 flex-shrink-0">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Dadar</h2>
-                    <button id="closeDadarModalFn" 
-                        class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
-                </div>
-
-                <!-- Tab Navigation -->
-                <div class="border-b flex">
-                    <button id="dadarPlaceTab"
-                        class="flex-1 py-2 text-center font-semibold border-b-2 border-orange-600 text-orange-600">
-                        Place a Bet
-                    </button>
-                    <button id="dadarHistoryTab"
-                        class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-orange-600">
-                        History
-                    </button>
-                </div>
-            </div>
-
-            <!-- Scrollable Content Area -->
-            <div class="px-6 pb-6 overflow-y-auto flex-1" style="min-height: 0;">
-                <!-- Place Bet Content -->
-                <div id="dadarPlaceContent">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
-                            <div class="grid grid-cols-4 gap-2 mb-4">
-                                <button class="dadar-amount-button" data-amount="1">₹1</button>
-                                <button class="dadar-amount-button" data-amount="2">₹2</button>
-                                <button class="dadar-amount-button" data-amount="2.5">₹2.5</button>
-                                <button class="dadar-amount-button" data-amount="5">₹5</button>
-                            </div>
-
-                            <div class="relative my-4">
-                                <div class="absolute inset-0 flex items-center">
-                                    <div class="w-full border-t border-gray-300"></div>
-                                </div>
-                                <div class="relative flex justify-center text-sm">
-                                    <span class="px-2 bg-white text-gray-500">OR</span>
-                                </div>
-                            </div>
-
-                            <label for="dadarCustomAmount"
-                                class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples of
-                                10):</label>
-                            <input type="number" id="dadarCustomAmount" placeholder="e.g. 10, 50, 100..."
-                                min="10" max="10000" step="10"
-                                class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
-                            <p class="text-xs text-gray-500 mt-1">Min: ₹10 | Max: ₹10,000 | Must be multiple of
-                                10</p>
-                        </div>
-
-                        <div class="space-y-2 pt-2">
-                            <div class="flex gap-2">
-                                <button id="cancelDadarBtn"
-                                    class="flex-1 px-4 py-2 bg-gray-300 rounded-lg text-gray-800 font-semibold hover:bg-gray-400 transition">Cancel</button>
-                                <button id="confirmDadarBtn"
-                                    class="flex-1 px-4 py-2 bg-orange-600 rounded-lg text-white font-semibold hover:bg-orange-700 transition">Place
-                                    Bet</button>
-                            </div>
-
-                            <button id="undoDadarModalBtn"
+                            <button id="undoBtn"
                                 class="w-full px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition hidden">
-                                Undo Last Dadar
+                                Undo Last Action
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- History Content -->
-                <div id="dadarHistoryContent" class="hidden">
-                    <div class="p-4 text-center text-gray-500">
-                        No history available
+                <div id="historyContent" class="hidden">
+                    <div id="historyList" class="space-y-2">
+                        <div class="p-4 text-center text-gray-500">
+                            No history available
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <!-- Regular Bet Modal -->
-    <div id="betModal"
-        class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden z-50 transition">
-        <div class="bg-white w-96 rounded-lg shadow-lg p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="modalTitle" class="text-lg font-semibold text-gray-800">Place a Bet</h2>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
-            </div>
-
-            <div class="border-b mb-4 flex">
-                <button id="placeTab"
-                    class="flex-1 py-2 text-center font-semibold border-b-2 border-indigo-600 text-indigo-600">Place a
-                    Bet</button>
-                <button id="historyTab"
-                    class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-indigo-600">History</button>
-            </div>
-
-            <div id="placeContent">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
-                <div class="grid grid-cols-4 gap-2 mb-4">
-                    <button class="amount-button" data-amount="1">₹1</button>
-                    <button class="amount-button" data-amount="2">₹2</button>
-                    <button class="amount-button" data-amount="2.5">₹2.5</button>
-                    <button class="amount-button" data-amount="5">₹5</button>
-                </div>
-
-                <div class="relative my-4">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">OR</span>
-                    </div>
-                </div>
-
-                <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom amount (multiples
-                    of 10):</label>
-                <input type="number" id="customAmount" placeholder="e.g. 10, 50, 100..." min="10" max="10000" step="10"
-                    class="w-full border-2 border-gray-300 rounded-lg p-3 mb-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-                <p class="text-xs text-gray-500 mb-4">Min: ₹10 | Max: ₹10,000 | Must be multiple of 10</p>
-
-                <button id="confirmBet"
-                    class="w-full bg-indigo-600 text-white py-2 rounded-md font-semibold hover:bg-indigo-700 transition">OK</button>
-
-                <button id="undoBulkBtn"
-                    class="w-full mt-2 bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600 transition hidden">Undo
-                    Last Bulk</button>
-            </div>
-
-            <div id="historyContent" class="hidden">
-                <ul id="historyList" class="space-y-2 text-gray-700 text-sm max-h-64 overflow-y-auto"></ul>
             </div>
         </div>
     </div>
@@ -620,45 +450,29 @@
 
             let bets = {};
             let currentNumber = null;
-            let currentBulkType = null;
+            let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR'
             let lastBulkAction = null;
 
-            const tbody = document.getElementById('spreadsheet-body');
-            const page1Btn = document.getElementById('page-1-btn');
-            const page2Btn = document.getElementById('page-2-btn');
-            const modal = document.getElementById('betModal');
+            // Modal Elements
+            const modal = document.getElementById('universalModal');
             const closeModalBtn = document.getElementById('closeModal');
             const modalTitle = document.getElementById('modalTitle');
-            const confirmBet = document.getElementById('confirmBet');
-            const historyList = document.getElementById('historyList');
             const placeTab = document.getElementById('placeTab');
             const historyTab = document.getElementById('historyTab');
             const placeContent = document.getElementById('placeContent');
             const historyContent = document.getElementById('historyContent');
+            const historyList = document.getElementById('historyList');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const undoBtn = document.getElementById('undoBtn');
             const customAmountInput = document.getElementById('customAmount');
             const amountButtons = document.querySelectorAll('.amount-button');
-            const undoBulkBtn = document.getElementById('undoBulkBtn');
-            const jodiModal = document.getElementById('jodiVagarModal');
-            const jodiBtn = document.getElementById('jodi-btn');
-            const closeJodiModal = document.getElementById('closeJodiModal');
-            const cancelJodiBtn = document.getElementById('cancelJodiBtn');
-            const confirmJodiBtn = document.getElementById('confirmJodiBtn');
-            const jodiAmountButtons = document.querySelectorAll('.jodi-amount-button');
-            const jodiCustomAmount = document.getElementById('jodiCustomAmount');
-            const undoJodiModalBtn = document.getElementById('undoJodiModalBtn');
-            const dadarModal = document.getElementById('dadarModal');
-            const dadarBtn = document.getElementById('dadar-btn');
-            const closeDadarModal = document.getElementById('closeDadarModal');
-            const cancelDadarBtn = document.getElementById('cancelDadarBtn');
-            const confirmDadarBtn = document.getElementById('confirmDadarBtn');
-            const dadarAmountButtons = document.querySelectorAll('.dadar-amount-button');
-            const dadarCustomAmount = document.getElementById('dadarCustomAmount');
-            const undoDadarModalBtn = document.getElementById('undoDadarModalBtn');
+            const jodiOptions = document.getElementById('jodiOptions');
+            const tbody = document.getElementById('spreadsheet-body');
 
             function getCSRFToken() {
                 return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
             }
-
 
             function showToast(title, message, type = 'success') {
                 const container = document.getElementById('toastContainer');
@@ -694,6 +508,132 @@
                 setTimeout(() => toast.remove(), 400);
             }
 
+            // Open Modal Function
+            function openModal(betType, number = null, title = 'Place a Bet') {
+                currentBetType = betType;
+                currentNumber = number;
+                
+                modal.classList.remove('hidden');
+                modalTitle.textContent = title;
+                
+                // Reset form
+                customAmountInput.value = '';
+                amountButtons.forEach(b => b.classList.remove('selected'));
+                
+                // Show/hide Jodi options
+                if (betType === 'JODI') {
+                    jodiOptions.classList.remove('hidden');
+                } else {
+                    jodiOptions.classList.add('hidden');
+                }
+                
+                // Switch to Place tab
+                switchToPlaceTab();
+                
+                // Update undo button
+                updateUndoButton();
+            }
+
+            // Close Modal Function
+            function closeModal() {
+                modal.classList.add('hidden');
+                currentBetType = null;
+                currentNumber = null;
+            }
+
+            // Switch to Place Tab
+            function switchToPlaceTab() {
+                placeContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
+                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
+            }
+
+            // Switch to History Tab
+            function switchToHistoryTab() {
+                placeContent.classList.add('hidden');
+                historyContent.classList.remove('hidden');
+                historyTab.classList.add('border-indigo-600', 'text-indigo-600');
+                placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
+                renderHistory();
+            }
+
+            // Update Undo Button Visibility
+            function updateUndoButton() {
+                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR'].includes(currentBetType)) {
+                    undoBtn.classList.remove('hidden');
+                } else {
+                    undoBtn.classList.add('hidden');
+                }
+            }
+
+            // Render History
+            function renderHistory() {
+                historyList.innerHTML = '';
+                
+                let relevantBets = [];
+                
+                if (currentBetType === 'SINGLE') {
+                    // Show history for single number
+                    const history = bets[currentNumber]?.history || [];
+                    if (history.length === 0) {
+                        historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No bets yet.</div>';
+                        return;
+                    }
+                    
+                    history.forEach((bet, i) => {
+                        const li = document.createElement('li');
+                        li.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-50', 'p-2', 'rounded');
+                        const text = document.createElement('span');
+                        text.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
+                        const delBtn = document.createElement('button');
+                        delBtn.textContent = 'Delete';
+                        delBtn.classList.add('delete-button');
+                        delBtn.onclick = async () => {
+                            await deleteBet(bet.id, currentNumber);
+                            renderHistory();
+                        };
+                        li.append(text, delBtn);
+                        historyList.appendChild(li);
+                    });
+                } else if (currentBetType === 'DADAR') {
+                    // Show Dadar history
+                    const dadarNumbers = new Set([678, 345, 120, 789, 456, 123, 890, 567, 234, 190].map(String));
+                    relevantBets = Object.entries(bets)
+                        .filter(([number]) => dadarNumbers.has(number))
+                        .flatMap(([number, data]) => 
+                            data.history.map(bet => ({
+                                ...bet,
+                                number
+                            }))
+                        );
+                    
+                    if (relevantBets.length === 0) {
+                        historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No Dadar bets found</div>';
+                        return;
+                    }
+                    
+                    relevantBets.forEach((bet) => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
+                        const text = document.createElement('span');
+                        text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
+                        const delBtn = document.createElement('button');
+                        delBtn.textContent = 'Delete';
+                        delBtn.className = 'delete-button';
+                        delBtn.onclick = async () => {
+                            await deleteBet(bet.id, bet.number);
+                            renderHistory();
+                        };
+                        li.append(text, delBtn);
+                        historyList.appendChild(li);
+                    });
+                } else {
+                    historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No history available</div>';
+                }
+            }
+
+            // API Functions
             async function loadBets() {
                 try {
                     const res = await fetch(API.LOAD_BETS);
@@ -797,9 +737,7 @@
                     lastBulkAction = null;
                     await getLastBulkAction();
                     await updateTotalAmount();
-                    closeModalFn();
-                    closeJodiModalFn();
-                    closeDadarModalFn();
+                    closeModal();
                 } else {
                     showToast('Error', data.message || 'Failed to undo', 'error');
                 }
@@ -829,6 +767,9 @@
                 tbody.innerHTML = '';
                 const start = page === 1 ? 0 : 13;
                 const end = page === 1 ? 11 : 22;
+
+                const page1Btn = document.getElementById('page-1-btn');
+                const page2Btn = document.getElementById('page-2-btn');
 
                 if (page === 1) {
                     page1Btn.classList.add('bg-indigo-600', 'text-white');
@@ -862,7 +803,7 @@
                             const plus = document.createElement('button');
                             plus.textContent = '+';
                             plus.classList.add('bet-button');
-                            plus.onclick = () => openModal(value);
+                            plus.onclick = () => openModal('SINGLE', value, `Place a Bet on ${value}`);
 
                             const total = document.createElement('span');
                             total.classList.add('ml-2', 'text-sm', 'font-semibold', 'text-green-600');
@@ -877,129 +818,9 @@
                 }
             }
 
-            function openModal(number) {
-                currentNumber = number;
-                currentBulkType = null;
-                modal.classList.remove('hidden');
-                modalTitle.textContent = `Place a Bet on ${number}`;
-                customAmountInput.value = '';
-                amountButtons.forEach(b => b.classList.remove('selected'));
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
-                renderHistory();
-            }
+            // Event Listeners
 
-            function closeModalFn() {
-                modal.classList.add('hidden');
-            }
-
-            function closeJodiModalFn() {
-                jodiModal.classList.add('hidden');
-            }
-            function closeDadarModalFn() {
-                dadarModal.classList.add('hidden');
-            }
-
-            function renderHistory() {
-                historyList.innerHTML = '';
-                const history = bets[currentNumber]?.history || [];
-                if (history.length === 0) {
-                    const li = document.createElement('li');
-                    li.textContent = 'No bets yet.';
-                    li.classList.add('text-gray-500', 'italic');
-                    historyList.appendChild(li);
-                } else {
-                    history.forEach((bet, i) => {
-                        const li = document.createElement('li');
-                        li.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-50', 'p-2', 'rounded');
-                        const text = document.createElement('span');
-                        text.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
-                        const delBtn = document.createElement('button');
-                        delBtn.textContent = 'Delete';
-                        delBtn.classList.add('delete-button');
-                        delBtn.onclick = async () => {
-                            await deleteBet(bet.id, currentNumber);
-                            renderHistory();
-                        };
-                        li.append(text, delBtn);
-                        historyList.appendChild(li);
-                    });
-                }
-            }
-
-            // Add this function after renderHistory()
-            function renderDadarHistory() {
-                const dadarHistoryList = document.getElementById('dadarHistoryContent');
-                dadarHistoryList.innerHTML = '';
-                
-                // Filter bets for Dadar numbers only
-                const dadarNumbers = new Set([678, 345, 120, 789, 456, 123, 890, 567, 234, 190].map(String));
-                const dadarBets = Object.entries(bets)
-                    .filter(([number]) => dadarNumbers.has(number))
-                    .flatMap(([number, data]) => 
-                        data.history.map(bet => ({
-                            ...bet,
-                            number
-                        }))
-                    )
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-                if (dadarBets.length === 0) {
-                    const div = document.createElement('div');
-                    div.className = 'p-4 text-center text-gray-500';
-                    div.textContent = 'No Dadar bets found';
-                    dadarHistoryList.appendChild(div);
-                    return;
-                }
-
-                const ul = document.createElement('ul');
-                ul.className = 'space-y-2';
-
-                dadarBets.forEach((bet) => {
-                    const li = document.createElement('li');
-                    li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
-                    
-                    const text = document.createElement('span');
-                    text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
-                    
-                    const delBtn = document.createElement('button');
-                    delBtn.textContent = 'Delete';
-                    delBtn.className = 'delete-button';
-                    delBtn.onclick = async () => {
-                        const result = await deleteBet(bet.id, bet.number);
-                        if (result.success) {
-                            await loadBets();
-                            renderDadarHistory();
-                            await updateTotalAmount();
-                        }
-                    };
-                    
-                    li.append(text, delBtn);
-                    ul.appendChild(li);
-                });
-
-                dadarHistoryList.appendChild(ul);
-            }
-
-            function updateUndoButton() {
-                undoBulkBtn.classList.add('hidden');
-                undoJodiModalBtn.classList.add('hidden');
-                undoDadarModalBtn.classList.add('hidden');
-
-                if (lastBulkAction) {
-                    if (lastBulkAction.type === 'JODI') {
-                        undoJodiModalBtn.classList.remove('hidden');
-                    } else if (lastBulkAction.type === 'DADAR') {
-                        undoDadarModalBtn.classList.remove('hidden');
-                    } else if (currentBulkType && lastBulkAction.type === currentBulkType) {
-                        undoBulkBtn.classList.remove('hidden');
-                    }
-                }
-            }
-
+            // Amount button selection
             amountButtons.forEach(btn => {
                 btn.onclick = () => {
                     amountButtons.forEach(b => b.classList.remove('selected'));
@@ -1012,31 +833,17 @@
                 amountButtons.forEach(b => b.classList.remove('selected'));
             });
 
-            jodiAmountButtons.forEach(btn => {
-                btn.onclick = () => {
-                    jodiAmountButtons.forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    jodiCustomAmount.value = '';
-                };
-            });
+            // Modal close
+            closeModalBtn.onclick = closeModal;
+            cancelBtn.onclick = closeModal;
+            modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-            jodiCustomAmount.addEventListener('input', () => {
-                jodiAmountButtons.forEach(b => b.classList.remove('selected'));
-            });
+            // Tab switching
+            placeTab.onclick = switchToPlaceTab;
+            historyTab.onclick = switchToHistoryTab;
 
-            dadarAmountButtons.forEach(btn => {
-                btn.onclick = () => {
-                    dadarAmountButtons.forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    dadarCustomAmount.value = '';
-                };
-            });
-
-            dadarCustomAmount.addEventListener('input', () => {
-                dadarAmountButtons.forEach(b => b.classList.remove('selected'));
-            });
-
-            confirmBet.onclick = async () => {
+            // Confirm Bet
+            confirmBtn.onclick = async () => {
                 let amount = 0;
                 const selected = document.querySelector('.amount-button.selected');
                 if (selected) {
@@ -1055,195 +862,67 @@
                     if (amount % 10 !== 0) return showToast('Invalid Amount', 'Must be multiple of 10', 'warning');
                 }
 
-                if (currentBulkType) {
-                    const result = await placeBulkBet(currentBulkType, amount);
+                if (currentBetType === 'SINGLE') {
+                    const result = await placeSingleBet(currentNumber, amount);
+                    if (result.success) {
+                        showToast('Success!', `Bet of ₹${amount} placed on ${currentNumber}`, 'success');
+                        closeModal();
+                        await updateTotalAmount();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place bet', 'error');
+                    }
+                } else if (currentBetType === 'JODI') {
+                    const column = parseInt(document.getElementById('jodiColumn').value);
+                    const jodiType = parseInt(document.getElementById('jodiType').value);
+                    const result = await placeBulkBet('JODI', amount, column, jodiType);
+                    if (result.success) {
+                        showToast('Success!', `Jodi Vagar ${jodiType} bet placed on ${result.total_bets} numbers`, 'success');
+                        closeModal();
+                        renderPage(1);
+                        await getLastBulkAction();
+                        await updateTotalAmount();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
+                    }
+                } else if (['SP', 'DP', 'DADAR'].includes(currentBetType)) {
+                    const result = await placeBulkBet(currentBetType, amount);
                     if (result.success) {
                         showToast('Success!', `${result.total_bets} bets placed successfully`, 'success');
-                        closeModalFn();
-                        renderPage(currentBulkType === 'SP' ? 1 : 2);
+                        closeModal();
+                        renderPage(currentBetType === 'SP' ? 1 : 2);
                         await getLastBulkAction();
                         await updateTotalAmount();
                     } else {
                         showToast('Error', result.error || 'Failed to place bets', 'error');
                     }
-                } else {
-                    const result = await placeSingleBet(currentNumber, amount);
-                    if (result.success) {
-                        renderHistory();
-                        closeModalFn();
-                        showToast('Success!', `Bet of ₹${amount} placed on ${currentNumber}`, 'success');
-                        await updateTotalAmount();
-                    } else {
-                        showToast('Error', result.error || 'Failed to place bet', 'error');
-                    }
                 }
             };
 
-            placeTab.onclick = () => {
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
-            };
+            // Undo button
+            undoBtn.onclick = undoBulkAction;
 
-            historyTab.onclick = () => {
-                placeContent.classList.add('hidden');
-                historyContent.classList.remove('hidden');
-                historyTab.classList.add('border-indigo-600', 'text-indigo-600');
-                placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                renderHistory();
-            };
+            // Page navigation
+            document.getElementById('page-1-btn').onclick = () => renderPage(1);
+            document.getElementById('page-2-btn').onclick = () => renderPage(2);
 
-            closeModalBtn.onclick = closeModalFn;
-            modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
-
-            page1Btn.onclick = () => {
-                currentBulkType = null;
-                renderPage(1);
-            };
-
-            page2Btn.onclick = () => {
-                currentBulkType = null;
-                renderPage(2);
-            };
-
+            // Bet action buttons
             document.getElementById('all-sp-btn').onclick = () => {
-                currentBulkType = 'SP';
-                modal.classList.remove('hidden');
-                modalTitle.textContent = 'Place Bet on ALL SP (120 numbers)';
-                customAmountInput.value = '';
-                amountButtons.forEach(b => b.classList.remove('selected'));
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
+                openModal('SP', null, 'Place Bet on ALL SP (120 numbers)');
             };
 
             document.getElementById('all-dp-btn').onclick = () => {
-                currentBulkType = 'DP';
-                modal.classList.remove('hidden');
-                modalTitle.textContent = 'Place Bet on ALL DP (100 numbers)';
-                customAmountInput.value = '';
-                amountButtons.forEach(b => b.classList.remove('selected'));
-                placeContent.classList.remove('hidden');
-                historyContent.classList.add('hidden');
-                placeTab.classList.add('border-indigo-600', 'text-indigo-600');
-                historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
-                updateUndoButton();
+                openModal('DP', null, 'Place Bet on ALL DP (100 numbers)');
             };
 
-            jodiBtn.onclick = () => {
-                jodiModal.classList.remove('hidden');
-                jodiCustomAmount.value = '';
-                jodiAmountButtons.forEach(b => b.classList.remove('selected'));
-                updateUndoButton();
+            document.getElementById('jodi-btn').onclick = () => {
+                openModal('JODI', null, 'Jodi Vagar');
             };
 
-            dadarBtn.onclick = () => {
-                dadarModal.classList.remove('hidden');
-                dadarCustomAmount.value = '';
-                dadarAmountButtons.forEach(b => b.classList.remove('selected'));
-                updateUndoButton();
+            document.getElementById('dadar-btn').onclick = () => {
+                openModal('DADAR', null, 'Dadar');
             };
 
-            closeJodiModal.onclick = closeJodiModalFn;
-            cancelJodiBtn.onclick = closeJodiModalFn;
-            jodiModal.addEventListener('click', e => { if (e.target === jodiModal) closeJodiModalFn(); });
-
-            confirmJodiBtn.onclick = async () => {
-                const column = parseInt(document.getElementById('jodiColumn').value);
-                const jodiType = parseInt(document.getElementById('jodiType').value);
-
-                let amount = 0;
-                const selected = document.querySelector('.jodi-amount-button.selected');
-                if (selected) {
-                    amount = parseFloat(selected.dataset.amount);
-                } else {
-                    amount = parseFloat(jodiCustomAmount.value);
-                }
-
-                if (!amount || amount <= 0) {
-                    return showToast('Invalid Amount', 'Please select or enter an amount', 'warning');
-                }
-
-                if (!selected) {
-                    if (amount < 10) return showToast('Amount Too Low', 'Minimum is ₹10', 'warning');
-                    if (amount > 10000) return showToast('Amount Too High', 'Maximum is ₹10,000', 'warning');
-                    if (amount % 10 !== 0) return showToast('Invalid Amount', 'Must be multiple of 10', 'warning');
-                }
-
-                const result = await placeBulkBet('JODI', amount, column, jodiType);
-                if (result.success) {
-                    showToast('Success!', `Jodi Vagar ${jodiType} bet placed on ${result.total_bets} numbers`, 'success');
-                    closeJodiModalFn();
-                    renderPage(1);
-                    await getLastBulkAction();
-                    await updateTotalAmount();
-                } else {
-                    showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
-                }
-            };
-
-            confirmDadarBtn.onclick = async () => {
-                let amount = 0;
-                const selected = document.querySelector('.dadar-amount-button.selected');
-                if (selected) {
-                    amount = parseFloat(selected.dataset.amount);
-                } else {
-                    amount = parseFloat(dadarCustomAmount.value);
-                }
-
-                if (!amount || amount <= 0) {
-                    return showToast('Invalid Amount', 'Please select or enter an amount', 'warning');
-                }
-
-                if (!selected) {
-                    if (amount < 10) return showToast('Amount Too Low', 'Minimum is ₹10', 'warning');
-                    if (amount > 10000) return showToast('Amount Too High', 'Maximum is ₹10,000', 'warning');
-                    if (amount % 10 !== 0) return showToast('Invalid Amount', 'Must be multiple of 10', 'warning');
-                }
-
-                const result = await placeBulkBet('DADAR', amount);
-                if (result.success) {
-                    showToast('Success!', `Dadar bet placed on ${result.total_bets} numbers`, 'success');
-                    closeDadarModalFn();
-                    renderPage(1);
-                    await getLastBulkAction();
-                    await updateTotalAmount();
-                    renderDadarHistory();  // Add this line
-                } else {
-                    showToast('Error', result.error || 'Failed to place Dadar bet', 'error');
-                }
-            };
-
-            undoBulkBtn.onclick = undoBulkAction;
-            undoJodiModalBtn.onclick = undoBulkAction;
-            undoDadarModalBtn.onclick = undoBulkAction;
-
-            // Get tab elements
-            const dadarPlaceTab = document.getElementById('dadarPlaceTab');
-            const dadarHistoryTab = document.getElementById('dadarHistoryTab');
-            const dadarPlaceContent = document.getElementById('dadarPlaceContent');
-            const dadarHistoryContent = document.getElementById('dadarHistoryContent');
-
-            // Tab switching logic
-            dadarPlaceTab.onclick = () => {
-                dadarPlaceContent.classList.remove('hidden');
-                dadarHistoryContent.classList.add('hidden');
-                dadarPlaceTab.classList.add('border-orange-600', 'text-orange-600');
-                dadarHistoryTab.classList.remove('border-orange-600', 'text-orange-600');
-            };
-
-            dadarHistoryTab.onclick = () => {
-                dadarPlaceContent.classList.add('hidden');
-                dadarHistoryContent.classList.remove('hidden');
-                dadarHistoryTab.classList.add('border-orange-600', 'text-orange-600');
-                dadarPlaceTab.classList.remove('border-orange-600', 'text-orange-600');
-                renderDadarHistory();  // Add this call
-            };
-
+            // Initialize
             await loadBets();
             await getLastBulkAction();
             await updateTotalAmount();
