@@ -70,7 +70,7 @@ JODI_PANEL_NUMBERS = {
     7: [124, 160, 278, 340, 458, 467, 890],
     8: [125, 170, 378, 134, 189, 459, 567],
     9: [126, 180, 289, 237, 450, 478, 568],
-    10: [145, 190, 235, 389, 569, 127,578]
+    10: [145, 235, 389, 569, 127, 578, 190]
 }
 
 ALL_COLUMN_DATA = [
@@ -83,7 +83,7 @@ ALL_COLUMN_DATA = [
     [124, 160, 179, 250, 269, 278, 340, 359, 368, 458, 467, 890, 115, 133, 188, 223, 377, 449, 557, 566, 700, 999],
     [125, 134, 170, 189, 260, 279, 350, 369, 378, 459, 468, 567, 116, 224, 233, 288, 440, 477, 558, 800, 990, 666],
     [126, 135, 180, 234, 270, 289, 360, 379, 450, 469, 478, 568, 117, 144, 199, 225, 388, 559, 577, 667, 900, 333],
-    [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 559, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
+    [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 569, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
 ]
 
 
@@ -100,6 +100,7 @@ def get_dp_numbers():
     dp_numbers = []
     for col in ALL_COLUMN_DATA:
         dp_numbers.extend([str(num) for num in col[12:22]])
+        
     return dp_numbers
 
 
@@ -161,7 +162,9 @@ def login_view(request):
 @login_required
 def home(request):
     """Home page after successful login"""
-    return render(request, 'userbaseapp/home.html')
+    return render(request, 'userbaseapp/home.html', {
+        'ALL_COLUMN_DATA': json.dumps(ALL_COLUMN_DATA)
+    })
 
 
 def logout_view(request):
@@ -188,7 +191,8 @@ def place_bet(request):
         bet = Bet.objects.create(
             user=request.user,
             number=str(number),
-            amount=amount
+            amount=amount,
+            bet_type='SINGLE'
         )
 
         return JsonResponse({
@@ -232,8 +236,8 @@ def place_bulk_bet(request):
                     column_index = int(column) - 1
                     if 0 <= column_index < 10:
                         column_data = ALL_COLUMN_DATA[column_index]
-                        # Get SP numbers from this column
-                        sp_from_column = [str(n) for n in column_data if str(n).count(str(n)[0]) == 2]
+                        # Get SP numbers from this column (first 12 numbers)
+                        sp_from_column = [str(n) for n in column_data[0:12]]
                         numbers.extend(sp_from_column)
                 # Remove duplicates
                 seen = set()
@@ -249,8 +253,8 @@ def place_bulk_bet(request):
                     column_index = int(column) - 1
                     if 0 <= column_index < 10:
                         column_data = ALL_COLUMN_DATA[column_index]
-                        # Get DP numbers from this column
-                        dp_from_column = [str(n) for n in column_data if len(set(str(n))) == 2]
+                        # Get DP numbers from this column (last 10 numbers, positions 12-21)
+                        dp_from_column = [str(n) for n in column_data[12:22]]
                         numbers.extend(dp_from_column)
                 # Remove duplicates
                 seen = set()
@@ -292,19 +296,8 @@ def place_bulk_bet(request):
             seen = set()
             numbers = [x for x in numbers if not (x in seen or seen.add(x))]
         elif bet_type == 'DADAR':
-            columns = data.get('columns')  # Support multiple columns
-            if columns and isinstance(columns, list):
-                # Multi-column DADAR
-                numbers = []
-                for column in columns:
-                    column = int(column)
-                    if column in DADAR_NUMBERS:
-                        numbers.extend([str(n) for n in DADAR_NUMBERS[column]])
-                # Remove duplicates
-                seen = set()
-                numbers = [x for x in numbers if not (x in seen or seen.add(x))]
-            else:
-                numbers = get_dadar_numbers()
+            # Always bet on all 10 Dadar numbers
+            numbers = get_dadar_numbers()
         elif bet_type in ['EKI', 'BEKI']:
             numbers = get_eki_beki_numbers(bet_type)
         elif bet_type == 'ABR_CUT':
@@ -376,17 +369,76 @@ def place_bulk_bet(request):
 
         # Create all bets
         bets_created = []
+        
+        # Determine sub_type for tracking
+        sub_type = None
+        if bet_type == 'JODI':
+            sub_type = str(data.get('jodi_type'))  # '5', '7', or '12'
+        elif bet_type == 'JODI_PANEL':
+            sub_type = str(data.get('panel_type'))  # '6' or '7'
+        elif bet_type in ['EKI', 'BEKI', 'DADAR']:
+            sub_type = bet_type  # Store EKI, BEKI, or DADAR as sub_type
+        
+        # Get all columns for multi-column bets
+        all_columns = data.get('columns', [])
+        if not isinstance(all_columns, list):
+            all_columns = [all_columns] if all_columns else []
+        
         for number in numbers:
+            # Determine which column this number belongs to (for column-based bet types)
+            column_num = None
+            
+            # For SP and DP, detect column from ALL_COLUMN_DATA if columns were selected
+            if bet_type in ['SP', 'DP'] and all_columns:
+                for col in all_columns:
+                    col_int = int(col)
+                    if 1 <= col_int <= 10:
+                        column_data = ALL_COLUMN_DATA[col_int - 1]
+                        if bet_type == 'SP':
+                            # Check if number is in first 12 positions (SP numbers)
+                            if number in [str(n) for n in column_data[0:12]]:
+                                column_num = col_int
+                                break
+                        elif bet_type == 'DP':
+                            # Check if number is in positions 12-21 (DP numbers)
+                            if number in [str(n) for n in column_data[12:22]]:
+                                column_num = col_int
+                                break
+            
+            # For other column-based bet types (only if columns were provided)
+            elif bet_type in ['JODI', 'ABR_CUT', 'JODI_PANEL'] and all_columns:
+                # Find which column contains this number
+                for col in all_columns:
+                    col_int = int(col)
+                    if bet_type == 'JODI' and col_int in JODI_VAGAR_NUMBERS:
+                        if int(number) in JODI_VAGAR_NUMBERS[col_int]:
+                            column_num = col_int
+                            break
+                    elif bet_type == 'ABR_CUT' and col_int in ABR_CUT_NUMBERS:
+                        if int(number) in ABR_CUT_NUMBERS[col_int]:
+                            column_num = col_int
+                            break
+                    elif bet_type == 'JODI_PANEL' and col_int in JODI_PANEL_NUMBERS:
+                        if int(number) in JODI_PANEL_NUMBERS[col_int]:
+                            column_num = col_int
+                            break
+            
             bet = Bet.objects.create(
                 user=request.user,
                 number=str(number),
                 amount=amount,
-                bulk_action=bulk_action
+                bulk_action=bulk_action,
+                bet_type=bet_type,
+                column_number=column_num,
+                sub_type=sub_type
             )
             bets_created.append({
                 'id': bet.id,
                 'number': bet.number,
-                'amount': str(bet.amount)
+                'amount': str(bet.amount),
+                'bet_type': bet.bet_type,
+                'column': column_num,
+                'created_at': bet.created_at.strftime('%Y-%m-%d %H:%M:%S')
             })
 
         return JsonResponse({
@@ -421,7 +473,10 @@ def load_bets(request):
             bets_dict[bet.number]['history'].append({
                 'id': bet.id,
                 'amount': float(bet.amount),
-                'created_at': bet.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                'created_at': bet.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'bet_type': bet.bet_type,
+                'column': bet.column_number,
+                'sub_type': bet.sub_type
             })
         
         return JsonResponse({

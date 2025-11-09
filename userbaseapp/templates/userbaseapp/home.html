@@ -227,6 +227,12 @@
             overflow-y: auto;
             min-height: 0;
         }
+
+        /* Checkbox label styling - highlight when checked */
+        label:has(input[type="checkbox"]:checked) {
+            border-color: currentColor !important;
+            background-color: rgba(var(--tw-color-rgb), 0.1);
+        }
     </style>
 </head>
 
@@ -297,13 +303,9 @@
                 class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Jodi Vagar
             </button>
-            <button id="dadar-btn"
-                class="text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                Dadar
-            </button>
             <button id="eki-beki-btn"
                 class="text-white bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                Eki/Beki
+                Eki/Beki/Dadar
             </button>
             <button id="abr-cut-btn"
                 class="text-white bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
@@ -312,6 +314,85 @@
             <button id="jodi-panel-btn"
                 class="text-white bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Jodi Panel
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Bet Entry Table (Bottom Left) -->
+    <div class="fixed bottom-4 left-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40" style="width: 320px;">
+        <h3 class="text-lg font-bold text-indigo-700 mb-3 text-center">Quick Bet Entry</h3>
+        
+        <div class="overflow-auto" style="max-height: 300px;">
+            <table class="w-full border-collapse">
+                <thead class="bg-indigo-100 sticky top-0">
+                    <tr>
+                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700 w-12">Row</th>
+                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700">A (Number)</th>
+                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700">B (Amount)</th>
+                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700 w-10"></th>
+                    </tr>
+                </thead>
+                <tbody id="quickBetTableBody">
+                    <tr data-row="1">
+                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">1</td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="text" 
+                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="3-digit" 
+                                maxlength="3"
+                                data-row="1">
+                        </td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="number" 
+                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="Amount"
+                                min="1"
+                                data-row="1">
+                        </td>
+                        <td class="border border-gray-300 p-1 text-center">
+                            <button class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition" title="Remove row">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr data-row="2">
+                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">2</td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="text" 
+                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="3-digit" 
+                                maxlength="3"
+                                data-row="2">
+                        </td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="number" 
+                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="Amount"
+                                min="1"
+                                data-row="2">
+                        </td>
+                        <td class="border border-gray-300 p-1 text-center">
+                            <button class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition" title="Remove row">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3 flex gap-2">
+            <button id="quickBetOkayBtn"
+                class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md transition">
+                Place Bets
+            </button>
+            <button id="quickBetClearBtn"
+                class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-md transition">
+                Clear
             </button>
         </div>
     </div>
@@ -350,51 +431,48 @@
                         <!-- SINGLE, SP, DP Options -->
                         <div id="columnOptions" class="hidden space-y-4">
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <div class="flex gap-2">
-                                    <select id="betColumn"
-                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="1">Column 1</option>
-                                        <option value="2">Column 2</option>
-                                        <option value="3">Column 3</option>
-                                        <option value="4">Column 4</option>
-                                        <option value="5">Column 5</option>
-                                        <option value="6">Column 6</option>
-                                        <option value="7">Column 7</option>
-                                        <option value="8">Column 8</option>
-                                        <option value="9">Column 9</option>
-                                        <option value="10">Column 10</option>
-                                    </select>
-                                    <button id="addBetColumnBtn" type="button"
-                                        class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-bold hover:bg-indigo-600 transition text-xl">
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Dadar Options -->
-                        <div id="dadarOptions" class="hidden space-y-4">
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <div class="flex gap-2">
-                                    <select id="dadarColumn"
-                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                                        <option value="1">Column 1</option>
-                                        <option value="2">Column 2</option>
-                                        <option value="3">Column 3</option>
-                                        <option value="4">Column 4</option>
-                                        <option value="5">Column 5</option>
-                                        <option value="6">Column 6</option>
-                                        <option value="7">Column 7</option>
-                                        <option value="8">Column 8</option>
-                                        <option value="9">Column 9</option>
-                                        <option value="10">Column 10</option>
-                                    </select>
-                                    <button id="addDadarColumnBtn" type="button"
-                                        class="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition text-xl">
-                                        +
-                                    </button>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Columns</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="1" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">1</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="2" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">2</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="3" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">3</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="4" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">4</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="5" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">5</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="6" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">6</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="7" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">7</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="8" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">8</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="9" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">9</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-indigo-50 transition">
+                                        <input type="checkbox" value="10" class="betColumnCheckbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <span class="text-sm font-medium">10</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -406,35 +484,58 @@
                                 <select id="jodiType"
                                     class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     <option value="5">Jodi Vagar 5</option>
-                                    <option value="7">Jodi Vagar 7</option>
+                                    <option value="7">Jodi Vagar DP 7</option>
                                     <option value="12">Jodi Vagar 12</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <div class="flex gap-2">
-                                    <select id="jodiColumn"
-                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                        <option value="1">Column 1</option>
-                                        <option value="2">Column 2</option>
-                                        <option value="3">Column 3</option>
-                                        <option value="4">Column 4</option>
-                                        <option value="5">Column 5</option>
-                                        <option value="6">Column 6</option>
-                                        <option value="7">Column 7</option>
-                                        <option value="8">Column 8</option>
-                                        <option value="9">Column 9</option>
-                                        <option value="10">Column 10</option>
-                                    </select>
-                                    <button id="addJodiColumnBtn" type="button"
-                                        class="px-4 py-2 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600 transition text-xl">
-                                        +
-                                    </button>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Columns</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="1" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">1</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="2" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">2</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="3" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">3</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="4" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">4</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="5" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">5</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="6" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">6</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="7" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">7</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="8" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">8</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="9" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">9</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-purple-50 transition">
+                                        <input type="checkbox" value="10" class="jodiColumnCheckbox w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                                        <span class="text-sm font-medium">10</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Eki/Beki Options -->
+                        <!-- Eki/Beki/Dadar Options -->
                         <div id="ekiBekiOptions" class="hidden space-y-4">
                             <div>
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
@@ -442,34 +543,56 @@
                                     class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
                                     <option value="EKI">Eki (13579) - 10 numbers</option>
                                     <option value="BEKI">Beki (24680) - 10 numbers</option>
+                                    <option value="DADAR">Dadar - 10 numbers</option>
                                 </select>
                             </div>
-
-                            <!-- Recent action info removed -->
                         </div>
 
                         <!-- ABR Cut Options -->
                         <div id="abrCutOptions" class="hidden space-y-4">
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <div class="flex gap-2">
-                                    <select id="abrCutColumn"
-                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-pink-500">
-                                        <option value="1">Column 1 (9 numbers)</option>
-                                        <option value="2">Column 2 (9 numbers)</option>
-                                        <option value="3">Column 3 (9 numbers)</option>
-                                        <option value="4">Column 4 (10 numbers)</option>
-                                        <option value="5">Column 5 (9 numbers)</option>
-                                        <option value="6">Column 6 (9 numbers)</option>
-                                        <option value="7">Column 7 (9 numbers)</option>
-                                        <option value="8">Column 8 (10 numbers)</option>
-                                        <option value="9">Column 9 (10 numbers)</option>
-                                        <option value="10">Column 10 (9 numbers)</option>
-                                    </select>
-                                    <button id="addColumnBtn" type="button"
-                                        class="px-4 py-2 bg-pink-500 text-white rounded-lg font-bold hover:bg-pink-600 transition text-xl">
-                                        +
-                                    </button>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Columns</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="1" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">1</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="2" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">2</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="3" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">3</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="4" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">4</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="5" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">5</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="6" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">6</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="7" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">7</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="8" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">8</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="9" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">9</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-pink-50 transition">
+                                        <input type="checkbox" value="10" class="abrCutColumnCheckbox w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500">
+                                        <span class="text-sm font-medium">10</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -485,35 +608,60 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <div class="flex gap-2">
-                                    <select id="jodiPanelColumn"
-                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                                        <option value="1">Column 1</option>
-                                        <option value="2">Column 2</option>
-                                        <option value="3">Column 3</option>
-                                        <option value="4">Column 4</option>
-                                        <option value="5">Column 5</option>
-                                        <option value="6">Column 6</option>
-                                        <option value="7">Column 7</option>
-                                        <option value="8">Column 8</option>
-                                        <option value="9">Column 9</option>
-                                        <option value="10">Column 10</option>
-                                    </select>
-                                    <button id="addJodiPanelColumnBtn" type="button"
-                                        class="px-4 py-2 bg-teal-500 text-white rounded-lg font-bold hover:bg-teal-600 transition text-xl">
-                                        +
-                                    </button>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Columns</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="1" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">1</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="2" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">2</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="3" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">3</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="4" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">4</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="5" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">5</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="6" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">6</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="7" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">7</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="8" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">8</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="9" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">9</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-teal-50 transition">
+                                        <input type="checkbox" value="10" class="jodiPanelColumnCheckbox w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500">
+                                        <span class="text-sm font-medium">10</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Shared Selected Columns Display (for all bet types) -->
-                        <div id="selectedColumnsContainer" class="hidden">
-                            <label class="block mb-2 text-sm font-medium text-gray-700">Selected Columns:</label>
-                            <div id="selectedColumnsList" class="flex flex-wrap gap-2">
-                                <!-- Selected columns will be added here dynamically -->
-                            </div>
+                        <!-- Select All Columns Checkbox (for Jodi, Dadar, ABR Cut, Jodi Panel) -->
+                        <div id="selectAllColumnsContainer" class="hidden mb-4">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="selectAllColumnsCheckbox" 
+                                    class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                                <span class="text-sm font-medium text-gray-700">Select All Columns (1-10)</span>
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1 ml-7">Check this to place bets on all 10 columns</p>
                         </div>
 
                         <!-- Amount Selection -->
@@ -597,7 +745,7 @@
                 [124, 160, 179, 250, 269, 278, 340, 359, 368, 458, 467, 890, 115, 133, 188, 223, 377, 449, 557, 566, 700, 999],
                 [125, 134, 170, 189, 260, 279, 350, 369, 378, 459, 468, 567, 116, 224, 233, 288, 440, 477, 558, 800, 990, 666],
                 [126, 135, 180, 234, 270, 289, 360, 379, 450, 469, 478, 568, 117, 144, 199, 225, 388, 559, 577, 667, 900, 333],
-                [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 559, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
+                [127, 136, 145, 190, 235, 280, 370, 389, 460, 479, 569, 578, 118, 226, 244, 299, 334, 488, 550, 668, 677, '000']
             ];
 
             let bets = {};
@@ -680,20 +828,35 @@
                 
                 // Reset selected columns when opening modal
                 selectedAbrColumns = [];
-                renderSelectedColumns();
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.betColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.jodiColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.abrCutColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.jodiPanelColumnCheckbox').forEach(cb => cb.checked = false);
+                
+                // Reset "Select All Columns" checkbox
+                const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
+                selectAllCheckbox.checked = false;
                 
                 // Show/hide specific options
                 columnOptions.classList.add('hidden');
-                dadarOptions.classList.add('hidden');
                 jodiOptions.classList.add('hidden');
                 ekiBekiOptions.classList.add('hidden');
                 abrCutOptions.classList.add('hidden');
                 jodiPanelOptions.classList.add('hidden');
                 
+                // Show/hide "Select All Columns" checkbox (only for JODI, ABR_CUT, JODI_PANEL)
+                // Note: DADAR is now part of EKI_BEKI dropdown, so it's handled differently
+                const selectAllContainer = document.getElementById('selectAllColumnsContainer');
+                if (['JODI', 'ABR_CUT', 'JODI_PANEL'].includes(betType)) {
+                    selectAllContainer.classList.remove('hidden');
+                } else {
+                    selectAllContainer.classList.add('hidden');
+                }
+                
                 if (betType === 'SINGLE' || betType === 'SP' || betType === 'DP') {
                     columnOptions.classList.remove('hidden');
-                } else if (betType === 'DADAR') {
-                    dadarOptions.classList.remove('hidden');
                 } else if (betType === 'JODI') {
                     jodiOptions.classList.remove('hidden');
                 } else if (betType === 'EKI_BEKI') {
@@ -717,93 +880,25 @@
                 currentBetType = null;
                 currentNumber = null;
                 selectedAbrColumns = [];
-                renderSelectedColumns();
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.betColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.jodiColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.abrCutColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.jodiPanelColumnCheckbox').forEach(cb => cb.checked = false);
+                
+                // Reset "Select All Columns" checkbox
+                const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
+                selectAllCheckbox.checked = false;
             }
 
-            // Add Column to Selection (works for all bet types)
-            function addColumn() {
-                let columnSelect;
-                let colorClass = 'indigo'; // default color
-                
-                // Determine which dropdown to use based on current bet type
-                if (currentBetType === 'ABR_CUT') {
-                    columnSelect = document.getElementById('abrCutColumn');
-                    colorClass = 'pink';
-                } else if (currentBetType === 'JODI') {
-                    columnSelect = document.getElementById('jodiColumn');
-                    colorClass = 'purple';
-                } else if (currentBetType === 'DADAR') {
-                    columnSelect = document.getElementById('dadarColumn');
-                    colorClass = 'orange';
-                } else if (currentBetType === 'JODI_PANEL') {
-                    columnSelect = document.getElementById('jodiPanelColumn');
-                    colorClass = 'teal';
-                } else if (currentBetType === 'SINGLE' || currentBetType === 'SP' || currentBetType === 'DP') {
-                    columnSelect = document.getElementById('betColumn');
-                    colorClass = 'indigo';
-                } else {
-                    return; // Eki/Beki doesn't support multi-column
-                }
-                
-                const column = parseInt(columnSelect.value);
-                
-                // Check if column is already selected
-                if (selectedAbrColumns.includes(column)) {
-                    showToast('Already Added', `Column ${column} is already in your selection`, 'warning');
-                    return;
-                }
-                
-                // Add column to selection
-                selectedAbrColumns.push(column);
-                renderSelectedColumns(colorClass);
-                showToast('Column Added', `Column ${column} added to selection`, 'success');
-            }
-
-            // Remove Column from Selection
-            function removeColumn(column) {
-                selectedAbrColumns = selectedAbrColumns.filter(c => c !== column);
-                
-                // Determine color class based on current bet type
-                let colorClass = 'indigo';
-                if (currentBetType === 'ABR_CUT') colorClass = 'pink';
-                else if (currentBetType === 'JODI') colorClass = 'purple';
-                else if (currentBetType === 'DADAR') colorClass = 'orange';
-                else if (currentBetType === 'JODI_PANEL') colorClass = 'teal';
-                
-                renderSelectedColumns(colorClass);
-                showToast('Column Removed', `Column ${column} removed from selection`, 'success');
-            }
-
-            // Render Selected Columns (with color based on bet type)
-            function renderSelectedColumns(colorClass = 'pink') {
-                const container = document.getElementById('selectedColumnsContainer');
-                const list = document.getElementById('selectedColumnsList');
-                
-                if (selectedAbrColumns.length === 0) {
-                    container.classList.add('hidden');
-                    list.innerHTML = '';
-                    return;
-                }
-                
-                container.classList.remove('hidden');
-                list.innerHTML = '';
-                
-                selectedAbrColumns.sort((a, b) => a - b).forEach(column => {
-                    const badge = document.createElement('div');
-                    badge.className = `flex items-center gap-2 bg-${colorClass}-100 text-${colorClass}-700 px-3 py-1 rounded-lg text-sm font-medium`;
-                    
-                    const span = document.createElement('span');
-                    span.textContent = `Column ${column}`;
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.textContent = '×';
-                    removeBtn.className = `text-${colorClass}-500 hover:text-${colorClass}-700 font-bold`;
-                    removeBtn.onclick = () => removeColumn(column);
-                    
-                    badge.appendChild(span);
-                    badge.appendChild(removeBtn);
-                    list.appendChild(badge);
+            // Get selected columns from checkboxes
+            function getSelectedColumns(checkboxClass) {
+                const selected = [];
+                document.querySelectorAll(`.${checkboxClass}:checked`).forEach(cb => {
+                    selected.push(parseInt(cb.value));
                 });
+                return selected;
             }
 
             // Switch to Place Tab
@@ -859,9 +954,24 @@
                     
                     history.forEach((bet, i) => {
                         const li = document.createElement('li');
-                        li.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-50', 'p-2', 'rounded');
-                        const text = document.createElement('span');
-                        text.textContent = `Bet ${i + 1}: ₹${bet.amount}`;
+                        li.classList.add('flex', 'flex-col', 'bg-gray-50', 'p-3', 'rounded', 'gap-1');
+                        
+                        const mainRow = document.createElement('div');
+                        mainRow.classList.add('flex', 'justify-between', 'items-center');
+                        
+                        const infoDiv = document.createElement('div');
+                        infoDiv.classList.add('flex', 'flex-col');
+                        
+                        const amountText = document.createElement('span');
+                        amountText.classList.add('font-semibold');
+                        amountText.textContent = `₹${bet.amount}`;
+                        
+                        const metaText = document.createElement('span');
+                        metaText.classList.add('text-xs', 'text-gray-500');
+                        metaText.textContent = `${bet.created_at} • ${bet.bet_type || 'SINGLE'}`;
+                        
+                        infoDiv.append(amountText, metaText);
+                        
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.classList.add('delete-button');
@@ -869,7 +979,9 @@
                             await deleteBet(bet.id, currentNumber);
                             renderHistory();
                         };
-                        li.append(text, delBtn);
+                        
+                        mainRow.append(infoDiv, delBtn);
+                        li.appendChild(mainRow);
                         historyList.appendChild(li);
                     });
                 } else if (currentBetType === 'DADAR') {
@@ -890,9 +1002,25 @@
                     
                     relevantBets.forEach((bet) => {
                         const li = document.createElement('li');
-                        li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
-                        const text = document.createElement('span');
-                        text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
+                        li.className = 'flex flex-col bg-gray-50 p-3 rounded gap-1';
+                        
+                        const mainRow = document.createElement('div');
+                        mainRow.className = 'flex justify-between items-center';
+                        
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'flex flex-col';
+                        
+                        const numberAmount = document.createElement('span');
+                        numberAmount.className = 'font-semibold';
+                        numberAmount.textContent = `${bet.number}: ₹${bet.amount}`;
+                        
+                        const metaText = document.createElement('span');
+                        metaText.className = 'text-xs text-gray-500';
+                        const columnInfo = bet.column ? `Col ${bet.column} • ` : '';
+                        metaText.textContent = `${bet.created_at} • ${columnInfo}${bet.bet_type || 'DADAR'}`;
+                        
+                        infoDiv.append(numberAmount, metaText);
+                        
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.className = 'delete-button';
@@ -900,7 +1028,9 @@
                             await deleteBet(bet.id, bet.number);
                             renderHistory();
                         };
-                        li.append(text, delBtn);
+                        
+                        mainRow.append(infoDiv, delBtn);
+                        li.appendChild(mainRow);
                         historyList.appendChild(li);
                     });
                 } else if (currentBetType === 'EKI_BEKI') {
@@ -908,8 +1038,10 @@
                     let targetNumbers;
                     if (ekiBekiType === 'EKI') {
                         targetNumbers = new Set([137, 135, 139, 157, 159, 179, 357, 359, 379, 579].map(String));
-                    } else {
+                    } else if (ekiBekiType === 'BEKI') {
                         targetNumbers = new Set([246, 248, 240, 268, 260, 280, 468, 460, 480, 680].map(String));
+                    } else if (ekiBekiType === 'DADAR') {
+                        targetNumbers = new Set([100, 110, 112, 113, 114, 115, 116, 117, 118, 119].map(String));
                     }
                     
                     relevantBets = Object.entries(bets)
@@ -928,9 +1060,24 @@
                     
                     relevantBets.forEach((bet) => {
                         const li = document.createElement('li');
-                        li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
-                        const text = document.createElement('span');
-                        text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
+                        li.className = 'flex flex-col bg-gray-50 p-3 rounded gap-1';
+                        
+                        const mainRow = document.createElement('div');
+                        mainRow.className = 'flex justify-between items-center';
+                        
+                        const infoDiv = document.createElement('div');
+                        infoDiv.className = 'flex flex-col';
+                        
+                        const numberAmount = document.createElement('span');
+                        numberAmount.className = 'font-semibold';
+                        numberAmount.textContent = `${bet.number}: ₹${bet.amount}`;
+                        
+                        const metaText = document.createElement('span');
+                        metaText.className = 'text-xs text-gray-500';
+                        metaText.textContent = `${bet.created_at} • ${bet.sub_type || bet.bet_type || ekiBekiType}`;
+                        
+                        infoDiv.append(numberAmount, metaText);
+                        
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.className = 'delete-button';
@@ -938,7 +1085,9 @@
                             await deleteBet(bet.id, bet.number);
                             renderHistory();
                         };
-                        li.append(text, delBtn);
+                        
+                        mainRow.append(infoDiv, delBtn);
+                        li.appendChild(mainRow);
                         historyList.appendChild(li);
                     });
                 } else {
@@ -1201,10 +1350,13 @@
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
                 } else if (currentBetType === 'JODI') {
-                    // Check if user has selected columns or just using dropdown
-                    const columns = selectedAbrColumns.length > 0 
-                        ? selectedAbrColumns 
-                        : [parseInt(document.getElementById('jodiColumn').value)];
+                    // Get selected columns from checkboxes
+                    const columns = getSelectedColumns('jodiColumnCheckbox');
+                    
+                    if (columns.length === 0) {
+                        return showToast('No Columns Selected', 'Please select at least one column', 'warning');
+                    }
+                    
                     const jodiType = parseInt(document.getElementById('jodiType').value);
                     
                     const result = await placeBulkBet('JODI', amount, columns, jodiType);
@@ -1222,6 +1374,8 @@
                     }
                 } else if (currentBetType === 'EKI_BEKI') {
                     const ekiBekiType = document.getElementById('ekiBekiType').value;
+                    
+                    // Handle all types (EKI, BEKI, DADAR) the same way - no column selection
                     const result = await placeBulkBet(ekiBekiType, amount);
                     if (result.success) {
                         showToast('Success!', `${ekiBekiType} bet placed on ${result.total_bets} numbers`, 'success');
@@ -1233,10 +1387,12 @@
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
                 } else if (currentBetType === 'ABR_CUT') {
-                    // Check if user has selected columns or just using dropdown
-                    const columns = selectedAbrColumns.length > 0 
-                        ? selectedAbrColumns 
-                        : [parseInt(document.getElementById('abrCutColumn').value)];
+                    // Get selected columns from checkboxes
+                    const columns = getSelectedColumns('abrCutColumnCheckbox');
+                    
+                    if (columns.length === 0) {
+                        return showToast('No Columns Selected', 'Please select at least one column', 'warning');
+                    }
                     
                     const result = await placeBulkBet('ABR_CUT', amount, columns);
                     if (result.success) {
@@ -1252,10 +1408,13 @@
                         showToast('Error', result.error || 'Failed to place ABR Cut bet', 'error');
                     }
                 } else if (currentBetType === 'JODI_PANEL') {
-                    // Check if user has selected columns or just using dropdown
-                    const columns = selectedAbrColumns.length > 0 
-                        ? selectedAbrColumns 
-                        : [parseInt(document.getElementById('jodiPanelColumn').value)];
+                    // Get selected columns from checkboxes
+                    const columns = getSelectedColumns('jodiPanelColumnCheckbox');
+                    
+                    if (columns.length === 0) {
+                        return showToast('No Columns Selected', 'Please select at least one column', 'warning');
+                    }
+                    
                     const panelType = parseInt(document.getElementById('jodiPanelType').value);
                     
                     const result = await placeBulkBet('JODI_PANEL', amount, columns, null, panelType);
@@ -1271,17 +1430,12 @@
                     } else {
                         showToast('Error', result.error || 'Failed to place Jodi Panel bet', 'error');
                     }
-                } else if (['SP', 'DP', 'DADAR'].includes(currentBetType)) {
-                    // Check if user has selected columns or placing on all numbers
+                } else if (['SP', 'DP'].includes(currentBetType)) {
+                    // Get selected columns from checkboxes based on bet type
                     let columns = null;
-                    if (currentBetType === 'DADAR') {
-                        columns = selectedAbrColumns.length > 0 
-                            ? selectedAbrColumns 
-                            : [parseInt(document.getElementById('dadarColumn').value || 1)];
-                    } else if (currentBetType === 'SP' || currentBetType === 'DP') {
-                        // For SP/DP, only use columns if user explicitly selected them
-                        columns = selectedAbrColumns.length > 0 ? selectedAbrColumns : null;
-                    }
+                    // For SP/DP, columns are optional
+                    columns = getSelectedColumns('betColumnCheckbox');
+                    columns = columns.length > 0 ? columns : null;
                     
                     const result = await placeBulkBet(currentBetType, amount, columns);
                     if (result.success) {
@@ -1306,17 +1460,40 @@
             // Undo button
             undoBtn.onclick = undoBulkAction;
 
-            // Eki/Beki type change listener to update undo button
+            // Eki/Beki/Dadar type change listener to update undo button
             document.getElementById('ekiBekiType').addEventListener('change', function() {
                 updateUndoButton();
             });
 
-            // Add column buttons for all bet types
-            document.getElementById('addColumnBtn').onclick = addColumn; // ABR Cut
-            document.getElementById('addBetColumnBtn').onclick = addColumn; // SINGLE, SP, DP
-            document.getElementById('addDadarColumnBtn').onclick = addColumn; // Dadar
-            document.getElementById('addJodiColumnBtn').onclick = addColumn; // Jodi
-            document.getElementById('addJodiPanelColumnBtn').onclick = addColumn; // Jodi Panel
+            // "Select All Columns" checkbox event listener
+            document.getElementById('selectAllColumnsCheckbox').addEventListener('change', function() {
+                let checkboxClass;
+                
+                // Determine which checkboxes to select based on current bet type
+                if (currentBetType === 'ABR_CUT') {
+                    checkboxClass = 'abrCutColumnCheckbox';
+                } else if (currentBetType === 'JODI') {
+                    checkboxClass = 'jodiColumnCheckbox';
+                } else if (currentBetType === 'JODI_PANEL') {
+                    checkboxClass = 'jodiPanelColumnCheckbox';
+                } else {
+                    return;
+                }
+                
+                if (this.checked) {
+                    // Check all checkboxes
+                    document.querySelectorAll(`.${checkboxClass}`).forEach(cb => {
+                        cb.checked = true;
+                    });
+                    showToast('All Columns Selected', 'All 10 columns have been selected', 'success');
+                } else {
+                    // Uncheck all checkboxes
+                    document.querySelectorAll(`.${checkboxClass}`).forEach(cb => {
+                        cb.checked = false;
+                    });
+                    showToast('Columns Cleared', 'All columns have been deselected', 'success');
+                }
+            });
 
             // Page navigation
             document.getElementById('page-1-btn').onclick = () => renderPage(1);
@@ -1335,12 +1512,8 @@
                 openModal('JODI', null, 'Jodi Vagar');
             };
 
-            document.getElementById('dadar-btn').onclick = () => {
-                openModal('DADAR', null, 'Dadar');
-            };
-
             document.getElementById('eki-beki-btn').onclick = () => {
-                openModal('EKI_BEKI', null, 'Eki/Beki');
+                openModal('EKI_BEKI', null, 'Eki/Beki/Dadar');
             };
 
             document.getElementById('abr-cut-btn').onclick = () => {
@@ -1350,6 +1523,307 @@
             document.getElementById('jodi-panel-btn').onclick = () => {
                 openModal('JODI_PANEL', null, 'Jodi Panel');
             };
+
+            // Add event listeners to all column checkboxes for visual feedback
+            function addCheckboxListeners(checkboxClass, highlightColor) {
+                document.querySelectorAll(`.${checkboxClass}`).forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const label = this.closest('label');
+                        if (this.checked) {
+                            label.classList.add(`border-${highlightColor}-500`, `bg-${highlightColor}-50`);
+                            label.classList.remove('border-gray-300');
+                        } else {
+                            label.classList.remove(`border-${highlightColor}-500`, `bg-${highlightColor}-50`);
+                            label.classList.add('border-gray-300');
+                        }
+                    });
+                });
+            }
+
+            // Add listeners for all checkbox types
+            addCheckboxListeners('betColumnCheckbox', 'indigo');
+            addCheckboxListeners('jodiColumnCheckbox', 'purple');
+            addCheckboxListeners('abrCutColumnCheckbox', 'pink');
+            addCheckboxListeners('jodiPanelColumnCheckbox', 'teal');
+
+            // Quick Bet Entry functionality
+            let quickBetRowCounter = 2;
+            const validNumbers = new Set();
+            
+            // Build valid numbers set from ALL_COLUMN_DATA (already defined above)
+            allColumnData.forEach(column => {
+                column.forEach(num => {
+                    const numStr = String(num);
+                    if (numStr.length === 3) {
+                        validNumbers.add(numStr);
+                    }
+                });
+            });
+
+            // Handle number input - validate 3-digit number from ALL_COLUMN_DATA
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('quick-bet-number')) {
+                    const input = e.target;
+                    const rowNum = input.dataset.row;
+                    
+                    // Only allow digits
+                    input.value = input.value.replace(/[^0-9]/g, '');
+                    
+                    // Check if it's a valid 3-digit number
+                    if (input.value.length === 3) {
+                        if (!validNumbers.has(input.value)) {
+                            input.classList.add('border-red-500', 'bg-red-50');
+                            showToast('Invalid Number', `${input.value} is not in the allowed numbers list`, 'error');
+                        } else {
+                            input.classList.remove('border-red-500', 'bg-red-50');
+                            input.classList.add('border-green-500', 'bg-green-50');
+                        }
+                    } else {
+                        input.classList.remove('border-red-500', 'bg-red-50', 'border-green-500', 'bg-green-50');
+                    }
+                    
+                    // Auto-add new row when user starts typing in the last row
+                    const allRows = document.querySelectorAll('#quickBetTableBody tr');
+                    const lastRow = allRows[allRows.length - 1];
+                    const lastRowNum = parseInt(lastRow.dataset.row);
+                    
+                    if (parseInt(rowNum) === lastRowNum && input.value.length > 0) {
+                        addQuickBetRow();
+                    }
+                }
+            });
+
+            // Add new row to quick bet table
+            function addQuickBetRow() {
+                quickBetRowCounter++;
+                const tbody = document.getElementById('quickBetTableBody');
+                const newRow = document.createElement('tr');
+                newRow.dataset.row = quickBetRowCounter;
+                newRow.innerHTML = `
+                    <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">${quickBetRowCounter}</td>
+                    <td class="border border-gray-300 p-1">
+                        <input type="text" 
+                            class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                            placeholder="3-digit" 
+                            maxlength="3"
+                            data-row="${quickBetRowCounter}">
+                    </td>
+                    <td class="border border-gray-300 p-1">
+                        <input type="number" 
+                            class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                            placeholder="Amount"
+                            min="1"
+                            data-row="${quickBetRowCounter}">
+                    </td>
+                    <td class="border border-gray-300 p-1 text-center">
+                        <button class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition" title="Remove row">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+            }
+
+            // Remove row button event listener (event delegation)
+            document.getElementById('quickBetTableBody').addEventListener('click', function(e) {
+                const removeBtn = e.target.closest('.remove-row-btn');
+                if (removeBtn) {
+                    const row = removeBtn.closest('tr');
+                    const tbody = document.getElementById('quickBetTableBody');
+                    
+                    // Prevent removing if only one row left
+                    if (tbody.querySelectorAll('tr').length <= 1) {
+                        showToast('Cannot Remove', 'At least one row must remain', 'warning');
+                        return;
+                    }
+                    
+                    row.remove();
+                    
+                    // Re-number remaining rows
+                    const remainingRows = tbody.querySelectorAll('tr');
+                    remainingRows.forEach((row, index) => {
+                        const rowNum = index + 1;
+                        row.dataset.row = rowNum;
+                        row.querySelector('td:first-child').textContent = rowNum;
+                        row.querySelectorAll('input').forEach(input => {
+                            input.dataset.row = rowNum;
+                        });
+                    });
+                    
+                    // Update counter to match the highest row number
+                    quickBetRowCounter = remainingRows.length;
+                }
+            });
+
+            // Place bets button
+            document.getElementById('quickBetOkayBtn').addEventListener('click', async function() {
+                const numberInputs = document.querySelectorAll('.quick-bet-number');
+                const amountInputs = document.querySelectorAll('.quick-bet-amount');
+                
+                const betsToPlace = [];
+                
+                for (let i = 0; i < numberInputs.length; i++) {
+                    const number = numberInputs[i].value.trim();
+                    const amount = amountInputs[i].value.trim();
+                    
+                    if (number && amount) {
+                        // Validate number
+                        if (number.length !== 3) {
+                            showToast('Invalid Entry', `Row ${i + 1}: Number must be 3 digits`, 'error');
+                            return;
+                        }
+                        
+                        if (!validNumbers.has(number)) {
+                            showToast('Invalid Number', `Row ${i + 1}: ${number} is not allowed`, 'error');
+                            return;
+                        }
+                        
+                        // Validate amount
+                        const amountNum = parseFloat(amount);
+                        if (isNaN(amountNum) || amountNum <= 0) {
+                            showToast('Invalid Amount', `Row ${i + 1}: Amount must be greater than 0`, 'error');
+                            return;
+                        }
+                        
+                        betsToPlace.push({ number, amount: amountNum });
+                    } else if (number || amount) {
+                        // One field filled but not the other
+                        showToast('Incomplete Entry', `Row ${i + 1}: Please fill both number and amount`, 'warning');
+                        return;
+                    }
+                }
+                
+                if (betsToPlace.length === 0) {
+                    showToast('No Bets', 'Please enter at least one bet', 'warning');
+                    return;
+                }
+                
+                // Place all bets
+                let successCount = 0;
+                let failCount = 0;
+                const failedBets = [];
+                
+                for (const bet of betsToPlace) {
+                    try {
+                        const response = await fetch(API.PLACE_BET, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({
+                                number: bet.number,
+                                amount: bet.amount
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            successCount++;
+                            
+                            // Update bets dictionary like the main placeSingleBet function does
+                            const num = bet.number;
+                            if (!bets[num]) bets[num] = { total: 0, history: [] };
+                            bets[num].total += parseFloat(bet.amount);
+                            bets[num].history.push({ 
+                                id: result.bet_id, 
+                                amount: parseFloat(bet.amount),
+                                created_at: new Date().toISOString(),
+                                bet_type: 'SINGLE'
+                            });
+                            updateBetTotal(num);
+                        } else {
+                            failCount++;
+                            failedBets.push(`${bet.number} (₹${bet.amount})`);
+                            console.error('Bet failed:', result.error || 'Unknown error');
+                        }
+                    } catch (error) {
+                        failCount++;
+                        failedBets.push(`${bet.number} (₹${bet.amount})`);
+                        console.error('Bet error:', error);
+                    }
+                }
+                
+                // Show result
+                if (successCount > 0 && failCount === 0) {
+                    showToast('Success!', `${successCount} bet(s) placed successfully`, 'success');
+                    
+                    // Clear the table
+                    document.getElementById('quickBetClearBtn').click();
+                    
+                    // Reload bets and update total
+                    await loadBets();
+                    await updateTotalAmount();
+                    renderPage(1);
+                } else if (successCount > 0 && failCount > 0) {
+                    showToast('Partial Success', `${successCount} bet(s) placed, ${failCount} failed: ${failedBets.join(', ')}`, 'warning');
+                    
+                    // Reload bets and update total
+                    await loadBets();
+                    await updateTotalAmount();
+                    renderPage(1);
+                } else if (failCount > 0) {
+                    showToast('Failed', `All ${failCount} bet(s) failed to place: ${failedBets.join(', ')}`, 'error');
+                }
+            });
+
+            // Clear button
+            document.getElementById('quickBetClearBtn').addEventListener('click', function() {
+                const tbody = document.getElementById('quickBetTableBody');
+                tbody.innerHTML = `
+                    <tr data-row="1">
+                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">1</td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="text" 
+                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="3-digit" 
+                                maxlength="3"
+                                data-row="1">
+                        </td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="number" 
+                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="Amount"
+                                min="1"
+                                data-row="1">
+                        </td>
+                        <td class="border border-gray-300 p-1 text-center">
+                            <button class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition" title="Remove row">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr data-row="2">
+                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">2</td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="text" 
+                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="3-digit" 
+                                maxlength="3"
+                                data-row="2">
+                        </td>
+                        <td class="border border-gray-300 p-1">
+                            <input type="number" 
+                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                                placeholder="Amount"
+                                min="1"
+                                data-row="2">
+                        </td>
+                        <td class="border border-gray-300 p-1 text-center">
+                            <button class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition" title="Remove row">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                quickBetRowCounter = 2;
+            });
 
             // Initialize
             await loadBets();
