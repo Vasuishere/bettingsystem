@@ -26,12 +26,51 @@ JODI_VAGAR_NUMBERS = {
     10: [136, 280, 460, 370, 479, 118, 226, 244, 299, 488, 550, 668]
 }
 
-DADAR_NUMBERS = [678, 345, 120, 789, 456, 123, 890, 567, 234, 190]
+DADAR_NUMBERS = {
+    1: [678],         
+    2: [345],
+    3: [120],
+    4: [789],
+    5: [456],
+    6: [123],
+    7: [890],
+    8: [567],
+    9: [234],
+    10: [190]
+}
 
 # Eki/Beki number mappings
 EKI_BEKI_NUMBERS = {
     'EKI': [137, 135, 139, 157, 159, 179, 357, 359, 379, 579],
     'BEKI': [246, 248, 240, 268, 260, 280, 468, 460, 480, 680]
+}
+
+# ABR Cut number mappings - 10 columns
+ABR_CUT_NUMBERS = {
+    1: [128, 146, 236, 245, 290, 380, 470, 489, 560],
+    2: [129, 138, 147, 156, 237, 390, 570, 589, 679],
+    3: [148, 238, 247, 256, 346, 490, 580, 670, 689],
+    4: [130, 149, 158, 167, 239, 257, 347, 356, 590],
+    5: [140, 168, 230, 249, 258, 267, 348, 690, 780],
+    6: [150, 169, 178, 259, 349, 358, 367, 457, 790],
+    7: [124, 160, 250, 269, 278, 340, 368, 458, 467],
+    8: [125, 134, 170, 189, 279, 350, 369, 378, 459],
+    9: [126, 180, 289, 270, 478, 568, 469, 450, 360],
+    10: [127, 136, 145, 235, 370, 389, 479, 578, 569]
+}
+
+# Jodi Panel number mappings - 10 columns
+JODI_PANEL_NUMBERS = {
+    1: [128, 236, 290, 560, 489, 245, 678],
+    2: [129, 589, 679, 237, 390, 150, 345],
+    3: [238, 256, 376, 490, 670, 689, 120],
+    4: [130, 167, 239, 247, 356, 590, 789],
+    5: [140, 230, 267, 348, 690, 780, 456],
+    6: [150, 178, 349, 367, 457, 790, 123],
+    7: [124, 160, 278, 340, 458, 467, 890],
+    8: [125, 170, 378, 134, 189, 459, 567],
+    9: [126, 180, 289, 237, 450, 478, 568],
+    10: [145, 190, 235, 389, 569, 127,578]
 }
 
 ALL_COLUMN_DATA = [
@@ -66,12 +105,31 @@ def get_dp_numbers():
 
 def get_dadar_numbers():
     """Get all Dadar numbers (10 numbers)"""
-    return [str(num) for num in DADAR_NUMBERS]
+    all_dadar = []
+    for column in DADAR_NUMBERS.values():
+        all_dadar.extend(column)
+    return [str(num) for num in all_dadar]
 
 
 def get_eki_beki_numbers(bet_type):
     """Get Eki or Beki numbers"""
     return [str(num) for num in EKI_BEKI_NUMBERS.get(bet_type, [])]
+
+
+def get_abr_cut_numbers(column):
+    """Get ABR Cut numbers for a specific column"""
+    return [str(num) for num in ABR_CUT_NUMBERS.get(column, [])]
+
+
+def get_jodi_panel_numbers(column, panel_type):
+    """Get Jodi Panel numbers for a specific column
+    panel_type: 6 (first 6 numbers) or 7 (all 7 numbers)
+    """
+    numbers = JODI_PANEL_NUMBERS.get(column, [])
+    if panel_type == 6:
+        return [str(num) for num in numbers[:6]]  # First 6 numbers (exclude last 3-digit)
+    else:  # panel_type == 7
+        return [str(num) for num in numbers]  # All 7 numbers
 
 
 def index(request):
@@ -151,10 +209,10 @@ def place_bet(request):
 @require_http_methods(["POST"])
 @transaction.atomic
 def place_bulk_bet(request):
-    """Place bulk bets (SP, DP, Jodi Vagar, Dadar, Eki, or Beki)"""
+    """Place bulk bets (SP, DP, Jodi Vagar, Dadar, Eki, Beki, or ABR Cut)"""
     try:
         data = json.loads(request.body.decode('utf-8'))
-        bet_type = data.get('type')  # 'SP', 'DP', 'JODI', 'DADAR', 'EKI', or 'BEKI'
+        bet_type = data.get('type')  # 'SP', 'DP', 'JODI', 'DADAR', 'EKI', 'BEKI', or 'ABR_CUT'
         amount = data.get('amount')
 
         if not bet_type or not amount:
@@ -166,47 +224,154 @@ def place_bulk_bet(request):
 
         # Determine which numbers to bet on
         if bet_type == 'SP':
-            numbers = get_sp_numbers()
+            columns = data.get('columns')  # Support multiple columns
+            if columns and isinstance(columns, list):
+                # Multi-column SP
+                numbers = []
+                for column in columns:
+                    column_index = int(column) - 1
+                    if 0 <= column_index < 10:
+                        column_data = ALL_COLUMN_DATA[column_index]
+                        # Get SP numbers from this column
+                        sp_from_column = [str(n) for n in column_data if str(n).count(str(n)[0]) == 2]
+                        numbers.extend(sp_from_column)
+                # Remove duplicates
+                seen = set()
+                numbers = [x for x in numbers if not (x in seen or seen.add(x))]
+            else:
+                numbers = get_sp_numbers()
         elif bet_type == 'DP':
-            numbers = get_dp_numbers()
+            columns = data.get('columns')  # Support multiple columns
+            if columns and isinstance(columns, list):
+                # Multi-column DP
+                numbers = []
+                for column in columns:
+                    column_index = int(column) - 1
+                    if 0 <= column_index < 10:
+                        column_data = ALL_COLUMN_DATA[column_index]
+                        # Get DP numbers from this column
+                        dp_from_column = [str(n) for n in column_data if len(set(str(n))) == 2]
+                        numbers.extend(dp_from_column)
+                # Remove duplicates
+                seen = set()
+                numbers = [x for x in numbers if not (x in seen or seen.add(x))]
+            else:
+                numbers = get_dp_numbers()
         elif bet_type == 'JODI':
-            column = data.get('column')
+            columns = data.get('columns')  # Support multiple columns
             jodi_type = data.get('jodi_type')  # 5, 7, or 12
             
-            if not column or not jodi_type:
-                return JsonResponse({'error': 'Missing column or jodi_type'}, status=400)
+            if not columns or not jodi_type:
+                return JsonResponse({'error': 'Missing columns or jodi_type'}, status=400)
             
-            column = int(column)
+            # Ensure columns is a list
+            if not isinstance(columns, list):
+                columns = [columns]
+            
             jodi_type = int(jodi_type)
             
-            if column not in JODI_VAGAR_NUMBERS:
-                return JsonResponse({'error': 'Invalid column'}, status=400)
+            # Collect all numbers from all selected columns
+            numbers = []
+            for column in columns:
+                column = int(column)
+                if column not in JODI_VAGAR_NUMBERS:
+                    return JsonResponse({'error': f'Invalid column {column}'}, status=400)
+                
+                all_jodi_numbers = JODI_VAGAR_NUMBERS[column]
+                
+                if jodi_type == 5:
+                    numbers.extend([str(n) for n in all_jodi_numbers[:5]])
+                elif jodi_type == 7:
+                    numbers.extend([str(n) for n in all_jodi_numbers[-7:]])
+                elif jodi_type == 12:
+                    numbers.extend([str(n) for n in all_jodi_numbers])
+                else:
+                    return JsonResponse({'error': 'Invalid jodi_type'}, status=400)
             
-            all_jodi_numbers = JODI_VAGAR_NUMBERS[column]
-            
-            if jodi_type == 5:
-                numbers = [str(n) for n in all_jodi_numbers[:5]]
-            elif jodi_type == 7:
-                numbers = [str(n) for n in all_jodi_numbers[-7:]]
-            elif jodi_type == 12:
-                numbers = [str(n) for n in all_jodi_numbers]
-            else:
-                return JsonResponse({'error': 'Invalid jodi_type'}, status=400)
+            # Remove duplicates while preserving order
+            seen = set()
+            numbers = [x for x in numbers if not (x in seen or seen.add(x))]
         elif bet_type == 'DADAR':
-            numbers = get_dadar_numbers()
+            columns = data.get('columns')  # Support multiple columns
+            if columns and isinstance(columns, list):
+                # Multi-column DADAR
+                numbers = []
+                for column in columns:
+                    column = int(column)
+                    if column in DADAR_NUMBERS:
+                        numbers.extend([str(n) for n in DADAR_NUMBERS[column]])
+                # Remove duplicates
+                seen = set()
+                numbers = [x for x in numbers if not (x in seen or seen.add(x))]
+            else:
+                numbers = get_dadar_numbers()
         elif bet_type in ['EKI', 'BEKI']:
             numbers = get_eki_beki_numbers(bet_type)
+        elif bet_type == 'ABR_CUT':
+            columns = data.get('columns')  # Support multiple columns
+            
+            if not columns:
+                return JsonResponse({'error': 'Missing columns for ABR Cut'}, status=400)
+            
+            # Ensure columns is a list
+            if not isinstance(columns, list):
+                columns = [columns]
+            
+            # Collect all numbers from all selected columns
+            numbers = []
+            for column in columns:
+                column = int(column)
+                if column not in ABR_CUT_NUMBERS:
+                    return JsonResponse({'error': f'Invalid column {column} for ABR Cut'}, status=400)
+                numbers.extend(get_abr_cut_numbers(column))
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            numbers = [x for x in numbers if not (x in seen or seen.add(x))]
+        elif bet_type == 'JODI_PANEL':
+            columns = data.get('columns')  # Support multiple columns
+            panel_type = data.get('panel_type')  # 6 or 7
+            
+            if not columns or not panel_type:
+                return JsonResponse({'error': 'Missing columns or panel_type for Jodi Panel'}, status=400)
+            
+            # Ensure columns is a list
+            if not isinstance(columns, list):
+                columns = [columns]
+            
+            panel_type = int(panel_type)
+            if panel_type not in [6, 7]:
+                return JsonResponse({'error': 'Invalid panel_type. Must be 6 or 7'}, status=400)
+            
+            # Collect all numbers from all selected columns
+            numbers = []
+            for column in columns:
+                column = int(column)
+                if column not in JODI_PANEL_NUMBERS:
+                    return JsonResponse({'error': f'Invalid column {column} for Jodi Panel'}, status=400)
+                numbers.extend(get_jodi_panel_numbers(column, panel_type))
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            numbers = [x for x in numbers if not (x in seen or seen.add(x))]
         else:
             return JsonResponse({'error': 'Invalid bet type'}, status=400)
 
         # Create bulk action record
+        # Store first column for tracking purposes
+        jodi_column = None
+        if bet_type in ['JODI', 'DADAR', 'ABR_CUT', 'JODI_PANEL']:
+            columns = data.get('columns')
+            if columns and isinstance(columns, list) and len(columns) > 0:
+                jodi_column = columns[0]
+        
         bulk_action = BulkBetAction.objects.create(
             user=request.user,
             action_type=bet_type,
             amount=amount,
             total_bets=len(numbers),
-            jodi_column=data.get('column') if bet_type == 'JODI' else None,
-            jodi_type=data.get('jodi_type') if bet_type == 'JODI' else None
+            jodi_column=jodi_column,
+            jodi_type=data.get('jodi_type') if bet_type == 'JODI' else (data.get('panel_type') if bet_type == 'JODI_PANEL' else None)
         )
 
         # Create all bets

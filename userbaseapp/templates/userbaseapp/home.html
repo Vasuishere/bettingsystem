@@ -305,6 +305,14 @@
                 class="text-white bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Eki/Beki
             </button>
+            <button id="abr-cut-btn"
+                class="text-white bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                ABR Cut
+            </button>
+            <button id="jodi-panel-btn"
+                class="text-white bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Jodi Panel
+            </button>
         </div>
     </div>
 
@@ -339,6 +347,58 @@
                 <!-- Place Bet Content -->
                 <div id="placeContent">
                     <div class="space-y-4">
+                        <!-- SINGLE, SP, DP Options -->
+                        <div id="columnOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                                <div class="flex gap-2">
+                                    <select id="betColumn"
+                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="1">Column 1</option>
+                                        <option value="2">Column 2</option>
+                                        <option value="3">Column 3</option>
+                                        <option value="4">Column 4</option>
+                                        <option value="5">Column 5</option>
+                                        <option value="6">Column 6</option>
+                                        <option value="7">Column 7</option>
+                                        <option value="8">Column 8</option>
+                                        <option value="9">Column 9</option>
+                                        <option value="10">Column 10</option>
+                                    </select>
+                                    <button id="addBetColumnBtn" type="button"
+                                        class="px-4 py-2 bg-indigo-500 text-white rounded-lg font-bold hover:bg-indigo-600 transition text-xl">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dadar Options -->
+                        <div id="dadarOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                                <div class="flex gap-2">
+                                    <select id="dadarColumn"
+                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                        <option value="1">Column 1</option>
+                                        <option value="2">Column 2</option>
+                                        <option value="3">Column 3</option>
+                                        <option value="4">Column 4</option>
+                                        <option value="5">Column 5</option>
+                                        <option value="6">Column 6</option>
+                                        <option value="7">Column 7</option>
+                                        <option value="8">Column 8</option>
+                                        <option value="9">Column 9</option>
+                                        <option value="10">Column 10</option>
+                                    </select>
+                                    <button id="addDadarColumnBtn" type="button"
+                                        class="px-4 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition text-xl">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Jodi Options -->
                         <div id="jodiOptions" class="hidden space-y-4">
                             <div>
@@ -352,19 +412,25 @@
                             </div>
                             <div>
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
-                                <select id="jodiColumn"
-                                    class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                    <option value="1">Column 1</option>
-                                    <option value="2">Column 2</option>
-                                    <option value="3">Column 3</option>
-                                    <option value="4">Column 4</option>
-                                    <option value="5">Column 5</option>
-                                    <option value="6">Column 6</option>
-                                    <option value="7">Column 7</option>
-                                    <option value="8">Column 8</option>
-                                    <option value="9">Column 9</option>
-                                    <option value="10">Column 10</option>
-                                </select>
+                                <div class="flex gap-2">
+                                    <select id="jodiColumn"
+                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="1">Column 1</option>
+                                        <option value="2">Column 2</option>
+                                        <option value="3">Column 3</option>
+                                        <option value="4">Column 4</option>
+                                        <option value="5">Column 5</option>
+                                        <option value="6">Column 6</option>
+                                        <option value="7">Column 7</option>
+                                        <option value="8">Column 8</option>
+                                        <option value="9">Column 9</option>
+                                        <option value="10">Column 10</option>
+                                    </select>
+                                    <button id="addJodiColumnBtn" type="button"
+                                        class="px-4 py-2 bg-purple-500 text-white rounded-lg font-bold hover:bg-purple-600 transition text-xl">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -379,14 +445,74 @@
                                 </select>
                             </div>
 
-                            <!-- Add Recent Action Info -->
-                            <div id="lastActionInfo" class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hidden">
-                                <p class="text-sm text-gray-600">
-                                    Last Action: <span id="lastActionType" class="font-semibold text-indigo-600"></span>
-                                </p>
-                                <p class="text-sm text-gray-600">
-                                    Total Bets: <span id="lastActionBets" class="font-semibold text-indigo-600"></span>
-                                </p>
+                            <!-- Recent action info removed -->
+                        </div>
+
+                        <!-- ABR Cut Options -->
+                        <div id="abrCutOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                                <div class="flex gap-2">
+                                    <select id="abrCutColumn"
+                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                                        <option value="1">Column 1 (9 numbers)</option>
+                                        <option value="2">Column 2 (9 numbers)</option>
+                                        <option value="3">Column 3 (9 numbers)</option>
+                                        <option value="4">Column 4 (10 numbers)</option>
+                                        <option value="5">Column 5 (9 numbers)</option>
+                                        <option value="6">Column 6 (9 numbers)</option>
+                                        <option value="7">Column 7 (9 numbers)</option>
+                                        <option value="8">Column 8 (10 numbers)</option>
+                                        <option value="9">Column 9 (10 numbers)</option>
+                                        <option value="10">Column 10 (9 numbers)</option>
+                                    </select>
+                                    <button id="addColumnBtn" type="button"
+                                        class="px-4 py-2 bg-pink-500 text-white rounded-lg font-bold hover:bg-pink-600 transition text-xl">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jodi Panel Options -->
+                        <div id="jodiPanelOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
+                                <select id="jodiPanelType"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                    <option value="7">Jodi Panel 7 (All 7 numbers)</option>
+                                    <option value="6">Jodi Panel 6 (First 6 numbers)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column</label>
+                                <div class="flex gap-2">
+                                    <select id="jodiPanelColumn"
+                                        class="flex-1 border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                                        <option value="1">Column 1</option>
+                                        <option value="2">Column 2</option>
+                                        <option value="3">Column 3</option>
+                                        <option value="4">Column 4</option>
+                                        <option value="5">Column 5</option>
+                                        <option value="6">Column 6</option>
+                                        <option value="7">Column 7</option>
+                                        <option value="8">Column 8</option>
+                                        <option value="9">Column 9</option>
+                                        <option value="10">Column 10</option>
+                                    </select>
+                                    <button id="addJodiPanelColumnBtn" type="button"
+                                        class="px-4 py-2 bg-teal-500 text-white rounded-lg font-bold hover:bg-teal-600 transition text-xl">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shared Selected Columns Display (for all bet types) -->
+                        <div id="selectedColumnsContainer" class="hidden">
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Selected Columns:</label>
+                            <div id="selectedColumnsList" class="flex flex-wrap gap-2">
+                                <!-- Selected columns will be added here dynamically -->
                             </div>
                         </div>
 
@@ -476,8 +602,9 @@
 
             let bets = {};
             let currentNumber = null;
-            let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI'
+            let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT'
             let lastBulkAction = null;
+            let selectedAbrColumns = []; // Array to store selected columns for multi-selection
 
             // Modal Elements
             const modal = document.getElementById('universalModal');
@@ -493,8 +620,12 @@
             const undoBtn = document.getElementById('undoBtn');
             const customAmountInput = document.getElementById('customAmount');
             const amountButtons = document.querySelectorAll('.amount-button');
+            const columnOptions = document.getElementById('columnOptions');
+            const dadarOptions = document.getElementById('dadarOptions');
             const jodiOptions = document.getElementById('jodiOptions');
             const ekiBekiOptions = document.getElementById('ekiBekiOptions');
+            const abrCutOptions = document.getElementById('abrCutOptions');
+            const jodiPanelOptions = document.getElementById('jodiPanelOptions');
             const tbody = document.getElementById('spreadsheet-body');
 
             function getCSRFToken() {
@@ -547,35 +678,36 @@
                 customAmountInput.value = '';
                 amountButtons.forEach(b => b.classList.remove('selected'));
                 
+                // Reset selected columns when opening modal
+                selectedAbrColumns = [];
+                renderSelectedColumns();
+                
                 // Show/hide specific options
+                columnOptions.classList.add('hidden');
+                dadarOptions.classList.add('hidden');
                 jodiOptions.classList.add('hidden');
                 ekiBekiOptions.classList.add('hidden');
+                abrCutOptions.classList.add('hidden');
+                jodiPanelOptions.classList.add('hidden');
                 
-                if (betType === 'JODI') {
+                if (betType === 'SINGLE' || betType === 'SP' || betType === 'DP') {
+                    columnOptions.classList.remove('hidden');
+                } else if (betType === 'DADAR') {
+                    dadarOptions.classList.remove('hidden');
+                } else if (betType === 'JODI') {
                     jodiOptions.classList.remove('hidden');
                 } else if (betType === 'EKI_BEKI') {
                     ekiBekiOptions.classList.remove('hidden');
-                    
-                    // Show last action info if available
-                    const lastActionInfo = document.getElementById('lastActionInfo');
-                    const lastActionType = document.getElementById('lastActionType');
-                    const lastActionBets = document.getElementById('lastActionBets');
-                    
-                    if (lastBulkAction && ['EKI', 'BEKI'].includes(lastBulkAction.type)) {
-                        lastActionInfo.classList.remove('hidden');
-                        lastActionType.textContent = lastBulkAction.type;
-                        lastActionBets.textContent = lastBulkAction.total_bets;
-                        undoBtn.classList.remove('hidden');
-                    } else {
-                        lastActionInfo.classList.add('hidden');
-                        undoBtn.classList.add('hidden');
-                    }
+                } else if (betType === 'ABR_CUT') {
+                    abrCutOptions.classList.remove('hidden');
+                } else if (betType === 'JODI_PANEL') {
+                    jodiPanelOptions.classList.remove('hidden');
                 }
                 
                 // Switch to Place tab
                 switchToPlaceTab();
                 
-                // Update undo button
+                // Update undo button for all bet types
                 updateUndoButton();
             }
 
@@ -584,6 +716,94 @@
                 modal.classList.add('hidden');
                 currentBetType = null;
                 currentNumber = null;
+                selectedAbrColumns = [];
+                renderSelectedColumns();
+            }
+
+            // Add Column to Selection (works for all bet types)
+            function addColumn() {
+                let columnSelect;
+                let colorClass = 'indigo'; // default color
+                
+                // Determine which dropdown to use based on current bet type
+                if (currentBetType === 'ABR_CUT') {
+                    columnSelect = document.getElementById('abrCutColumn');
+                    colorClass = 'pink';
+                } else if (currentBetType === 'JODI') {
+                    columnSelect = document.getElementById('jodiColumn');
+                    colorClass = 'purple';
+                } else if (currentBetType === 'DADAR') {
+                    columnSelect = document.getElementById('dadarColumn');
+                    colorClass = 'orange';
+                } else if (currentBetType === 'JODI_PANEL') {
+                    columnSelect = document.getElementById('jodiPanelColumn');
+                    colorClass = 'teal';
+                } else if (currentBetType === 'SINGLE' || currentBetType === 'SP' || currentBetType === 'DP') {
+                    columnSelect = document.getElementById('betColumn');
+                    colorClass = 'indigo';
+                } else {
+                    return; // Eki/Beki doesn't support multi-column
+                }
+                
+                const column = parseInt(columnSelect.value);
+                
+                // Check if column is already selected
+                if (selectedAbrColumns.includes(column)) {
+                    showToast('Already Added', `Column ${column} is already in your selection`, 'warning');
+                    return;
+                }
+                
+                // Add column to selection
+                selectedAbrColumns.push(column);
+                renderSelectedColumns(colorClass);
+                showToast('Column Added', `Column ${column} added to selection`, 'success');
+            }
+
+            // Remove Column from Selection
+            function removeColumn(column) {
+                selectedAbrColumns = selectedAbrColumns.filter(c => c !== column);
+                
+                // Determine color class based on current bet type
+                let colorClass = 'indigo';
+                if (currentBetType === 'ABR_CUT') colorClass = 'pink';
+                else if (currentBetType === 'JODI') colorClass = 'purple';
+                else if (currentBetType === 'DADAR') colorClass = 'orange';
+                else if (currentBetType === 'JODI_PANEL') colorClass = 'teal';
+                
+                renderSelectedColumns(colorClass);
+                showToast('Column Removed', `Column ${column} removed from selection`, 'success');
+            }
+
+            // Render Selected Columns (with color based on bet type)
+            function renderSelectedColumns(colorClass = 'pink') {
+                const container = document.getElementById('selectedColumnsContainer');
+                const list = document.getElementById('selectedColumnsList');
+                
+                if (selectedAbrColumns.length === 0) {
+                    container.classList.add('hidden');
+                    list.innerHTML = '';
+                    return;
+                }
+                
+                container.classList.remove('hidden');
+                list.innerHTML = '';
+                
+                selectedAbrColumns.sort((a, b) => a - b).forEach(column => {
+                    const badge = document.createElement('div');
+                    badge.className = `flex items-center gap-2 bg-${colorClass}-100 text-${colorClass}-700 px-3 py-1 rounded-lg text-sm font-medium`;
+                    
+                    const span = document.createElement('span');
+                    span.textContent = `Column ${column}`;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = '×';
+                    removeBtn.className = `text-${colorClass}-500 hover:text-${colorClass}-700 font-bold`;
+                    removeBtn.onclick = () => removeColumn(column);
+                    
+                    badge.appendChild(span);
+                    badge.appendChild(removeBtn);
+                    list.appendChild(badge);
+                });
             }
 
             // Switch to Place Tab
@@ -605,7 +825,7 @@
 
             // Update Undo Button Visibility
             function updateUndoButton() {
-                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI', 'BEKI'].includes(currentBetType)) {
+                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT', 'JODI_PANEL'].includes(currentBetType)) {
                     if (currentBetType === 'EKI_BEKI') {
                         // Only show undo for matching EKI/BEKI type
                         const selectedType = document.getElementById('ekiBekiType').value;
@@ -614,8 +834,11 @@
                             return;
                         }
                     } else {
-                        undoBtn.classList.remove('hidden');
-                        return;
+                        // For SP, DP, JODI, DADAR, ABR_CUT, JODI_PANEL - show if last action matches current type
+                        if (lastBulkAction.type === currentBetType) {
+                            undoBtn.classList.remove('hidden');
+                            return;
+                        }
                     }
                 }
                 undoBtn.classList.add('hidden');
@@ -764,11 +987,27 @@
                 return data;
             }
 
-            async function placeBulkBet(type, amount, column = null, jodiType = null) {
+            async function placeBulkBet(type, amount, column = null, jodiType = null, panelType = null) {
                 const payload = { type, amount };
                 if (type === 'JODI') {
-                    payload.column = column;
+                    // Support both single column (number) and multiple columns (array)
+                    payload.columns = Array.isArray(column) ? column : [column];
                     payload.jodi_type = jodiType;
+                } else if (type === 'DADAR') {
+                    // Support both single column (number) and multiple columns (array)
+                    payload.columns = Array.isArray(column) ? column : [column];
+                } else if (type === 'SINGLE' || type === 'SP' || type === 'DP') {
+                    // Support both single column (number) and multiple columns (array)
+                    if (column !== null) {
+                        payload.columns = Array.isArray(column) ? column : [column];
+                    }
+                } else if (type === 'ABR_CUT') {
+                    // Support both single column (number) and multiple columns (array)
+                    payload.columns = Array.isArray(column) ? column : [column];
+                } else if (type === 'JODI_PANEL') {
+                    // Support both single column (number) and multiple columns (array)
+                    payload.columns = Array.isArray(column) ? column : [column];
+                    payload.panel_type = panelType;
                 }
                 const res = await fetch(API.PLACE_BULK, {
                     method: 'POST',
@@ -962,11 +1201,18 @@
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
                 } else if (currentBetType === 'JODI') {
-                    const column = parseInt(document.getElementById('jodiColumn').value);
+                    // Check if user has selected columns or just using dropdown
+                    const columns = selectedAbrColumns.length > 0 
+                        ? selectedAbrColumns 
+                        : [parseInt(document.getElementById('jodiColumn').value)];
                     const jodiType = parseInt(document.getElementById('jodiType').value);
-                    const result = await placeBulkBet('JODI', amount, column, jodiType);
+                    
+                    const result = await placeBulkBet('JODI', amount, columns, jodiType);
                     if (result.success) {
-                        showToast('Success!', `Jodi Vagar ${jodiType} bet placed on ${result.total_bets} numbers`, 'success');
+                        const columnText = columns.length > 1 
+                            ? `${columns.length} columns (${columns.join(', ')})` 
+                            : `Column ${columns[0]}`;
+                        showToast('Success!', `Jodi Vagar ${jodiType} bet placed on ${columnText}: ${result.total_bets} numbers`, 'success');
                         closeModal();
                         renderPage(1);
                         await getLastBulkAction();
@@ -986,10 +1232,67 @@
                     } else {
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
-                } else if (['SP', 'DP', 'DADAR'].includes(currentBetType)) {
-                    const result = await placeBulkBet(currentBetType, amount);
+                } else if (currentBetType === 'ABR_CUT') {
+                    // Check if user has selected columns or just using dropdown
+                    const columns = selectedAbrColumns.length > 0 
+                        ? selectedAbrColumns 
+                        : [parseInt(document.getElementById('abrCutColumn').value)];
+                    
+                    const result = await placeBulkBet('ABR_CUT', amount, columns);
                     if (result.success) {
-                        showToast('Success!', `${result.total_bets} bets placed successfully`, 'success');
+                        const columnText = columns.length > 1 
+                            ? `${columns.length} columns (${columns.join(', ')})` 
+                            : `Column ${columns[0]}`;
+                        showToast('Success!', `ABR Cut bet placed on ${columnText}: ${result.total_bets} numbers`, 'success');
+                        closeModal();
+                        renderPage(1);
+                        await getLastBulkAction();
+                        await updateTotalAmount();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place ABR Cut bet', 'error');
+                    }
+                } else if (currentBetType === 'JODI_PANEL') {
+                    // Check if user has selected columns or just using dropdown
+                    const columns = selectedAbrColumns.length > 0 
+                        ? selectedAbrColumns 
+                        : [parseInt(document.getElementById('jodiPanelColumn').value)];
+                    const panelType = parseInt(document.getElementById('jodiPanelType').value);
+                    
+                    const result = await placeBulkBet('JODI_PANEL', amount, columns, null, panelType);
+                    if (result.success) {
+                        const columnText = columns.length > 1 
+                            ? `${columns.length} columns (${columns.join(', ')})` 
+                            : `Column ${columns[0]}`;
+                        showToast('Success!', `Jodi Panel ${panelType} bet placed on ${columnText}: ${result.total_bets} numbers`, 'success');
+                        closeModal();
+                        renderPage(1);
+                        await getLastBulkAction();
+                        await updateTotalAmount();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place Jodi Panel bet', 'error');
+                    }
+                } else if (['SP', 'DP', 'DADAR'].includes(currentBetType)) {
+                    // Check if user has selected columns or placing on all numbers
+                    let columns = null;
+                    if (currentBetType === 'DADAR') {
+                        columns = selectedAbrColumns.length > 0 
+                            ? selectedAbrColumns 
+                            : [parseInt(document.getElementById('dadarColumn').value || 1)];
+                    } else if (currentBetType === 'SP' || currentBetType === 'DP') {
+                        // For SP/DP, only use columns if user explicitly selected them
+                        columns = selectedAbrColumns.length > 0 ? selectedAbrColumns : null;
+                    }
+                    
+                    const result = await placeBulkBet(currentBetType, amount, columns);
+                    if (result.success) {
+                        let message = `${result.total_bets} bets placed successfully`;
+                        if (columns && columns.length > 0) {
+                            const columnText = columns.length > 1 
+                                ? `${columns.length} columns (${columns.join(', ')})` 
+                                : `Column ${columns[0]}`;
+                            message = `${currentBetType} bet placed on ${columnText}: ${result.total_bets} numbers`;
+                        }
+                        showToast('Success!', message, 'success');
                         closeModal();
                         renderPage(currentBetType === 'SP' ? 1 : 2);
                         await getLastBulkAction();
@@ -1002,6 +1305,18 @@
 
             // Undo button
             undoBtn.onclick = undoBulkAction;
+
+            // Eki/Beki type change listener to update undo button
+            document.getElementById('ekiBekiType').addEventListener('change', function() {
+                updateUndoButton();
+            });
+
+            // Add column buttons for all bet types
+            document.getElementById('addColumnBtn').onclick = addColumn; // ABR Cut
+            document.getElementById('addBetColumnBtn').onclick = addColumn; // SINGLE, SP, DP
+            document.getElementById('addDadarColumnBtn').onclick = addColumn; // Dadar
+            document.getElementById('addJodiColumnBtn').onclick = addColumn; // Jodi
+            document.getElementById('addJodiPanelColumnBtn').onclick = addColumn; // Jodi Panel
 
             // Page navigation
             document.getElementById('page-1-btn').onclick = () => renderPage(1);
@@ -1026,6 +1341,14 @@
 
             document.getElementById('eki-beki-btn').onclick = () => {
                 openModal('EKI_BEKI', null, 'Eki/Beki');
+            };
+
+            document.getElementById('abr-cut-btn').onclick = () => {
+                openModal('ABR_CUT', null, 'ABR Cut');
+            };
+
+            document.getElementById('jodi-panel-btn').onclick = () => {
+                openModal('JODI_PANEL', null, 'Jodi Panel');
             };
 
             // Initialize
