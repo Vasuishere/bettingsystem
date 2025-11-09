@@ -460,7 +460,7 @@
             <div class="p-6 pb-4 flex-shrink-0">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Dadar</h2>
-                    <button id="closeDadarModal" 
+                    <button id="closeDadarModalFn" 
                         class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
                 </div>
 
@@ -482,13 +482,6 @@
                 <!-- Place Bet Content -->
                 <div id="dadarPlaceContent">
                     <div class="space-y-4">
-                        <!-- Info Box -->
-                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                            <p class="text-sm text-orange-800 font-medium">Betting on 10 Dadar Numbers:</p>
-                            <p class="text-xs text-orange-600 mt-1">678, 345, 120, 789, 456, 123, 890, 567, 234,
-                                190</p>
-                        </div>
-
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
                             <div class="grid grid-cols-4 gap-2 mb-4">
@@ -937,6 +930,60 @@
                 }
             }
 
+            // Add this function after renderHistory()
+            function renderDadarHistory() {
+                const dadarHistoryList = document.getElementById('dadarHistoryContent');
+                dadarHistoryList.innerHTML = '';
+                
+                // Filter bets for Dadar numbers only
+                const dadarNumbers = new Set([678, 345, 120, 789, 456, 123, 890, 567, 234, 190].map(String));
+                const dadarBets = Object.entries(bets)
+                    .filter(([number]) => dadarNumbers.has(number))
+                    .flatMap(([number, data]) => 
+                        data.history.map(bet => ({
+                            ...bet,
+                            number
+                        }))
+                    )
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                if (dadarBets.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'p-4 text-center text-gray-500';
+                    div.textContent = 'No Dadar bets found';
+                    dadarHistoryList.appendChild(div);
+                    return;
+                }
+
+                const ul = document.createElement('ul');
+                ul.className = 'space-y-2';
+
+                dadarBets.forEach((bet) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
+                    
+                    const text = document.createElement('span');
+                    text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.textContent = 'Delete';
+                    delBtn.className = 'delete-button';
+                    delBtn.onclick = async () => {
+                        const result = await deleteBet(bet.id, bet.number);
+                        if (result.success) {
+                            await loadBets();
+                            renderDadarHistory();
+                            await updateTotalAmount();
+                        }
+                    };
+                    
+                    li.append(text, delBtn);
+                    ul.appendChild(li);
+                });
+
+                dadarHistoryList.appendChild(ul);
+            }
+
             function updateUndoButton() {
                 undoBulkBtn.classList.add('hidden');
                 undoJodiModalBtn.classList.add('hidden');
@@ -1165,6 +1212,7 @@
                     renderPage(1);
                     await getLastBulkAction();
                     await updateTotalAmount();
+                    renderDadarHistory();  // Add this line
                 } else {
                     showToast('Error', result.error || 'Failed to place Dadar bet', 'error');
                 }
@@ -1193,6 +1241,7 @@
                 dadarHistoryContent.classList.remove('hidden');
                 dadarHistoryTab.classList.add('border-orange-600', 'text-orange-600');
                 dadarPlaceTab.classList.remove('border-orange-600', 'text-orange-600');
+                renderDadarHistory();  // Add this call
             };
 
             await loadBets();
