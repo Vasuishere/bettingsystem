@@ -12,7 +12,7 @@ from decimal import Decimal
 import json
 
 
-# Jodi Vagar number mappings (moved from JavaScript to Python)
+# Jodi Vagar number mappings
 JODI_VAGAR_NUMBERS = {
     1: [137, 146, 470, 579, 380, 119, 155, 227, 335, 399, 588, 669],
     2: [147, 246, 480, 138, 570, 228, 255, 336, 499, 688, 660, 200],
@@ -24,13 +24,15 @@ JODI_VAGAR_NUMBERS = {
     8: [279, 260, 350, 369, 468, 116, 224, 288, 440, 477, 558, 800],
     9: [379, 270, 469, 450, 360, 117, 144, 199, 225, 388, 559, 577],
     10: [136, 280, 460, 370, 479, 118, 226, 244, 299, 488, 550, 668]
-    
 }
-
-
 
 DADAR_NUMBERS = [678, 345, 120, 789, 456, 123, 890, 567, 234, 190]
 
+# Eki/Beki number mappings
+EKI_BEKI_NUMBERS = {
+    'EKI': [137, 135, 139, 157, 159, 179, 357, 359, 379, 579],
+    'BEKI': [246, 248, 240, 268, 260, 280, 468, 460, 480, 680]
+}
 
 ALL_COLUMN_DATA = [
     [128, 137, 146, 236, 245, 290, 380, 470, 489, 560, 579, 678, 100, 119, 155, 227, 335, 344, 399, 588, 669, 777],
@@ -61,9 +63,16 @@ def get_dp_numbers():
         dp_numbers.extend([str(num) for num in col[12:22]])
     return dp_numbers
 
+
 def get_dadar_numbers():
     """Get all Dadar numbers (10 numbers)"""
     return [str(num) for num in DADAR_NUMBERS]
+
+
+def get_eki_beki_numbers(bet_type):
+    """Get Eki or Beki numbers"""
+    return [str(num) for num in EKI_BEKI_NUMBERS.get(bet_type, [])]
+
 
 def index(request):
     return render(request, 'userbaseapp/index.html')
@@ -142,10 +151,10 @@ def place_bet(request):
 @require_http_methods(["POST"])
 @transaction.atomic
 def place_bulk_bet(request):
-    """Place bulk bets (SP, DP, or Jodi Vagar)"""
+    """Place bulk bets (SP, DP, Jodi Vagar, Dadar, Eki, or Beki)"""
     try:
         data = json.loads(request.body.decode('utf-8'))
-        bet_type = data.get('type')  # 'SP', 'DP', or 'JODI'
+        bet_type = data.get('type')  # 'SP', 'DP', 'JODI', 'DADAR', 'EKI', or 'BEKI'
         amount = data.get('amount')
 
         if not bet_type or not amount:
@@ -176,15 +185,17 @@ def place_bulk_bet(request):
             all_jodi_numbers = JODI_VAGAR_NUMBERS[column]
             
             if jodi_type == 5:
-                numbers = [str(n) for n in all_jodi_numbers[:5]]  # First 5 numbers
+                numbers = [str(n) for n in all_jodi_numbers[:5]]
             elif jodi_type == 7:
-                numbers = [str(n) for n in all_jodi_numbers[-7:]]  # Last 7 numbers
+                numbers = [str(n) for n in all_jodi_numbers[-7:]]
             elif jodi_type == 12:
-                numbers = [str(n) for n in all_jodi_numbers]  # All 12 numbers
+                numbers = [str(n) for n in all_jodi_numbers]
             else:
                 return JsonResponse({'error': 'Invalid jodi_type'}, status=400)
         elif bet_type == 'DADAR':
-            numbers = get_dadar_numbers()  # This will get the fixed Dadar numbers
+            numbers = get_dadar_numbers()
+        elif bet_type in ['EKI', 'BEKI']:
+            numbers = get_eki_beki_numbers(bet_type)
         else:
             return JsonResponse({'error': 'Invalid bet type'}, status=400)
 

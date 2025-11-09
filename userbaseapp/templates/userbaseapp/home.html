@@ -301,6 +301,10 @@
                 class="text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Dadar
             </button>
+            <button id="eki-beki-btn"
+                class="text-white bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Eki/Beki
+            </button>
         </div>
     </div>
 
@@ -335,7 +339,7 @@
                 <!-- Place Bet Content -->
                 <div id="placeContent">
                     <div class="space-y-4">
-                        <!-- Additional Options (Jodi specific) -->
+                        <!-- Jodi Options -->
                         <div id="jodiOptions" class="hidden space-y-4">
                             <div>
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
@@ -361,6 +365,28 @@
                                     <option value="9">Column 9</option>
                                     <option value="10">Column 10</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- Eki/Beki Options -->
+                        <div id="ekiBekiOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
+                                <select id="ekiBekiType"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                                    <option value="EKI">Eki (13579) - 10 numbers</option>
+                                    <option value="BEKI">Beki (24680) - 10 numbers</option>
+                                </select>
+                            </div>
+
+                            <!-- Add Recent Action Info -->
+                            <div id="lastActionInfo" class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hidden">
+                                <p class="text-sm text-gray-600">
+                                    Last Action: <span id="lastActionType" class="font-semibold text-indigo-600"></span>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Total Bets: <span id="lastActionBets" class="font-semibold text-indigo-600"></span>
+                                </p>
                             </div>
                         </div>
 
@@ -450,7 +476,7 @@
 
             let bets = {};
             let currentNumber = null;
-            let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR'
+            let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI'
             let lastBulkAction = null;
 
             // Modal Elements
@@ -468,6 +494,7 @@
             const customAmountInput = document.getElementById('customAmount');
             const amountButtons = document.querySelectorAll('.amount-button');
             const jodiOptions = document.getElementById('jodiOptions');
+            const ekiBekiOptions = document.getElementById('ekiBekiOptions');
             const tbody = document.getElementById('spreadsheet-body');
 
             function getCSRFToken() {
@@ -520,11 +547,29 @@
                 customAmountInput.value = '';
                 amountButtons.forEach(b => b.classList.remove('selected'));
                 
-                // Show/hide Jodi options
+                // Show/hide specific options
+                jodiOptions.classList.add('hidden');
+                ekiBekiOptions.classList.add('hidden');
+                
                 if (betType === 'JODI') {
                     jodiOptions.classList.remove('hidden');
-                } else {
-                    jodiOptions.classList.add('hidden');
+                } else if (betType === 'EKI_BEKI') {
+                    ekiBekiOptions.classList.remove('hidden');
+                    
+                    // Show last action info if available
+                    const lastActionInfo = document.getElementById('lastActionInfo');
+                    const lastActionType = document.getElementById('lastActionType');
+                    const lastActionBets = document.getElementById('lastActionBets');
+                    
+                    if (lastBulkAction && ['EKI', 'BEKI'].includes(lastBulkAction.type)) {
+                        lastActionInfo.classList.remove('hidden');
+                        lastActionType.textContent = lastBulkAction.type;
+                        lastActionBets.textContent = lastBulkAction.total_bets;
+                        undoBtn.classList.remove('hidden');
+                    } else {
+                        lastActionInfo.classList.add('hidden');
+                        undoBtn.classList.add('hidden');
+                    }
                 }
                 
                 // Switch to Place tab
@@ -560,11 +605,20 @@
 
             // Update Undo Button Visibility
             function updateUndoButton() {
-                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR'].includes(currentBetType)) {
-                    undoBtn.classList.remove('hidden');
-                } else {
-                    undoBtn.classList.add('hidden');
+                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI', 'BEKI'].includes(currentBetType)) {
+                    if (currentBetType === 'EKI_BEKI') {
+                        // Only show undo for matching EKI/BEKI type
+                        const selectedType = document.getElementById('ekiBekiType').value;
+                        if (lastBulkAction.type === selectedType) {
+                            undoBtn.classList.remove('hidden');
+                            return;
+                        }
+                    } else {
+                        undoBtn.classList.remove('hidden');
+                        return;
+                    }
                 }
+                undoBtn.classList.add('hidden');
             }
 
             // Render History
@@ -574,7 +628,6 @@
                 let relevantBets = [];
                 
                 if (currentBetType === 'SINGLE') {
-                    // Show history for single number
                     const history = bets[currentNumber]?.history || [];
                     if (history.length === 0) {
                         historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No bets yet.</div>';
@@ -597,7 +650,6 @@
                         historyList.appendChild(li);
                     });
                 } else if (currentBetType === 'DADAR') {
-                    // Show Dadar history
                     const dadarNumbers = new Set([678, 345, 120, 789, 456, 123, 890, 567, 234, 190].map(String));
                     relevantBets = Object.entries(bets)
                         .filter(([number]) => dadarNumbers.has(number))
@@ -610,6 +662,44 @@
                     
                     if (relevantBets.length === 0) {
                         historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No Dadar bets found</div>';
+                        return;
+                    }
+                    
+                    relevantBets.forEach((bet) => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center bg-gray-50 p-2 rounded';
+                        const text = document.createElement('span');
+                        text.textContent = `Number ${bet.number}: ₹${bet.amount}`;
+                        const delBtn = document.createElement('button');
+                        delBtn.textContent = 'Delete';
+                        delBtn.className = 'delete-button';
+                        delBtn.onclick = async () => {
+                            await deleteBet(bet.id, bet.number);
+                            renderHistory();
+                        };
+                        li.append(text, delBtn);
+                        historyList.appendChild(li);
+                    });
+                } else if (currentBetType === 'EKI_BEKI') {
+                    const ekiBekiType = document.getElementById('ekiBekiType').value;
+                    let targetNumbers;
+                    if (ekiBekiType === 'EKI') {
+                        targetNumbers = new Set([137, 135, 139, 157, 159, 179, 357, 359, 379, 579].map(String));
+                    } else {
+                        targetNumbers = new Set([246, 248, 240, 268, 260, 280, 468, 460, 480, 680].map(String));
+                    }
+                    
+                    relevantBets = Object.entries(bets)
+                        .filter(([number]) => targetNumbers.has(number))
+                        .flatMap(([number, data]) => 
+                            data.history.map(bet => ({
+                                ...bet,
+                                number
+                            }))
+                        );
+                    
+                    if (relevantBets.length === 0) {
+                        historyList.innerHTML = `<div class="p-4 text-center text-gray-500">No ${ekiBekiType} bets found</div>`;
                         return;
                     }
                     
@@ -884,6 +974,18 @@
                     } else {
                         showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
                     }
+                } else if (currentBetType === 'EKI_BEKI') {
+                    const ekiBekiType = document.getElementById('ekiBekiType').value;
+                    const result = await placeBulkBet(ekiBekiType, amount);
+                    if (result.success) {
+                        showToast('Success!', `${ekiBekiType} bet placed on ${result.total_bets} numbers`, 'success');
+                        closeModal();
+                        renderPage(1);
+                        await getLastBulkAction();
+                        await updateTotalAmount();
+                    } else {
+                        showToast('Error', result.error || 'Failed to place bet', 'error');
+                    }
                 } else if (['SP', 'DP', 'DADAR'].includes(currentBetType)) {
                     const result = await placeBulkBet(currentBetType, amount);
                     if (result.success) {
@@ -920,6 +1022,10 @@
 
             document.getElementById('dadar-btn').onclick = () => {
                 openModal('DADAR', null, 'Dadar');
+            };
+
+            document.getElementById('eki-beki-btn').onclick = () => {
+                openModal('EKI_BEKI', null, 'Eki/Beki');
             };
 
             // Initialize
