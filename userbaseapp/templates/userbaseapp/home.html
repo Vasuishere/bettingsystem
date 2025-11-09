@@ -253,6 +253,13 @@
                 </button>
             </div>
             <div class="flex items-center gap-4">
+                <button id="toggleQuickBetBtn"
+                    class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-4 py-2.5 flex items-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Quick Bet
+                </button>
                 <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg shadow-md">
                     <p class="text-xs font-medium">Total Balance</p>
                     <p class="text-xl font-bold" id="totalBalance">₹0</p>
@@ -319,8 +326,11 @@
     </div>
 
     <!-- Quick Bet Entry Table (Bottom Left) -->
-    <div class="fixed bottom-4 left-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40" style="width: 320px;">
-        <h3 class="text-lg font-bold text-indigo-700 mb-3 text-center">Quick Bet Entry</h3>
+    <div id="quickBetContainer" class="hidden fixed bottom-4 left-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40" style="width: 320px;">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold text-indigo-700">Quick Bet Entry</h3>
+            <button id="closeQuickBetBtn" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+        </div>
         
         <div class="overflow-auto" style="max-height: 300px;">
             <table class="w-full border-collapse">
@@ -603,7 +613,8 @@
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Select Type</label>
                                 <select id="jodiPanelType"
                                     class="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                                    <option value="7">Jodi Panel 7 (All 7 numbers)</option>
+                                    <option value="9">Jodi Panel 9 (All 9 numbers)</option>
+                                    <option value="7">Jodi Panel 7 (First 7 numbers)</option>
                                     <option value="6">Jodi Panel 6 (First 6 numbers)</option>
                                 </select>
                             </div>
@@ -1823,6 +1834,16 @@
                     </tr>
                 `;
                 quickBetRowCounter = 2;
+            });
+
+            // Toggle Quick Bet Container
+            document.getElementById('toggleQuickBetBtn').addEventListener('click', function() {
+                const container = document.getElementById('quickBetContainer');
+                container.classList.toggle('hidden');
+            });
+
+            document.getElementById('closeQuickBetBtn').addEventListener('click', function() {
+                document.getElementById('quickBetContainer').classList.add('hidden');
             });
 
             // Initialize

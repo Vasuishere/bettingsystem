@@ -61,16 +61,16 @@ ABR_CUT_NUMBERS = {
 
 # Jodi Panel number mappings - 10 columns
 JODI_PANEL_NUMBERS = {
-    1: [128, 236, 290, 560, 489, 245, 678],
-    2: [129, 589, 679, 237, 390, 150, 345],
-    3: [238, 256, 376, 490, 670, 689, 120],
-    4: [130, 167, 239, 247, 356, 590, 789],
-    5: [140, 230, 267, 348, 690, 780, 456],
-    6: [150, 178, 349, 367, 457, 790, 123],
-    7: [124, 160, 278, 340, 458, 467, 890],
-    8: [125, 170, 378, 134, 189, 459, 567],
-    9: [126, 180, 289, 237, 450, 478, 568],
-    10: [145, 235, 389, 569, 127, 578, 190]
+    1: [128, 236, 290, 560, 489, 245, 678, 344, 100],
+    2: [129, 589, 679, 237, 390, 150, 345, 778, 110],
+    3: [238, 256, 376, 490, 670, 689, 120, 788, 445],
+    4: [130, 167, 239, 247, 356, 590, 789, 455, 112],
+    5: [140, 230, 267, 348, 690, 780, 456, 889, 122],
+    6: [150, 178, 349, 367, 457, 790, 123, 556, 899],
+    7: [124, 160, 278, 340, 458, 467, 890, 566, 223],
+    8: [125, 170, 378, 134, 189, 459, 567, 233, 990],
+    9: [126, 180, 289, 237, 450, 478, 568, 667, 900],
+    10: [145, 235, 389, 569, 127, 578, 190, 677, 334]
 }
 
 ALL_COLUMN_DATA = [
@@ -124,13 +124,15 @@ def get_abr_cut_numbers(column):
 
 def get_jodi_panel_numbers(column, panel_type):
     """Get Jodi Panel numbers for a specific column
-    panel_type: 6 (first 6 numbers) or 7 (all 7 numbers)
+    panel_type: 6 (first 6 numbers), 7 (first 7 numbers), or 9 (all 9 numbers)
     """
     numbers = JODI_PANEL_NUMBERS.get(column, [])
     if panel_type == 6:
-        return [str(num) for num in numbers[:6]]  # First 6 numbers (exclude last 3-digit)
-    else:  # panel_type == 7
-        return [str(num) for num in numbers]  # All 7 numbers
+        return [str(num) for num in numbers[:6]]  # First 6 numbers
+    elif panel_type == 7:
+        return [str(num) for num in numbers[:7]]  # First 7 numbers
+    else:  # panel_type == 9
+        return [str(num) for num in numbers]  # All 9 numbers
 
 
 def index(request):
@@ -323,7 +325,7 @@ def place_bulk_bet(request):
             numbers = [x for x in numbers if not (x in seen or seen.add(x))]
         elif bet_type == 'JODI_PANEL':
             columns = data.get('columns')  # Support multiple columns
-            panel_type = data.get('panel_type')  # 6 or 7
+            panel_type = data.get('panel_type')  # 6, 7, or 9
             
             if not columns or not panel_type:
                 return JsonResponse({'error': 'Missing columns or panel_type for Jodi Panel'}, status=400)
@@ -333,8 +335,8 @@ def place_bulk_bet(request):
                 columns = [columns]
             
             panel_type = int(panel_type)
-            if panel_type not in [6, 7]:
-                return JsonResponse({'error': 'Invalid panel_type. Must be 6 or 7'}, status=400)
+            if panel_type not in [6, 7, 9]:
+                return JsonResponse({'error': 'Invalid panel_type. Must be 6, 7, or 9'}, status=400)
             
             # Collect all numbers from all selected columns
             numbers = []
