@@ -620,3 +620,75 @@ def get_bet_total(request):
             'success': False,
             'error': str(e)
         })
+    
+
+def generate_three_digit_numbers(digits_string):
+    """
+    Generate 3-digit numbers from given digits with custom rules:
+    - Custom order: 1 < 2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < 0
+    - Pattern: a < b < c (strictly increasing)
+    - 0 can only appear at position c (last position)
+    - Digits can repeat
+    """
+    
+    # Define custom order: 1 is smallest, 0 is largest
+    order_map = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, 
+                 '6': 6, '7': 7, '8': 8, '9': 9, '0': 10}
+    
+    # Get unique digits from input
+    available_digits = list(set(digits_string))
+    
+    valid_numbers = []
+    
+    # Generate all possible 3-digit combinations
+    for a in available_digits:
+        for b in available_digits:
+            for c in available_digits:
+                # Rule: 0 can only be at position c
+                if a == '0' or b == '0':
+                    continue
+                
+                # Rule: a < b < c (using custom order)
+                if order_map[a] < order_map[b] < order_map[c]:
+                    number = a + b + c
+                    valid_numbers.append(number)
+    
+    return sorted(valid_numbers)
+
+
+def main():
+    # Get input from user
+    digits = input("Enter digits (e.g., 1234567890): ").strip()
+    
+    # Validate input
+    if not digits.isdigit():
+        print("Error: Please enter only digits (0-9)")
+        return
+    
+    # Generate valid numbers
+    result = generate_three_digit_numbers(digits)
+    
+    # Display results
+    print(f"\nGenerated {len(result)} valid 3-digit numbers:")
+    print("-" * 50)
+    
+    # Print in rows of 10 for better readability
+    for i in range(0, len(result), 10):
+        print("  ".join(result[i:i+10]))
+    
+    # Show some examples
+    print("\n" + "=" * 50)
+    print("Examples:")
+    if len(result) >= 3:
+        print(f"✓ {result[0]} - Valid")
+        print(f"✓ {result[len(result)//2]} - Valid")
+        print(f"✓ {result[-1]} - Valid")
+    
+    print("\nInvalid examples:")
+    print("✗ 930 - Invalid (9 > 3 > 0 doesn't follow a < b < c)")
+    print("✗ 210 - Invalid (2 > 1, but 1 < 0 fails)")
+    print("✗ 012 - Invalid (0 cannot be at position a)")
+
+
+if __name__ == "__main__":
+    main()
