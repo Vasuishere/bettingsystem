@@ -35,7 +35,14 @@ urlpatterns = [
     path('undo-bulk-action/', views.undo_bulk_action, name='undo_bulk_action'),
     path('get-last-bulk-action/', views.get_last_bulk_action, name='get_last_bulk_action'),
     
+    # Motar and Comman Pana operations
+    path('generate-motar-numbers/', views.generate_motar_numbers, name='generate_motar_numbers'),
+    path('find-comman-pana-numbers/', views.find_comman_pana_numbers, name='find_comman_pana_numbers'),
+    path('place-motar-bet/', views.place_motar_bet, name='place_motar_bet'),
+    path('place-comman-pana-bet/', views.place_comman_pana_bet, name='place_comman_pana_bet'),
+    
     # Summary/Statistics
     path('get-bet-summary/', views.get_bet_summary, name='get_bet_summary'),
     path('get-bet-total/', views.get_bet_total, name='get_bet_total'),
+    path('get-bulk-action-history/', views.get_bulk_action_history, name='get_bulk_action_history'),
 ]

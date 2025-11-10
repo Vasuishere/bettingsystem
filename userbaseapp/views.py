@@ -620,6 +620,38 @@ def get_bet_total(request):
             'success': False,
             'error': str(e)
         })
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_bulk_action_history(request):
+    """Get all bulk action history for the current user"""
+    try:
+        bulk_actions = BulkBetAction.objects.filter(user=request.user).order_by('-created_at')
+        
+        history_data = []
+        for action in bulk_actions:
+            history_data.append({
+                'id': action.id,
+                'action_type': action.action_type,
+                'amount': str(action.amount),
+                'total_bets': action.total_bets,
+                'jodi_column': action.jodi_column,
+                'jodi_type': action.jodi_type,
+                'created_at': action.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'is_undone': action.is_undone
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'history': history_data,
+            'count': len(history_data)
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
     
 
 def generate_three_digit_numbers(digits_string):
@@ -656,39 +688,244 @@ def generate_three_digit_numbers(digits_string):
     return sorted(valid_numbers)
 
 
-def main():
-    # Get input from user
-    digits = input("Enter digits (e.g., 1234567890): ").strip()
+def find_sp_numbers_with_digit(digit):
+    """
+    Find all SP numbers (first 12 from each column) that contain the given digit.
+    
+    Args:
+        digit: Single digit (0-9) as string or int
+        
+    Returns:
+        List of SP numbers containing the digit, sorted
+    """
+    digit_str = str(digit)
     
     # Validate input
-    if not digits.isdigit():
-        print("Error: Please enter only digits (0-9)")
-        return
+    if not digit_str.isdigit() or len(digit_str) != 1:
+        return []
     
-    # Generate valid numbers
-    result = generate_three_digit_numbers(digits)
+    sp_numbers_with_digit = []
     
-    # Display results
-    print(f"\nGenerated {len(result)} valid 3-digit numbers:")
-    print("-" * 50)
+    # Iterate through all columns in ALL_COLUMN_DATA
+    for column in ALL_COLUMN_DATA:
+        # Get first 12 numbers (SP numbers) from each column
+        sp_numbers = column[0:12]
+        
+        # Check if the digit appears in any of these SP numbers
+        for num in sp_numbers:
+            num_str = str(num)
+            if digit_str in num_str:
+                sp_numbers_with_digit.append(num_str)
     
-    # Print in rows of 10 for better readability
-    for i in range(0, len(result), 10):
-        print("  ".join(result[i:i+10]))
-    
-    # Show some examples
-    print("\n" + "=" * 50)
-    print("Examples:")
-    if len(result) >= 3:
-        print(f"✓ {result[0]} - Valid")
-        print(f"✓ {result[len(result)//2]} - Valid")
-        print(f"✓ {result[-1]} - Valid")
-    
-    print("\nInvalid examples:")
-    print("✗ 930 - Invalid (9 > 3 > 0 doesn't follow a < b < c)")
-    print("✗ 210 - Invalid (2 > 1, but 1 < 0 fails)")
-    print("✗ 012 - Invalid (0 cannot be at position a)")
+    # Return sorted unique numbers
+    return sorted(list(set(sp_numbers_with_digit)))
 
 
-if __name__ == "__main__":
-    main()
+@login_required
+@require_http_methods(["POST"])
+def generate_motar_numbers(request):
+    """API endpoint to generate Motar numbers from input digits"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        digits = data.get('digits', '')
+        
+        # Validate input
+        if not digits or not digits.isdigit():
+            return JsonResponse({'error': 'Invalid digits input'}, status=400)
+        
+        if len(digits) < 4 or len(digits) > 10:
+            return JsonResponse({'error': 'Digits must be 4-10 characters long'}, status=400)
+        
+        # Generate numbers
+        numbers = generate_three_digit_numbers(digits)
+        
+        return JsonResponse({
+            'success': True,
+            'numbers': numbers,
+            'count': len(numbers)
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def find_comman_pana_numbers(request):
+    """API endpoint to find SP numbers containing a specific digit"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        digit = data.get('digit')
+        
+        # Validate input
+        if digit is None:
+            return JsonResponse({'error': 'Missing digit parameter'}, status=400)
+        
+        digit_str = str(digit)
+        if not digit_str.isdigit() or len(digit_str) != 1:
+            return JsonResponse({'error': 'Digit must be a single digit (0-9)'}, status=400)
+        
+        # Find SP numbers
+        numbers = find_sp_numbers_with_digit(digit)
+        
+        return JsonResponse({
+            'success': True,
+            'numbers': numbers,
+            'count': len(numbers),
+            'digit': digit_str
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def place_motar_bet(request):
+    """Place bulk Motar bet - generate numbers and place all bets in one transaction"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        digits = data.get('digits', '')
+        amount = data.get('amount')
+        
+        # Validate input
+        if not digits or not digits.isdigit():
+            return JsonResponse({'error': 'Invalid digits input'}, status=400)
+        
+        if len(digits) < 4 or len(digits) > 10:
+            return JsonResponse({'error': 'Digits must be 4-10 characters long'}, status=400)
+        
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
+        
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Generate numbers server-side
+        numbers = generate_three_digit_numbers(digits)
+        
+        if not numbers:
+            return JsonResponse({'error': 'No valid numbers generated'}, status=400)
+        
+        # Create bulk action record for Motar
+        bulk_action = BulkBetAction.objects.create(
+            user=request.user,
+            action_type='MOTAR',
+            amount=amount,
+            total_bets=len(numbers)
+        )
+        
+        # Create bets and track IDs for undo functionality
+        bet_ids = []
+        bets_created = []
+        
+        for number in numbers:
+            bet = Bet.objects.create(
+                user=request.user,
+                number=str(number),
+                amount=amount,
+                bet_type='MOTAR',
+                bulk_action=bulk_action
+            )
+            bet_ids.append(bet.id)
+            bets_created.append({
+                'bet_id': bet.id,
+                'number': bet.number,
+                'amount': str(bet.amount)
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(numbers)} Motar bets placed successfully',
+            'total_bets': len(numbers),
+            'bet_ids': bet_ids,
+            'bets': bets_created,
+            'digits': digits,
+            'bulk_action_id': bulk_action.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def place_comman_pana_bet(request):
+    """Place bulk Comman Pana bet - find SP numbers and place all bets in one transaction"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        digit = data.get('digit')
+        amount = data.get('amount')
+        
+        # Validate input
+        if digit is None:
+            return JsonResponse({'error': 'Missing digit parameter'}, status=400)
+        
+        digit_str = str(digit)
+        if not digit_str.isdigit() or len(digit_str) != 1:
+            return JsonResponse({'error': 'Digit must be a single digit (0-9)'}, status=400)
+        
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
+        
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Find SP numbers server-side
+        numbers = find_sp_numbers_with_digit(digit)
+        
+        if not numbers:
+            return JsonResponse({'error': f'No SP numbers contain digit {digit}'}, status=400)
+        
+        # Create bulk action record for Comman Pana
+        bulk_action = BulkBetAction.objects.create(
+            user=request.user,
+            action_type='COMMAN_PANA',
+            amount=amount,
+            total_bets=len(numbers),
+            jodi_type=int(digit)  # Store the digit in jodi_type field for reference
+        )
+        
+        # Create bets and track IDs for undo functionality
+        bet_ids = []
+        bets_created = []
+        
+        for number in numbers:
+            bet = Bet.objects.create(
+                user=request.user,
+                number=str(number),
+                amount=amount,
+                bet_type='COMMAN_PANA',
+                bulk_action=bulk_action
+            )
+            bet_ids.append(bet.id)
+            bets_created.append({
+                'bet_id': bet.id,
+                'number': bet.number,
+                'amount': str(bet.amount)
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(numbers)} Comman Pana bets placed for digit {digit}',
+            'total_bets': len(numbers),
+            'bet_ids': bet_ids,
+            'bets': bets_created,
+            'digit': digit_str,
+            'bulk_action_id': bulk_action.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

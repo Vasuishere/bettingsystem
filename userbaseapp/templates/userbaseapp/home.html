@@ -253,6 +253,13 @@
                 </button>
             </div>
             <div class="flex items-center gap-4">
+                <button id="toggleHistoryBtn"
+                    class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg font-medium rounded-lg text-sm px-4 py-2.5 flex items-center gap-2 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    History
+                </button>
                 <button id="toggleQuickBetBtn"
                     class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-4 py-2.5 flex items-center gap-2 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -326,6 +333,72 @@
                 class="text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Motar
             </button>
+            <button id="comman-pana-btn"
+                class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Comman Pana 36
+            </button>
+        </div>
+    </div>
+
+    <!-- Bulk Action History Modal (Full Screen) -->
+    <div id="historyModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-11/12 h-5/6 flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+                <h2 class="text-2xl font-bold text-purple-700">📋 Bulk Action History</h2>
+                <button id="closeHistoryModal" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">&times;</button>
+            </div>
+
+            <!-- Excel-like Table -->
+            <div class="flex-1 overflow-auto p-6">
+                <div class="overflow-x-auto">
+                    <table id="historyTable" class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-purple-100 sticky top-0">
+                            <tr>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">ID</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Action Type</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Amount (₹)</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Total Bets</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Column</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Number</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Date & Time</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="bg-white">
+                            <tr>
+                                <td colspan="8" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                    Loading history...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer with Stats -->
+            <div class="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-6">
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Total Records:</span>
+                            <span id="totalRecords" class="text-lg font-bold text-purple-700 ml-2">0</span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Total Amount:</span>
+                            <span id="totalHistoryAmount" class="text-lg font-bold text-green-600 ml-2">₹0</span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Total Bets:</span>
+                            <span id="totalHistoryBets" class="text-lg font-bold text-blue-600 ml-2">0</span>
+                        </div>
+                    </div>
+                    <button id="refreshHistoryBtn" 
+                        class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition font-semibold">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -690,6 +763,27 @@
                             </div>
                         </div>
 
+                        <!-- Comman Pana 36 Options -->
+                        <div id="commanPanaOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Enter Single Digit (0-9)</label>
+                                <input type="text" id="commanPanaDigitInput" 
+                                    placeholder="e.g. 4" 
+                                    maxlength="1"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                <p class="text-xs text-gray-500 mt-1">Enter a single digit (0-9). System will find all SP numbers containing this digit.</p>
+                            </div>
+                            <div id="commanPanaGeneratedNumbers" class="hidden">
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Found SP Numbers:</label>
+                                <div id="commanPanaNumbersList" class="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg max-h-48 overflow-y-auto">
+                                    <div class="flex flex-wrap gap-2" id="commanPanaNumbersDisplay"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <span id="commanPanaNumbersCount">0</span> SP numbers contain this digit
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- Select All Columns Checkbox (for Jodi, Dadar, ABR Cut, Jodi Panel) -->
                         <div id="selectAllColumnsContainer" class="hidden mb-4">
                             <label class="flex items-center space-x-2 cursor-pointer">
@@ -768,6 +862,11 @@
                 UNDO_BULK: '/user/undo-bulk-action/',
                 GET_LAST_BULK: '/user/get-last-bulk-action/',
                 GET_BET_TOTAL: '/user/get-bet-total/',
+                GENERATE_MOTAR: '/user/generate-motar-numbers/',
+                FIND_COMMAN_PANA: '/user/find-comman-pana-numbers/',
+                PLACE_MOTAR: '/user/place-motar-bet/',
+                PLACE_COMMAN_PANA: '/user/place-comman-pana-bet/',
+                GET_BULK_HISTORY: '/user/get-bulk-action-history/',
             };
 
             const rowLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
@@ -790,6 +889,7 @@
             let lastBulkAction = null;
             let selectedAbrColumns = []; // Array to store selected columns for multi-selection
             let lastMotarBets = []; // Track last Motar bet IDs for undo
+            let lastCommanPanaBets = []; // Track last Comman Pana bet IDs for undo
 
             // Modal Elements
             const modal = document.getElementById('universalModal');
@@ -812,54 +912,8 @@
             const abrCutOptions = document.getElementById('abrCutOptions');
             const jodiPanelOptions = document.getElementById('jodiPanelOptions');
             const motarOptions = document.getElementById('motarOptions');
+            const commanPanaOptions = document.getElementById('commanPanaOptions');
             const tbody = document.getElementById('spreadsheet-body');
-
-            // Generate 3-digit combinations from input number with custom rules
-            function generate_three_digit_numbers(inputNumber) {
-                /**
-                 * Generate 3-digit numbers from given digits with custom rules:
-                 * - Custom order: 1 < 2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < 0
-                 * - Pattern: a < b < c (strictly increasing)
-                 * - 0 can only appear at position c (last position)
-                 * - Digits can repeat in the output
-                 */
-                
-                if (inputNumber.length < 4 || inputNumber.length > 10) {
-                    return [];
-                }
-                
-                // Define custom order: 1 is smallest, 0 is largest
-                const orderMap = {
-                    '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
-                    '6': 6, '7': 7, '8': 8, '9': 9, '0': 10
-                };
-                
-                // Get unique digits from input
-                const availableDigits = [...new Set(inputNumber.split(''))];
-                
-                const validNumbers = [];
-                
-                // Generate all possible 3-digit combinations
-                for (const a of availableDigits) {
-                    for (const b of availableDigits) {
-                        for (const c of availableDigits) {
-                            // Rule: 0 can only be at position c (last position)
-                            if (a === '0' || b === '0') {
-                                continue;
-                            }
-                            
-                            // Rule: a < b < c (using custom order)
-                            if (orderMap[a] < orderMap[b] && orderMap[b] < orderMap[c]) {
-                                const number = a + b + c;
-                                validNumbers.push(number);
-                            }
-                        }
-                    }
-                }
-                
-                // Sort and return unique numbers
-                return [...new Set(validNumbers)].sort();
-            }
 
             function getCSRFToken() {
                 return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
@@ -931,11 +985,18 @@
                 abrCutOptions.classList.add('hidden');
                 jodiPanelOptions.classList.add('hidden');
                 motarOptions.classList.add('hidden');
+                commanPanaOptions.classList.add('hidden');
                 
                 // Reset Motar input
                 if (motarOptions) {
                     document.getElementById('motarNumberInput').value = '';
                     document.getElementById('motarGeneratedNumbers').classList.add('hidden');
+                }
+                
+                // Reset Comman Pana input
+                if (commanPanaOptions) {
+                    document.getElementById('commanPanaDigitInput').value = '';
+                    document.getElementById('commanPanaGeneratedNumbers').classList.add('hidden');
                 }
                 
                 // Show/hide "Select All Columns" checkbox (only for JODI, ABR_CUT, JODI_PANEL)
@@ -959,6 +1020,8 @@
                     jodiPanelOptions.classList.remove('hidden');
                 } else if (betType === 'MOTAR') {
                     motarOptions.classList.remove('hidden');
+                } else if (betType === 'COMMAN_PANA') {
+                    commanPanaOptions.classList.remove('hidden');
                 }
                 
                 // Switch to Place tab
@@ -1021,6 +1084,13 @@
                 // Handle Motar undo separately
                 if (currentBetType === 'MOTAR' && lastMotarBets.length > 0) {
                     undoBtn.textContent = `Undo Last Motar (${lastMotarBets.length} bets)`;
+                    undoBtn.classList.remove('hidden');
+                    return;
+                }
+                
+                // Handle Comman Pana undo separately
+                if (currentBetType === 'COMMAN_PANA' && lastCommanPanaBets.length > 0) {
+                    undoBtn.textContent = `Undo Last Comman Pana (${lastCommanPanaBets.length} bets)`;
                     undoBtn.classList.remove('hidden');
                     return;
                 }
@@ -1339,6 +1409,37 @@
                     return;
                 }
                 
+                // Handle Comman Pana undo
+                if (currentBetType === 'COMMAN_PANA' && lastCommanPanaBets.length > 0) {
+                    if (!confirm(`Undo last Comman Pana action (${lastCommanPanaBets.length} bets)?`)) return;
+                    
+                    let successCount = 0;
+                    let failCount = 0;
+                    
+                    for (const bet of lastCommanPanaBets) {
+                        const result = await deleteBet(bet.bet_id, bet.number);
+                        if (result.success) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                        }
+                    }
+                    
+                    if (successCount > 0) {
+                        showToast('Success', `${successCount} Comman Pana bets undone`, 'success');
+                        lastCommanPanaBets = []; // Clear tracked bets
+                        await updateTotalAmount();
+                        renderPage(1);
+                        updateUndoButton(); // Hide undo button
+                    }
+                    
+                    if (failCount > 0) {
+                        showToast('Warning', `Failed to undo ${failCount} bets`, 'warning');
+                    }
+                    
+                    return;
+                }
+                
                 // Handle bulk action undo
                 if (!lastBulkAction) return showToast('Error', 'No bulk action to undo', 'warning');
                 if (!confirm(`Undo last ${lastBulkAction.type} bulk action (${lastBulkAction.total_bets} bets)?`)) return;
@@ -1600,45 +1701,128 @@
                         return showToast('Invalid Input', 'Please enter a 4-10 digit number', 'warning');
                     }
                     
-                    const numbers = generate_three_digit_numbers(motarInput);
-                    
-                    if (numbers.length === 0) {
-                        return showToast('No Numbers', 'Could not generate any 3-digit combinations', 'error');
-                    }
-                    
-                    // Clear previous Motar bets tracking
-                    lastMotarBets = [];
-                    
-                    // Place individual bets on each generated number
-                    let successCount = 0;
-                    let failCount = 0;
-                    
-                    for (const number of numbers) {
-                        const result = await placeSingleBet(number, amount);
-                        if (result.success) {
-                            successCount++;
-                            // Track bet ID for undo functionality
-                            lastMotarBets.push({
-                                bet_id: result.bet_id,
-                                number: number,
+                    try {
+                        // Call Django API to place all Motar bets in one transaction
+                        const res = await fetch(API.PLACE_MOTAR, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({ 
+                                digits: motarInput,
                                 amount: amount
+                            })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            // Update frontend bets
+                            lastMotarBets = []; // Clear previous tracking
+                            
+                            data.bets.forEach(bet => {
+                                const num = bet.number;
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += parseFloat(bet.amount);
+                                bets[num].history.push({ 
+                                    id: bet.bet_id, 
+                                    amount: parseFloat(bet.amount),
+                                    bet_type: 'MOTAR'
+                                });
+                                updateBetTotal(num);
+                                
+                                // Track for undo
+                                lastMotarBets.push({
+                                    bet_id: bet.bet_id,
+                                    number: bet.number,
+                                    amount: parseFloat(bet.amount)
+                                });
                             });
+                            
+                            // Update last bulk action
+                            lastBulkAction = { 
+                                id: data.bulk_action_id, 
+                                type: 'MOTAR', 
+                                total_bets: data.total_bets 
+                            };
+                            
+                            showToast('Success!', `Motar: ${data.total_bets} bets placed from ${motarInput}`, 'success');
+                            closeModal();
+                            renderPage(1);
+                            await updateTotalAmount();
+                            updateUndoButton();
                         } else {
-                            failCount++;
+                            showToast('Error', data.error || 'Failed to place Motar bets', 'error');
                         }
+                    } catch (err) {
+                        console.error('Error placing Motar bets:', err);
+                        showToast('Error', 'Failed to place Motar bets', 'error');
+                    }
+                } else if (currentBetType === 'COMMAN_PANA') {
+                    const digitInput = document.getElementById('commanPanaDigitInput').value;
+                    
+                    if (!digitInput || digitInput.length !== 1 || !/^[0-9]$/.test(digitInput)) {
+                        return showToast('Invalid Input', 'Please enter a single digit (0-9)', 'warning');
                     }
                     
-                    if (successCount > 0) {
-                        showToast('Success!', `Motar: ${successCount} bets placed on numbers from ${motarInput}`, 'success');
-                        closeModal();
-                        renderPage(1);
-                        await updateTotalAmount();
-                        // Update undo button to show Motar undo option
-                        updateUndoButton();
-                    }
-                    
-                    if (failCount > 0) {
-                        showToast('Partial Failure', `${failCount} out of ${numbers.length} bets failed`, 'warning');
+                    try {
+                        // Call Django API to place all Comman Pana bets in one transaction
+                        const res = await fetch(API.PLACE_COMMAN_PANA, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({ 
+                                digit: parseInt(digitInput),
+                                amount: amount
+                            })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            // Update frontend bets
+                            lastCommanPanaBets = []; // Clear previous tracking
+                            
+                            data.bets.forEach(bet => {
+                                const num = bet.number;
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += parseFloat(bet.amount);
+                                bets[num].history.push({ 
+                                    id: bet.bet_id, 
+                                    amount: parseFloat(bet.amount),
+                                    bet_type: 'COMMAN_PANA'
+                                });
+                                updateBetTotal(num);
+                                
+                                // Track for undo
+                                lastCommanPanaBets.push({
+                                    bet_id: bet.bet_id,
+                                    number: bet.number,
+                                    amount: parseFloat(bet.amount)
+                                });
+                            });
+                            
+                            // Update last bulk action
+                            lastBulkAction = { 
+                                id: data.bulk_action_id, 
+                                type: 'COMMAN_PANA', 
+                                total_bets: data.total_bets 
+                            };
+                            
+                            showToast('Success!', `Comman Pana 36: ${data.total_bets} SP bets placed for digit ${digitInput}`, 'success');
+                            closeModal();
+                            renderPage(1);
+                            await updateTotalAmount();
+                            updateUndoButton();
+                        } else {
+                            showToast('Error', data.error || 'Failed to place Comman Pana bets', 'error');
+                        }
+                    } catch (err) {
+                        console.error('Error placing Comman Pana bets:', err);
+                        showToast('Error', 'Failed to place Comman Pana bets', 'error');
                     }
                 }
             };
@@ -1714,8 +1898,12 @@
                 openModal('MOTAR', null, 'Motar');
             };
 
-            // Motar number input handler
-            document.getElementById('motarNumberInput').addEventListener('input', function(e) {
+            document.getElementById('comman-pana-btn').onclick = () => {
+                openModal('COMMAN_PANA', null, 'Comman Pana 36');
+            };
+
+            // Motar number input handler - call Django API for preview
+            document.getElementById('motarNumberInput').addEventListener('input', async function(e) {
                 let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
                 e.target.value = value;
                 
@@ -1724,15 +1912,82 @@
                 const countSpan = document.getElementById('motarNumbersCount');
                 
                 if (value.length >= 4 && value.length <= 10) {
-                    const numbers = generate_three_digit_numbers(value);
-                    
-                    // Display generated numbers
-                    displayDiv.innerHTML = numbers.map(num => 
-                        `<span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-sm font-mono">${num}</span>`
-                    ).join('');
-                    
-                    countSpan.textContent = numbers.length;
-                    generatedDiv.classList.remove('hidden');
+                    try {
+                        // Call Django API to generate numbers
+                        const res = await fetch(API.GENERATE_MOTAR, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({ digits: value })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            const numbers = data.numbers;
+                            
+                            // Display generated numbers
+                            displayDiv.innerHTML = numbers.map(num => 
+                                `<span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-sm font-mono">${num}</span>`
+                            ).join('');
+                            
+                            countSpan.textContent = numbers.length;
+                            generatedDiv.classList.remove('hidden');
+                        } else {
+                            generatedDiv.classList.add('hidden');
+                        }
+                    } catch (err) {
+                        console.error('Error generating Motar numbers:', err);
+                        generatedDiv.classList.add('hidden');
+                    }
+                } else {
+                    generatedDiv.classList.add('hidden');
+                }
+            });
+
+            // Comman Pana digit input handler - call Django API for preview
+            document.getElementById('commanPanaDigitInput').addEventListener('input', async function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
+                if (value.length > 1) value = value.slice(0, 1); // Limit to 1 digit
+                e.target.value = value;
+                
+                const generatedDiv = document.getElementById('commanPanaGeneratedNumbers');
+                const displayDiv = document.getElementById('commanPanaNumbersDisplay');
+                const countSpan = document.getElementById('commanPanaNumbersCount');
+                
+                if (value.length === 1) {
+                    try {
+                        // Call Django API to find SP numbers
+                        const res = await fetch(API.FIND_COMMAN_PANA, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({ digit: parseInt(value) })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            const numbers = data.numbers;
+                            
+                            // Display found SP numbers
+                            displayDiv.innerHTML = numbers.map(num => 
+                                `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-mono">${num}</span>`
+                            ).join('');
+                            
+                            countSpan.textContent = numbers.length;
+                            generatedDiv.classList.remove('hidden');
+                        } else {
+                            generatedDiv.classList.add('hidden');
+                        }
+                    } catch (err) {
+                        console.error('Error finding Comman Pana numbers:', err);
+                        generatedDiv.classList.add('hidden');
+                    }
                 } else {
                     generatedDiv.classList.add('hidden');
                 }
@@ -2047,6 +2302,112 @@
 
             document.getElementById('closeQuickBetBtn').addEventListener('click', function() {
                 document.getElementById('quickBetContainer').classList.add('hidden');
+            });
+
+            // History Modal Functions
+            const historyModal = document.getElementById('historyModal');
+            const historyTableBody = document.getElementById('historyTableBody');
+
+            async function loadBulkActionHistory() {
+                try {
+                    const res = await fetch(API.GET_BULK_HISTORY);
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        renderHistoryTable(data.history);
+                        updateHistoryStats(data.history);
+                    } else {
+                        showToast('Error', 'Failed to load history', 'error');
+                    }
+                } catch (err) {
+                    console.error('Error loading history:', err);
+                    showToast('Error', 'Failed to load history', 'error');
+                }
+            }
+
+            function renderHistoryTable(history) {
+                historyTableBody.innerHTML = '';
+                
+                if (history.length === 0) {
+                    historyTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                No history records found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                history.forEach((record, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? 'bg-white hover:bg-purple-50' : 'bg-gray-50 hover:bg-purple-50';
+                    
+                    // Action type with color coding
+                    let actionTypeClass = 'bg-gray-100 text-gray-800';
+                    if (record.action_type === 'SP') actionTypeClass = 'bg-lime-100 text-lime-800';
+                    else if (record.action_type === 'DP') actionTypeClass = 'bg-blue-100 text-blue-800';
+                    else if (record.action_type === 'JODI') actionTypeClass = 'bg-purple-100 text-purple-800';
+                    else if (record.action_type === 'EKI') actionTypeClass = 'bg-cyan-100 text-cyan-800';
+                    else if (record.action_type === 'BEKI') actionTypeClass = 'bg-cyan-100 text-cyan-800';
+                    else if (record.action_type === 'DADAR') actionTypeClass = 'bg-yellow-100 text-yellow-800';
+                    else if (record.action_type === 'ABR_CUT') actionTypeClass = 'bg-pink-100 text-pink-800';
+                    else if (record.action_type === 'JODI_PANEL') actionTypeClass = 'bg-teal-100 text-teal-800';
+                    else if (record.action_type === 'MOTAR') actionTypeClass = 'bg-orange-100 text-orange-800';
+                    else if (record.action_type === 'COMMAN_PANA') actionTypeClass = 'bg-blue-100 text-blue-800';
+                    
+                    // Status badge
+                    const statusBadge = record.is_undone 
+                        ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">Undone</span>'
+                        : '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">Active</span>';
+                    
+                    row.innerHTML = `
+                        <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${record.id}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="px-2 py-1 ${actionTypeClass} text-xs font-semibold rounded">${record.action_type}</span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm font-semibold text-green-700">₹${parseFloat(record.amount).toLocaleString('en-IN')}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm text-center font-semibold">${record.total_bets}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm text-center">${record.jodi_column || '-'}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm text-center">${record.jodi_type || '-'}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${record.created_at}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">${statusBadge}</td>
+                    `;
+                    
+                    historyTableBody.appendChild(row);
+                });
+            }
+
+            function updateHistoryStats(history) {
+                const totalRecords = history.length;
+                const totalAmount = history.reduce((sum, record) => sum + parseFloat(record.amount) * record.total_bets, 0);
+                const totalBets = history.reduce((sum, record) => sum + record.total_bets, 0);
+                
+                document.getElementById('totalRecords').textContent = totalRecords;
+                document.getElementById('totalHistoryAmount').textContent = `₹${totalAmount.toLocaleString('en-IN')}`;
+                document.getElementById('totalHistoryBets').textContent = totalBets;
+            }
+
+            // Toggle History Modal
+            document.getElementById('toggleHistoryBtn').addEventListener('click', function() {
+                historyModal.classList.remove('hidden');
+                loadBulkActionHistory();
+            });
+
+            document.getElementById('closeHistoryModal').addEventListener('click', function() {
+                historyModal.classList.add('hidden');
+            });
+
+            document.getElementById('refreshHistoryBtn').addEventListener('click', function() {
+                loadBulkActionHistory();
+                showToast('Refreshed', 'History data updated', 'success');
+            });
+
+            // Close modal on outside click
+            historyModal.addEventListener('click', function(e) {
+                if (e.target === historyModal) {
+                    historyModal.classList.add('hidden');
+                }
             });
 
             // Initialize
