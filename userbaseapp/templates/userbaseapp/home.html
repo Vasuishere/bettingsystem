@@ -363,11 +363,12 @@
                                 <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Number</th>
                                 <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Date & Time</th>
                                 <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">Status</th>
+                                <th class="border border-gray-300 px-4 py-3 text-center text-sm font-bold text-gray-700">Action</th>
                             </tr>
                         </thead>
                         <tbody id="historyTableBody" class="bg-white">
                             <tr>
-                                <td colspan="8" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                <td colspan="9" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
                                     Loading history...
                                 </td>
                             </tr>
@@ -2331,7 +2332,7 @@
                 if (history.length === 0) {
                     historyTableBody.innerHTML = `
                         <tr>
-                            <td colspan="8" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                            <td colspan="9" class="border border-gray-300 px-4 py-8 text-center text-gray-500">
                                 No history records found
                             </td>
                         </tr>
@@ -2361,6 +2362,15 @@
                         ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">Undone</span>'
                         : '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">Active</span>';
                     
+                    // Delete button - only show if not already undone
+                    const deleteButton = record.is_undone 
+                        ? '<span class="text-gray-400 text-sm">-</span>'
+                        : `<button onclick="deleteBulkAction(${record.id})" class="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded transition-colors" title="Delete bulk action">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>`;
+                    
                     row.innerHTML = `
                         <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${record.id}</td>
                         <td class="border border-gray-300 px-4 py-2">
@@ -2372,6 +2382,7 @@
                         <td class="border border-gray-300 px-4 py-2 text-sm text-center">${record.jodi_type || '-'}</td>
                         <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${record.created_at}</td>
                         <td class="border border-gray-300 px-4 py-2 text-center">${statusBadge}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">${deleteButton}</td>
                     `;
                     
                     historyTableBody.appendChild(row);
@@ -2387,6 +2398,52 @@
                 document.getElementById('totalHistoryAmount').textContent = `₹${totalAmount.toLocaleString('en-IN')}`;
                 document.getElementById('totalHistoryBets').textContent = totalBets;
             }
+
+            // Delete bulk action function
+            window.deleteBulkAction = async function(bulkActionId) {
+                if (!confirm('Are you sure you want to delete this bulk action? All associated bets will be permanently deleted.')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(API.UNDO_BULK, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({ bulk_action_id: bulkActionId })
+                    });
+
+                    // Check if response is ok
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast('Deleted!', data.message, 'success');
+                        
+                        // Reload history table
+                        await loadBulkActionHistory();
+                        
+                        // Reload bets and update totals
+                        await loadBets();
+                        await updateTotalAmount();
+                        renderPage(1);
+                        
+                        // Update undo button visibility
+                        await getLastBulkAction();
+                    } else {
+                        showToast('Error', data.message || 'Failed to delete bulk action', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting bulk action:', error);
+                    showToast('Error', error.message || 'Failed to delete bulk action', 'error');
+                }
+            };
 
             // Toggle History Modal
             document.getElementById('toggleHistoryBtn').addEventListener('click', function() {

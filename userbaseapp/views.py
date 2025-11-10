@@ -520,35 +520,52 @@ def delete_bet(request):
 
 @login_required
 @require_http_methods(["POST"])
+@transaction.atomic
 def undo_bulk_action(request):
-    """Undo the last bulk betting action"""
+    """Undo/Delete a bulk betting action"""
     try:
         data = json.loads(request.body.decode('utf-8'))
         bulk_action_id = data.get('bulk_action_id')
 
         if not bulk_action_id:
-            return JsonResponse({'error': 'Missing bulk_action_id'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Missing bulk_action_id'}, status=400)
 
+        # Find the bulk action
         bulk_action = BulkBetAction.objects.filter(
             id=bulk_action_id, 
-            user=request.user,
-            is_undone=False
+            user=request.user
         ).first()
         
         if not bulk_action:
-            return JsonResponse({'error': 'Bulk action not found or already undone'}, status=404)
+            return JsonResponse({'success': False, 'message': 'Bulk action not found or does not belong to you'}, status=404)
         
+        # Check if already undone
+        if bulk_action.is_undone:
+            return JsonResponse({'success': False, 'message': 'This bulk action has already been deleted'}, status=400)
+        
+        # Get count before deletion for message
+        bet_count = bulk_action.bets.count()
+        
+        # Delete all associated bets and mark as undone
         success, message = bulk_action.undo()
 
-        return JsonResponse({
-            'success': success,
-            'message': message
-        })
+        if success:
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully deleted bulk action with {bet_count} bets'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': message
+            }, status=400)
 
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        # Log the error for debugging
+        print(f"Error in undo_bulk_action: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Server error: {str(e)}'}, status=500)
 
 
 @login_required
