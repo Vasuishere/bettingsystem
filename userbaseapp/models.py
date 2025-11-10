@@ -34,12 +34,22 @@ class Bet(models.Model):
         ('SET_PANA', 'Set Pana'),
     ]
     
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets')
-    number = models.CharField(max_length=10)  # "000", "999", "137", etc.
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
+    STATUS_CHOICES = [
+        ('ACTIVE', 'Active'),
+        ('WON', 'Won'),
+        ('LOST', 'Lost'),
+        ('CANCELLED', 'Cancelled'),
+        ('PENDING', 'Pending'),
+    ]
     
-    # New fields for tracking bulk operations
+    # Core fields
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets')
+    number = models.CharField(max_length=10, db_index=True)  # "000", "999", "137", etc.
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Bulk action tracking
     bulk_action = models.ForeignKey(
         'BulkBetAction', 
         on_delete=models.SET_NULL, 
@@ -48,18 +58,29 @@ class Bet(models.Model):
         related_name='bets'
     )
     
-    # Additional fields for better filtration
-    bet_type = models.CharField(max_length=20, choices=BET_TYPE_CHOICES, default='SINGLE')
-    column_number = models.IntegerField(null=True, blank=True)  # Column 1-10 for applicable bet types
+    # Bet type and classification
+    bet_type = models.CharField(max_length=20, choices=BET_TYPE_CHOICES, default='SINGLE', db_index=True)
+    column_number = models.IntegerField(null=True, blank=True, db_index=True)  # Column 1-10 for applicable bet types
     sub_type = models.CharField(max_length=20, null=True, blank=True)  # For storing jodi_type (5,7,12) or panel_type (6,7)
     
-    # Session tracking
-    session_id = models.CharField(max_length=100, null=True, blank=True)  # For grouping bets in same session
+    # Family/Group tracking for Set Pana
+    family_group = models.CharField(max_length=10, null=True, blank=True, db_index=True)  # G1-G35 for Set Pana
     
-    # Result tracking (for future use)
-    is_winner = models.BooleanField(default=False)
-    winning_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    result_declared_at = models.DateTimeField(null=True, blank=True)
+    # Motar/Comman Pana specific
+    input_digits = models.CharField(max_length=20, null=True, blank=True)  # Store original input for Motar
+    search_digit = models.IntegerField(null=True, blank=True)  # Store digit for Common Pana searches
+    
+    # Session and grouping
+    session_id = models.CharField(max_length=100, null=True, blank=True, db_index=True)  # For grouping bets in same session
+    
+    # Status tracking
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE', db_index=True)
+    
+    # Additional metadata
+    notes = models.TextField(null=True, blank=True)  # Admin notes
+    is_deleted = models.BooleanField(default=False, db_index=True)  # Soft delete
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='deleted_bets')
 
     class Meta:
         ordering = ['-created_at']
@@ -68,12 +89,25 @@ class Bet(models.Model):
             models.Index(fields=['user', '-created_at']),
             models.Index(fields=['user', 'bet_type']),
             models.Index(fields=['user', 'column_number']),
+            models.Index(fields=['user', 'status']),
             models.Index(fields=['created_at']),
             models.Index(fields=['bet_type', 'column_number']),
+            models.Index(fields=['bulk_action', 'created_at']),
+            models.Index(fields=['family_group', 'bet_type']),
         ]
+        verbose_name = 'Bet'
+        verbose_name_plural = 'Bets'
 
     def __str__(self):
-        return f"{self.user.username} bet ₹{self.amount} on {self.number} ({self.bet_type})"
+        return f"{self.user.username} bet ₹{self.amount} on {self.number} ({self.bet_type}) - {self.status}"
+    
+    def soft_delete(self, deleted_by_user):
+        """Soft delete the bet"""
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.deleted_by = deleted_by_user
+        self.status = 'CANCELLED'
+        self.save()
 
 
 class BulkBetAction(models.Model):
@@ -93,30 +127,73 @@ class BulkBetAction(models.Model):
         ('SET_PANA', 'Set Pana'),
     ]
     
+    STATUS_CHOICES = [
+        ('ACTIVE', 'Active'),
+        ('UNDONE', 'Undone'),
+        ('PARTIAL_UNDONE', 'Partially Undone'),
+        ('COMPLETED', 'Completed'),
+    ]
+    
+    # Core fields
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bulk_actions')
-    action_type = models.CharField(max_length=20, choices=ACTION_TYPES)
+    action_type = models.CharField(max_length=20, choices=ACTION_TYPES, db_index=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     total_bets = models.IntegerField(default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Total amount across all bets
     
-    # For tracking column-based bets
-    jodi_column = models.IntegerField(null=True, blank=True)  # 1-10 (used for first column in multi-column)
+    # Column and type tracking
+    jodi_column = models.IntegerField(null=True, blank=True, db_index=True)  # 1-10 (used for first column in multi-column)
     jodi_type = models.IntegerField(null=True, blank=True)  # 5, 7, or 12 for JODI; 6 or 7 for JODI_PANEL
+    columns_used = models.CharField(max_length=100, null=True, blank=True)  # Comma-separated list of columns for multi-column bets
     
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_undone = models.BooleanField(default=False)  # Track if already undone
+    # Family/Group tracking for Set Pana
+    family_group = models.CharField(max_length=10, null=True, blank=True, db_index=True)  # G1-G35 for Set Pana
+    family_numbers = models.TextField(null=True, blank=True)  # JSON array of numbers in the family
+    
+    # Motar/Comman Pana specific
+    input_data = models.CharField(max_length=100, null=True, blank=True)  # Store original input
+    search_digit = models.IntegerField(null=True, blank=True)  # Digit for Common Pana
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Status tracking
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE', db_index=True)
+    is_undone = models.BooleanField(default=False, db_index=True)  # Track if already undone
+    undone_at = models.DateTimeField(null=True, blank=True)
+    undone_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='undone_bulk_actions')
+    
+    # Metadata
+    notes = models.TextField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['user', 'action_type']),
+            models.Index(fields=['user', 'status']),
+            models.Index(fields=['action_type', 'created_at']),
+            models.Index(fields=['is_undone', 'status']),
+        ]
+        verbose_name = 'Bulk Bet Action'
+        verbose_name_plural = 'Bulk Bet Actions'
 
     def __str__(self):
-        return f"{self.user.username} - {self.action_type} - ₹{self.amount} ({self.total_bets} bets)"
+        return f"{self.user.username} - {self.action_type} - ₹{self.amount} ({self.total_bets} bets) - {self.status}"
 
-    def undo(self):
+    def undo(self, undone_by_user=None):
         """Undo this bulk action by deleting all associated bets"""
         if self.is_undone:
             return False, "Already undone"
         
         deleted_count = self.bets.all().delete()[0]
         self.is_undone = True
+        self.status = 'UNDONE'
+        self.undone_at = timezone.now()
+        if undone_by_user:
+            self.undone_by = undone_by_user
         self.save()
         return True, f"Undone {deleted_count} bets"
