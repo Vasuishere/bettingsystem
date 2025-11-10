@@ -335,7 +335,11 @@
             </button>
             <button id="comman-pana-btn"
                 class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                Comman Pana 36
+                Common Bet
+            </button>
+            <button id="set-pana-btn"
+                class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Set Pana
             </button>
         </div>
     </div>
@@ -767,21 +771,64 @@
                         <!-- Comman Pana 36 Options -->
                         <div id="commanPanaOptions" class="hidden space-y-4">
                             <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Common Bet Type</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3 cursor-pointer p-3 border-2 border-gray-300 rounded-lg hover:bg-blue-50 transition">
+                                        <input type="checkbox" id="commanPana36Checkbox" value="36" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <div class="flex-1">
+                                            <span class="text-sm font-semibold text-gray-800">Common Pana 36</span>
+                                            <p class="text-xs text-gray-500">Find numbers from SP only (36 numbers max)</p>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center space-x-3 cursor-pointer p-3 border-2 border-gray-300 rounded-lg hover:bg-blue-50 transition">
+                                        <input type="checkbox" id="commanPana56Checkbox" value="56" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <div class="flex-1">
+                                            <span class="text-sm font-semibold text-gray-800">Common Pana 56</span>
+                                            <p class="text-xs text-gray-500">Find numbers from SP + DP (56 numbers max)</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Enter Single Digit (0-9)</label>
                                 <input type="text" id="commanPanaDigitInput" 
                                     placeholder="e.g. 4" 
                                     maxlength="1"
                                     class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                                <p class="text-xs text-gray-500 mt-1">Enter a single digit (0-9). System will find all SP numbers containing this digit.</p>
+                                <p class="text-xs text-gray-500 mt-1">Enter a single digit (0-9). System will find matching numbers based on selected type.</p>
                             </div>
                             <div id="commanPanaGeneratedNumbers" class="hidden">
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Found SP Numbers:</label>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Found Numbers:</label>
                                 <div id="commanPanaNumbersList" class="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg max-h-48 overflow-y-auto">
                                     <div class="flex flex-wrap gap-2" id="commanPanaNumbersDisplay"></div>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">
-                                    <span id="commanPanaNumbersCount">0</span> SP numbers contain this digit
+                                    <span id="commanPanaNumbersCount">0</span> numbers contain this digit
                                 </p>
+                            </div>
+                        </div>
+
+                        <!-- Set Pana Options -->
+                        <div id="setPanaOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Enter 3-Digit Number</label>
+                                <input type="text" id="setPanaNumberInput" 
+                                    placeholder="e.g. 115, 156, 660" 
+                                    maxlength="3"
+                                    class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                                <p class="text-xs text-gray-500 mt-1">Enter any 3-digit number from a family group (e.g., 115, 156, 110 are all in G17)</p>
+                            </div>
+                            <div id="setPanaFamilyInfo" class="hidden">
+                                <div class="p-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
+                                    <p class="text-sm font-semibold text-indigo-800 mb-2">
+                                        Family: <span id="setPanaFamilyName" class="text-indigo-600"></span>
+                                    </p>
+                                    <label class="block mb-2 text-xs font-medium text-gray-700">All numbers in this family:</label>
+                                    <div class="flex flex-wrap gap-2" id="setPanaFamilyNumbers"></div>
+                                    <p class="text-xs text-gray-500 mt-2">
+                                        <span id="setPanaFamilyCount">0</span> numbers in this family
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -867,6 +914,7 @@
                 FIND_COMMAN_PANA: '/user/find-comman-pana-numbers/',
                 PLACE_MOTAR: '/user/place-motar-bet/',
                 PLACE_COMMAN_PANA: '/user/place-comman-pana-bet/',
+                PLACE_SET_PANA: '/user/place-set-pana-bet/',
                 GET_BULK_HISTORY: '/user/get-bulk-action-history/',
             };
 
@@ -987,6 +1035,7 @@
                 jodiPanelOptions.classList.add('hidden');
                 motarOptions.classList.add('hidden');
                 commanPanaOptions.classList.add('hidden');
+                setPanaOptions.classList.add('hidden');
                 
                 // Reset Motar input
                 if (motarOptions) {
@@ -999,6 +1048,10 @@
                     document.getElementById('commanPanaDigitInput').value = '';
                     document.getElementById('commanPanaGeneratedNumbers').classList.add('hidden');
                 }
+                
+                // Reset Set Pana input
+                document.getElementById('setPanaNumberInput').value = '';
+                document.getElementById('setPanaFamilyInfo').classList.add('hidden');
                 
                 // Show/hide "Select All Columns" checkbox (only for JODI, ABR_CUT, JODI_PANEL)
                 // Note: DADAR is now part of EKI_BEKI dropdown, so it's handled differently
@@ -1023,6 +1076,8 @@
                     motarOptions.classList.remove('hidden');
                 } else if (betType === 'COMMAN_PANA') {
                     commanPanaOptions.classList.remove('hidden');
+                } else if (betType === 'SET_PANA') {
+                    setPanaOptions.classList.remove('hidden');
                 }
                 
                 // Switch to Place tab
@@ -1762,13 +1817,23 @@
                     }
                 } else if (currentBetType === 'COMMAN_PANA') {
                     const digitInput = document.getElementById('commanPanaDigitInput').value;
+                    const is36Checked = document.getElementById('commanPana36Checkbox').checked;
+                    const is56Checked = document.getElementById('commanPana56Checkbox').checked;
                     
                     if (!digitInput || digitInput.length !== 1 || !/^[0-9]$/.test(digitInput)) {
                         return showToast('Invalid Input', 'Please enter a single digit (0-9)', 'warning');
                     }
                     
+                    if (!is36Checked && !is56Checked) {
+                        return showToast('Select Type', 'Please select Common Pana 36 or 56', 'warning');
+                    }
+                    
+                    const betType = is56Checked ? '56' : '36';
+                    const betTypeName = is56Checked ? 'COMMAN_PANA_56' : 'COMMAN_PANA_36';
+                    const betLabel = is56Checked ? 'Common Pana 56' : 'Common Pana 36';
+                    
                     try {
-                        // Call Django API to place all Comman Pana bets in one transaction
+                        // Call Django API to place all Common Pana bets in one transaction
                         const res = await fetch(API.PLACE_COMMAN_PANA, {
                             method: 'POST',
                             headers: { 
@@ -1777,7 +1842,8 @@
                             },
                             body: JSON.stringify({ 
                                 digit: parseInt(digitInput),
-                                amount: amount
+                                amount: amount,
+                                type: betType
                             })
                         });
                         
@@ -1794,7 +1860,7 @@
                                 bets[num].history.push({ 
                                     id: bet.bet_id, 
                                     amount: parseFloat(bet.amount),
-                                    bet_type: 'COMMAN_PANA'
+                                    bet_type: betTypeName
                                 });
                                 updateBetTotal(num);
                                 
@@ -1809,21 +1875,86 @@
                             // Update last bulk action
                             lastBulkAction = { 
                                 id: data.bulk_action_id, 
-                                type: 'COMMAN_PANA', 
+                                type: betTypeName, 
                                 total_bets: data.total_bets 
                             };
                             
-                            showToast('Success!', `Comman Pana 36: ${data.total_bets} SP bets placed for digit ${digitInput}`, 'success');
+                            showToast('Success!', `${betLabel}: ${data.total_bets} bets placed for digit ${digitInput}`, 'success');
                             closeModal();
                             renderPage(1);
                             await updateTotalAmount();
                             updateUndoButton();
                         } else {
-                            showToast('Error', data.error || 'Failed to place Comman Pana bets', 'error');
+                            showToast('Error', data.error || 'Failed to place Common Pana bets', 'error');
                         }
                     } catch (err) {
-                        console.error('Error placing Comman Pana bets:', err);
-                        showToast('Error', 'Failed to place Comman Pana bets', 'error');
+                        console.error('Error placing Common Pana bets:', err);
+                        showToast('Error', 'Failed to place Common Pana bets', 'error');
+                    }
+                } else if (currentBetType === 'SET_PANA') {
+                    const numberInput = document.getElementById('setPanaNumberInput').value;
+                    
+                    if (!numberInput || numberInput.length !== 3 || !/^[0-9]{3}$/.test(numberInput)) {
+                        return showToast('Invalid Input', 'Please enter exactly 3 digits', 'warning');
+                    }
+                    
+                    // Check if family info is displayed (means number is valid)
+                    const familyInfoDiv = document.getElementById('setPanaFamilyInfo');
+                    if (familyInfoDiv.classList.contains('hidden')) {
+                        return showToast('Invalid Number', 'Number not found in any family group', 'warning');
+                    }
+                    
+                    const familyName = document.getElementById('setPanaFamilyName').textContent;
+                    
+                    try {
+                        // Call Django API to place all Set Pana bets in one transaction
+                        const res = await fetch(API.PLACE_SET_PANA, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({ 
+                                number: parseInt(numberInput),
+                                amount: amount
+                            })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.success) {
+                            // Update frontend bets
+                            data.bets.forEach(bet => {
+                                const num = bet.number;
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += parseFloat(bet.amount);
+                                bets[num].history.push({ 
+                                    id: bet.bet_id, 
+                                    amount: parseFloat(bet.amount),
+                                    bet_type: 'SET_PANA'
+                                });
+                                updateBetTotal(num);
+                            });
+                            
+                            // Update last bulk action
+                            lastBulkAction = { 
+                                id: data.bulk_action_id, 
+                                type: 'SET_PANA', 
+                                total_bets: data.total_bets 
+                            };
+                            
+                            showToast('Success!', `Set Pana: ${data.total_bets} bets placed for family ${familyName}`, 'success');
+                            closeModal();
+                            renderPage(1);
+                            await getLastBulkAction();
+                            await updateTotalAmount();
+                            updateUndoButton();
+                        } else {
+                            showToast('Error', data.error || 'Failed to place Set Pana bets', 'error');
+                        }
+                    } catch (err) {
+                        console.error('Error placing Set Pana bets:', err);
+                        showToast('Error', 'Failed to place Set Pana bets', 'error');
                     }
                 }
             };
@@ -1903,6 +2034,10 @@
                 openModal('COMMAN_PANA', null, 'Comman Pana 36');
             };
 
+            document.getElementById('set-pana-btn').onclick = () => {
+                openModal('SET_PANA', null, 'Set Pana');
+            };
+
             // Motar number input handler - call Django API for preview
             document.getElementById('motarNumberInput').addEventListener('input', async function(e) {
                 let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
@@ -1959,15 +2094,29 @@
                 const countSpan = document.getElementById('commanPanaNumbersCount');
                 
                 if (value.length === 1) {
+                    // Check which type is selected
+                    const is36Checked = document.getElementById('commanPana36Checkbox').checked;
+                    const is56Checked = document.getElementById('commanPana56Checkbox').checked;
+                    
+                    if (!is36Checked && !is56Checked) {
+                        showToast('Select Type', 'Please select Common Pana 36 or 56', 'warning');
+                        return;
+                    }
+                    
+                    const betType = is56Checked ? '56' : '36';
+                    
                     try {
-                        // Call Django API to find SP numbers
+                        // Call Django API to find numbers
                         const res = await fetch(API.FIND_COMMAN_PANA, {
                             method: 'POST',
                             headers: { 
                                 'Content-Type': 'application/json',
                                 'X-CSRFToken': getCSRFToken()
                             },
-                            body: JSON.stringify({ digit: parseInt(value) })
+                            body: JSON.stringify({ 
+                                digit: parseInt(value),
+                                type: betType
+                            })
                         });
                         
                         const data = await res.json();
@@ -1975,7 +2124,7 @@
                         if (data.success) {
                             const numbers = data.numbers;
                             
-                            // Display found SP numbers
+                            // Display found numbers
                             displayDiv.innerHTML = numbers.map(num => 
                                 `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-mono">${num}</span>`
                             ).join('');
@@ -1986,11 +2135,112 @@
                             generatedDiv.classList.add('hidden');
                         }
                     } catch (err) {
-                        console.error('Error finding Comman Pana numbers:', err);
+                        console.error('Error finding Common Pana numbers:', err);
                         generatedDiv.classList.add('hidden');
                     }
                 } else {
                     generatedDiv.classList.add('hidden');
+                }
+            });
+            
+            // Add checkbox change listeners for Common Pana types
+            document.getElementById('commanPana36Checkbox').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('commanPana56Checkbox').checked = false;
+                }
+                // Trigger digit input to refresh numbers
+                const digitInput = document.getElementById('commanPanaDigitInput');
+                if (digitInput.value) {
+                    digitInput.dispatchEvent(new Event('input'));
+                }
+            });
+            
+            document.getElementById('commanPana56Checkbox').addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('commanPana36Checkbox').checked = false;
+                }
+                // Trigger digit input to refresh numbers
+                const digitInput = document.getElementById('commanPanaDigitInput');
+                if (digitInput.value) {
+                    digitInput.dispatchEvent(new Event('input'));
+                }
+            });
+
+            // Set Pana number input handler - show family information
+            document.getElementById('setPanaNumberInput').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
+                e.target.value = value;
+                
+                const familyInfoDiv = document.getElementById('setPanaFamilyInfo');
+                const familyNameSpan = document.getElementById('setPanaFamilyName');
+                const familyNumbersDiv = document.getElementById('setPanaFamilyNumbers');
+                const countSpan = document.getElementById('setPanaFamilyCount');
+                
+                if (value.length === 3) {
+                    // Find which family this number belongs to
+                    const familyPanaNumbers = {
+                        'G1': [678, 123, 137, 268, 236, 178, 128, 367],
+                        'G2': [345, 890, 390, 458, 480, 359, 589, 340],
+                        'G3': [120, 567, 157, 260, 256, 170, 670, 125],
+                        'G4': [789, 234, 239, 478, 248, 379, 347, 289],
+                        'G5': [456, 190, 140, 569, 159, 460, 690, 145],
+                        'G6': [245, 290, 470, 579, 790, 457, 259, 240],
+                        'G7': [129, 147, 246, 679, 467, 269, 179, 124],
+                        'G8': [139, 148, 346, 689, 468, 369, 189, 134],
+                        'G9': [130, 158, 356, 680, 568, 360, 180, 135],
+                        'G10': [230, 258, 357, 780, 578, 370, 280, 235],
+                        'G11': [146, 119, 669, 169, 466, 114],
+                        'G12': [138, 336, 688, 368, 188, 133],
+                        'G13': [238, 337, 788, 378, 288, 233],
+                        'G14': [149, 446, 699, 469, 199, 144],
+                        'G15': [168, 113, 366, 136, 668, 118],
+                        'G16': [380, 335, 588, 358, 880, 330],
+                        'G17': [156, 110, 660, 160, 566, 115],
+                        'G18': [247, 229, 779, 279, 477, 224],
+                        'G19': [167, 112, 266, 126, 667, 117],
+                        'G20': [249, 447, 799, 479, 299, 244],
+                        'G21': [489, 344, 399, 349, 899, 448],
+                        'G22': [570, 255, 200, 250, 700, 557],
+                        'G23': [490, 445, 599, 459, 990, 440],
+                        'G24': [257, 220, 770, 270, 577, 225],
+                        'G25': [267, 122, 177, 127, 677, 226],
+                        'G26': [560, 100, 155, 150, 556, 600],
+                        'G27': [237, 228, 778, 278, 377, 223],
+                        'G28': [580, 300, 355, 350, 558, 800],
+                        'G29': [590, 400, 455, 450, 559, 900],
+                        'G30': [348, 339, 889, 389, 488, 334],
+                        'G31': [227, 777, 277, 222],
+                        'G32': [499, 444, 449, 999],
+                        'G33': [166, 111, 116, 666],
+                        'G34': [338, 888, 388, 333],
+                        'G35': [500, 555, 550, 0]
+                    };
+                    
+                    const numberInt = parseInt(value);
+                    let foundFamily = null;
+                    let foundNumbers = [];
+                    
+                    for (const [family, numbers] of Object.entries(familyPanaNumbers)) {
+                        if (numbers.includes(numberInt)) {
+                            foundFamily = family;
+                            foundNumbers = numbers;
+                            break;
+                        }
+                    }
+                    
+                    if (foundFamily) {
+                        familyNameSpan.textContent = foundFamily;
+                        familyNumbersDiv.innerHTML = foundNumbers.map(num => 
+                            `<span class="px-2 py-1 ${num === numberInt ? 'bg-indigo-200 font-bold' : 'bg-indigo-100'} text-indigo-800 rounded text-sm font-mono">${String(num).padStart(3, '0')}</span>`
+                        ).join('');
+                        countSpan.textContent = foundNumbers.length;
+                        familyInfoDiv.classList.remove('hidden');
+                    } else {
+                        familyInfoDiv.classList.add('hidden');
+                        showToast('Invalid Number', `Number ${value} is not in any family group`, 'error');
+                    }
+                } else {
+                    familyInfoDiv.classList.add('hidden');
                 }
             });
 
@@ -2355,7 +2605,9 @@
                     else if (record.action_type === 'ABR_CUT') actionTypeClass = 'bg-pink-100 text-pink-800';
                     else if (record.action_type === 'JODI_PANEL') actionTypeClass = 'bg-teal-100 text-teal-800';
                     else if (record.action_type === 'MOTAR') actionTypeClass = 'bg-orange-100 text-orange-800';
-                    else if (record.action_type === 'COMMAN_PANA') actionTypeClass = 'bg-blue-100 text-blue-800';
+                    else if (record.action_type === 'COMMAN_PANA_36') actionTypeClass = 'bg-blue-100 text-blue-800';
+                    else if (record.action_type === 'COMMAN_PANA_56') actionTypeClass = 'bg-indigo-100 text-indigo-800';
+                    else if (record.action_type === 'SET_PANA') actionTypeClass = 'bg-violet-100 text-violet-800';
                     
                     // Status badge
                     const statusBadge = record.is_undone 

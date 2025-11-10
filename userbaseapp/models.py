@@ -29,7 +29,9 @@ class Bet(models.Model):
         ('ABR_CUT', 'ABR Cut'),
         ('JODI_PANEL', 'Jodi Panel'),
         ('MOTAR', 'Motar'),
-        ('COMMAN_PANA', 'Comman Pana'),
+        ('COMMAN_PANA_36', 'Comman Pana 36'),
+        ('COMMAN_PANA_56', 'Comman Pana 56'),
+        ('SET_PANA', 'Set Pana'),
     ]
     
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets')
@@ -86,7 +88,9 @@ class BulkBetAction(models.Model):
         ('ABR_CUT', 'ABR Cut'),
         ('JODI_PANEL', 'Jodi Panel'),
         ('MOTAR', 'Motar'),
-        ('COMMAN_PANA', 'Comman Pana'),
+        ('COMMAN_PANA_36', 'Comman Pana 36'),
+        ('COMMAN_PANA_56', 'Comman Pana 56'),
+        ('SET_PANA', 'Set Pana'),
     ]
     
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bulk_actions')

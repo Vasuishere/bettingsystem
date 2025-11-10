@@ -26,6 +26,46 @@ JODI_VAGAR_NUMBERS = {
     10: [136, 280, 460, 370, 479, 118, 226, 244, 299, 488, 550, 668]
 }
 
+
+Family_Pana_numbers = {
+    'G1': [678, 123, 137, 268, 236, 178, 128, 367],
+    'G2': [345, 890, 390, 458, 480, 359, 589, 340],
+    'G3': [120, 567, 157, 260, 256, 170, 670, 125],
+    'G4': [789, 234, 239, 478, 248, 379, 347, 289],
+    'G5': [456, 190, 140, 569, 159, 460, 690, 145],
+    'G6': [245, 290, 470, 579, 790, 457, 259, 240],
+    'G7': [129, 147, 246, 679, 467, 269, 179, 124],
+    'G8': [139, 148, 346, 689, 468, 369, 189, 134],
+    'G9': [130, 158, 356, 680, 568, 360, 180, 135],
+    'G10': [230, 258, 357, 780, 578, 370, 280, 235],
+    'G11': [146, 119, 669, 169, 466, 114],
+    'G12': [138, 336, 688, 368, 188, 133],
+    'G13': [238, 337, 788, 378, 288, 233],
+    'G14': [149, 446, 699, 469, 199, 144],
+    'G15': [168, 113, 366, 136, 668, 118],
+    'G16': [380, 335, 588, 358, 880, 330],
+    'G17': [156, 110, 660, 160, 566, 115],
+    'G18': [247, 229, 779, 279, 477, 224],
+    'G19': [167, 112, 266, 126, 667, 117],
+    'G20': [249, 447, 799, 479, 299, 244],
+    'G21': [489, 344, 399, 349, 899, 448],
+    'G22': [570, 255, 200, 250, 700, 557],
+    'G23': [490, 445, 599, 459, 990, 440],
+    'G24': [257, 220, 770, 270, 577, 225],
+    'G25': [267, 122, 177, 127, 677, 226],
+    'G26': [560, 100, 155, 150, 556, 600],
+    'G27': [237, 228, 778, 278, 377, 223],
+    'G28': [580, 300, 355, 350, 558, 800],
+    'G29': [590, 400, 455, 450, 559, 900],
+    'G30': [348, 339, 889, 389, 488, 334],
+    'G31': [227, 777, 277, 222],
+    'G32': [499, 444, 449, 999],
+    'G33': [166, 111, 116, 666],
+    'G34': [338, 888, 388, 333],
+    'G35': [500, 555, 550, 000]
+}
+
+
 DADAR_NUMBERS = {
     1: [678],         
     2: [345],
@@ -708,6 +748,7 @@ def generate_three_digit_numbers(digits_string):
 def find_sp_numbers_with_digit(digit):
     """
     Find all SP numbers (first 12 from each column) that contain the given digit.
+    Common Pana 36 - searches only in SP numbers.
     
     Args:
         digit: Single digit (0-9) as string or int
@@ -736,6 +777,59 @@ def find_sp_numbers_with_digit(digit):
     
     # Return sorted unique numbers
     return sorted(list(set(sp_numbers_with_digit)))
+
+
+def find_sp_dp_numbers_with_digit(digit):
+    """
+    Find all SP + DP numbers (first 22 rows from each column) that contain the given digit.
+    Common Pana 56 - searches in both SP and DP numbers.
+    
+    Args:
+        digit: Single digit (0-9) as string or int
+        
+    Returns:
+        List of SP + DP numbers containing the digit, sorted
+    """
+    digit_str = str(digit)
+    
+    # Validate input
+    if not digit_str.isdigit() or len(digit_str) != 1:
+        return []
+    
+    sp_dp_numbers_with_digit = []
+    
+    # Iterate through all columns in ALL_COLUMN_DATA
+    for column in ALL_COLUMN_DATA:
+        # Get first 22 numbers (SP + DP numbers) from each column
+        sp_dp_numbers = column[0:22]
+        
+        # Check if the digit appears in any of these numbers
+        for num in sp_dp_numbers:
+            num_str = str(num)
+            if digit_str in num_str:
+                sp_dp_numbers_with_digit.append(num_str)
+    
+    # Return sorted unique numbers
+    return sorted(list(set(sp_dp_numbers_with_digit)))
+
+
+def find_family_group_by_number(number):
+    """
+    Find the family group (G1-G35) that contains the given number.
+    
+    Args:
+        number: 3-digit number as string or int
+        
+    Returns:
+        tuple: (family_name, family_numbers) or (None, None) if not found
+    """
+    number_int = int(number)
+    
+    for family_name, family_numbers in Family_Pana_numbers.items():
+        if number_int in family_numbers:
+            return family_name, family_numbers
+    
+    return None, None
 
 
 @login_required
@@ -771,10 +865,13 @@ def generate_motar_numbers(request):
 @login_required
 @require_http_methods(["POST"])
 def find_comman_pana_numbers(request):
-    """API endpoint to find SP numbers containing a specific digit"""
+    """API endpoint to find numbers containing a specific digit
+    Supports both Common Pana 36 (SP only) and Common Pana 56 (SP + DP)
+    """
     try:
         data = json.loads(request.body.decode('utf-8'))
         digit = data.get('digit')
+        bet_type = data.get('type', '36')  # '36' or '56', default to 36
         
         # Validate input
         if digit is None:
@@ -784,14 +881,21 @@ def find_comman_pana_numbers(request):
         if not digit_str.isdigit() or len(digit_str) != 1:
             return JsonResponse({'error': 'Digit must be a single digit (0-9)'}, status=400)
         
-        # Find SP numbers
-        numbers = find_sp_numbers_with_digit(digit)
+        # Find numbers based on type
+        if bet_type == '56':
+            numbers = find_sp_dp_numbers_with_digit(digit)
+            bet_name = 'Common Pana 56'
+        else:
+            numbers = find_sp_numbers_with_digit(digit)
+            bet_name = 'Common Pana 36'
         
         return JsonResponse({
             'success': True,
             'numbers': numbers,
             'count': len(numbers),
-            'digit': digit_str
+            'digit': digit_str,
+            'type': bet_type,
+            'bet_name': bet_name
         })
     
     except json.JSONDecodeError:
@@ -877,11 +981,12 @@ def place_motar_bet(request):
 @require_http_methods(["POST"])
 @transaction.atomic
 def place_comman_pana_bet(request):
-    """Place bulk Comman Pana bet - find SP numbers and place all bets in one transaction"""
+    """Place bulk Common Pana bet - supports both 36 (SP only) and 56 (SP + DP)"""
     try:
         data = json.loads(request.body.decode('utf-8'))
         digit = data.get('digit')
         amount = data.get('amount')
+        bet_type = data.get('type', '36')  # '36' or '56', default to 36
         
         # Validate input
         if digit is None:
@@ -898,16 +1003,25 @@ def place_comman_pana_bet(request):
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
         
-        # Find SP numbers server-side
-        numbers = find_sp_numbers_with_digit(digit)
+        # Find numbers based on type
+        if bet_type == '56':
+            numbers = find_sp_dp_numbers_with_digit(digit)
+            action_type = 'COMMAN_PANA_56'
+            bet_type_name = 'COMMAN_PANA_56'
+            message_type = 'Common Pana 56'
+        else:
+            numbers = find_sp_numbers_with_digit(digit)
+            action_type = 'COMMAN_PANA_36'
+            bet_type_name = 'COMMAN_PANA_36'
+            message_type = 'Common Pana 36'
         
         if not numbers:
-            return JsonResponse({'error': f'No SP numbers contain digit {digit}'}, status=400)
+            return JsonResponse({'error': f'No numbers contain digit {digit}'}, status=400)
         
-        # Create bulk action record for Comman Pana
+        # Create bulk action record
         bulk_action = BulkBetAction.objects.create(
             user=request.user,
-            action_type='COMMAN_PANA',
+            action_type=action_type,
             amount=amount,
             total_bets=len(numbers),
             jodi_type=int(digit)  # Store the digit in jodi_type field for reference
@@ -922,7 +1036,7 @@ def place_comman_pana_bet(request):
                 user=request.user,
                 number=str(number),
                 amount=amount,
-                bet_type='COMMAN_PANA',
+                bet_type=bet_type_name,
                 bulk_action=bulk_action
             )
             bet_ids.append(bet.id)
@@ -934,11 +1048,166 @@ def place_comman_pana_bet(request):
         
         return JsonResponse({
             'success': True,
-            'message': f'{len(numbers)} Comman Pana bets placed for digit {digit}',
+            'message': f'{len(numbers)} {message_type} bets placed for digit {digit}',
             'total_bets': len(numbers),
             'bet_ids': bet_ids,
             'bets': bets_created,
             'digit': digit_str,
+            'type': bet_type,
+            'bulk_action_id': bulk_action.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+@login_required
+@require_http_methods(['POST'])
+@transaction.atomic
+def place_set_pana_bet(request):
+    '''Place Set Pana bet - bets on all numbers in a family group'''
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        number = data.get('number')
+        amount = data.get('amount')
+        
+        # Validate inputs
+        if not number:
+            return JsonResponse({'error': 'Missing number'}, status=400)
+        
+        # Validate 3-digit number
+        number_str = str(number).strip()
+        if not number_str.isdigit() or len(number_str) != 3:
+            return JsonResponse({'error': 'Number must be exactly 3 digits'}, status=400)
+        
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
+        
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Find the family group
+        family_name, family_numbers = find_family_group_by_number(number)
+        
+        if not family_name:
+            return JsonResponse({
+                'error': f'Number {number} not found in any family group'
+            }, status=400)
+        
+        # Create bulk action record
+        bulk_action = BulkBetAction.objects.create(
+            user=request.user,
+            action_type='SET_PANA',
+            amount=amount,
+            total_bets=len(family_numbers)
+        )
+        
+        # Create bets for all numbers in the family
+        bet_ids = []
+        bets_created = []
+        
+        for num in family_numbers:
+            bet = Bet.objects.create(
+                user=request.user,
+                number=str(num),
+                amount=amount,
+                bet_type='SET_PANA',
+                bulk_action=bulk_action
+            )
+            bet_ids.append(bet.id)
+            bets_created.append({
+                'bet_id': bet.id,
+                'number': bet.number,
+                'amount': str(bet.amount)
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(family_numbers)} Set Pana bets placed for family {family_name}',
+            'total_bets': len(family_numbers),
+            'bet_ids': bet_ids,
+            'bets': bets_created,
+            'family_name': family_name,
+            'family_numbers': [str(n) for n in family_numbers],
+            'bulk_action_id': bulk_action.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def place_set_pana_bet(request):
+    """Place Set Pana bet - bets on all numbers in a family group"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        number = data.get('number')
+        amount = data.get('amount')
+        
+        # Validate inputs
+        if not number:
+            return JsonResponse({'error': 'Missing number'}, status=400)
+        
+        # Validate 3-digit number
+        number_str = str(number).strip()
+        if not number_str.isdigit() or len(number_str) != 3:
+            return JsonResponse({'error': 'Number must be exactly 3 digits'}, status=400)
+        
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
+        
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Find the family group
+        family_name, family_numbers = find_family_group_by_number(number)
+        
+        if not family_name:
+            return JsonResponse({
+                'error': f'Number {number} not found in any family group'
+            }, status=400)
+        
+        # Create bulk action record
+        bulk_action = BulkBetAction.objects.create(
+            user=request.user,
+            action_type='SET_PANA',
+            amount=amount,
+            total_bets=len(family_numbers)
+        )
+        
+        # Create bets for all numbers in the family
+        bet_ids = []
+        bets_created = []
+        
+        for num in family_numbers:
+            bet = Bet.objects.create(
+                user=request.user,
+                number=str(num),
+                amount=amount,
+                bet_type='SET_PANA',
+                bulk_action=bulk_action
+            )
+            bet_ids.append(bet.id)
+            bets_created.append({
+                'bet_id': bet.id,
+                'number': bet.number,
+                'amount': str(bet.amount)
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(family_numbers)} Set Pana bets placed for family {family_name}',
+            'total_bets': len(family_numbers),
+            'bet_ids': bet_ids,
+            'bets': bets_created,
+            'family_name': family_name,
+            'family_numbers': [str(n) for n in family_numbers],
             'bulk_action_id': bulk_action.id
         })
     
