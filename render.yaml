@@ -5,7 +5,8 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "./build.sh"
+    rootDir: .
+    buildCommand: "chmod +x build.sh && ./build.sh"
     startCommand: "gunicorn mymainserver.wsgi:application --bind 0.0.0.0:$PORT --timeout 120"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
