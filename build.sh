@@ -6,7 +6,10 @@ echo "=== Build script start ==="
 # Ensure python prints errors immediately
 export PYTHONUNBUFFERED=1
 
-# Install any build-time requirements if needed is handled by Render.
+# Install dependencies
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
 # Run migrations and collectstatic to prepare the app for production.
 echo "Running migrations..."
 python manage.py migrate --noinput
