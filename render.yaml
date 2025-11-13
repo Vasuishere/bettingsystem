@@ -2,7 +2,7 @@ services:
   - type: web
     name: bett-app
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "bash build.sh"
     startCommand: "gunicorn mymainserver.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
