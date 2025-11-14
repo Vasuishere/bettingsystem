@@ -211,7 +211,7 @@ def home(request):
 
 def logout_view(request):
     auth_logout(request)
-    return redirect('userbaseapp:login')
+    return redirect('/')
 
 
 @login_required

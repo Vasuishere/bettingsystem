@@ -66,6 +66,8 @@ MIDDLEWARE = [
 CSRF_COOKIE_HTTPONLY = False
 ROOT_URLCONF = 'mymainserver.urls'
 AUTH_USER_MODEL = 'userbaseapp.CustomUser'
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = 'userbaseapp:home'
 
 
 TEMPLATES = [
