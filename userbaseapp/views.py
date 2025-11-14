@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CustomUser, Bet, BulkBetAction
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page, cache_control
 from django.db import transaction
 from django.db.models import Sum
 from decimal import Decimal
@@ -202,6 +203,7 @@ def login_view(request):
 
 
 @login_required
+@cache_control(max_age=3600, private=True)
 def home(request):
     """Home page after successful login"""
     return render(request, 'userbaseapp/home.html', {
@@ -502,7 +504,7 @@ def place_bulk_bet(request):
 def load_bets(request):
     """Load all bets for the current user organized by number"""
     try:
-        user_bets = Bet.objects.filter(user=request.user).order_by('-created_at')
+        user_bets = Bet.objects.filter(user=request.user).select_related('user').order_by('-created_at')
         
         bets_dict = {}
         for bet in user_bets:
@@ -684,7 +686,7 @@ def get_bet_total(request):
 def get_bulk_action_history(request):
     """Get all bulk action history for the current user"""
     try:
-        bulk_actions = BulkBetAction.objects.filter(user=request.user).order_by('-created_at')
+        bulk_actions = BulkBetAction.objects.filter(user=request.user).select_related('user').order_by('-created_at')
         
         history_data = []
         for action in bulk_actions:

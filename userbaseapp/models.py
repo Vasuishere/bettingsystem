@@ -43,7 +43,7 @@ class Bet(models.Model):
     ]
     
     # Core fields
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets', db_index=True)
     number = models.CharField(max_length=10, db_index=True)  # "000", "999", "137", etc.
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -135,7 +135,7 @@ class BulkBetAction(models.Model):
     ]
     
     # Core fields
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bulk_actions')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bulk_actions', db_index=True)
     action_type = models.CharField(max_length=20, choices=ACTION_TYPES, db_index=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     total_bets = models.IntegerField(default=0)
