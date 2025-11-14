@@ -33,6 +33,12 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 if 'RENDER' in os.environ:
     ALLOWED_HOSTS.append(os.environ.get('RENDER_EXTERNAL_HOSTNAME'))
 
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://bettingsystem-1.onrender.com',
+    'https://*.onrender.com',
+]
+
 
 # Application definition
 
