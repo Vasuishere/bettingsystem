@@ -37,6 +37,7 @@ if 'RENDER' in os.environ:
 CSRF_TRUSTED_ORIGINS = [
     'https://bettingsystem-1.onrender.com',
     'https://*.onrender.com',
+    'https://bettingsystem-main-c89f941.kuberns.cloud',
 ]
 
 
