@@ -33,18 +33,10 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 if 'RENDER' in os.environ:
     ALLOWED_HOSTS.append(os.environ.get('RENDER_EXTERNAL_HOSTNAME'))
 
-# Add Deta Space domain
-if 'DETA_SPACE_APP_HOSTNAME' in os.environ:
-    ALLOWED_HOSTS.append(os.environ.get('DETA_SPACE_APP_HOSTNAME'))
-    ALLOWED_HOSTS.append('*.deta.app')
-    ALLOWED_HOSTS.append('*.deta.dev')
-
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     'https://bettingsystem-1.onrender.com',
     'https://*.onrender.com',
-    'https://*.deta.app',
-    'https://*.deta.dev',
 ]
 
 
