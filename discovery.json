@@ -1,0 +1,11 @@
+{
+  "name": "Betting System",
+  "description": "Django-based betting management system with real-time bet tracking",
+  "author": "Vasuishere",
+  "git": "https://github.com/Vasuishere/bettingsystem",
+  "homepage": "",
+  "primary_action": {
+    "type": "link",
+    "path": "/"
+  }
+}

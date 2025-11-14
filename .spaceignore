@@ -1,0 +1,26 @@
+# Deta Space ignore file
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.log
+db.sqlite3
+.env
+.env.local
+*.sqlite
+*.sqlite3
+.git/
+.gitignore
+*.md
+README.md
+node_modules/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
