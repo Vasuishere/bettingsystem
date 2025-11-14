@@ -153,6 +153,121 @@
             flex-shrink: 0;
         }
 
+        /* Loader Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            backdrop-filter: blur(4px);
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            --size: 30px;
+            --first-block-clr: #005bba;
+            --second-block-clr: #fed500;
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .spinner::after,
+        .spinner::before {
+            box-sizing: border-box;
+            position: absolute;
+            content: "";
+            width: var(--size);
+            height: var(--size);
+            top: 50%;
+            animation: up 2.4s cubic-bezier(0, 0, 0.24, 1.21) infinite;
+            left: 50%;
+            background: var(--first-block-clr);
+        }
+
+        .spinner::after {
+            background: var(--second-block-clr);
+            top: calc(50% - var(--size));
+            left: calc(50% - var(--size));
+            animation: down 2.4s cubic-bezier(0, 0, 0.24, 1.21) infinite;
+        }
+
+        .loader-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .loader-text {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        @keyframes down {
+            0%, 100% {
+                transform: none;
+            }
+            25% {
+                transform: translateX(100%);
+            }
+            50% {
+                transform: translateX(100%) translateY(100%);
+            }
+            75% {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes up {
+            0%, 100% {
+                transform: none;
+            }
+            25% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(-100%) translateY(-100%);
+            }
+            75% {
+                transform: translateY(-100%);
+            }
+        }
+
+        /* Disable pointer events during loading */
+        body.loading {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        body.loading .loader-overlay {
+            pointer-events: auto;
+        }
+
         .toast.success .toast-icon {
             background-color: #dcfce7;
             color: #16a34a;
@@ -239,6 +354,16 @@
 <body class="bg-gray-50 min-h-screen font-sans">
 
     <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loader Overlay -->
+    <div id="loaderOverlay" class="loader-overlay">
+        <div class="loader-container">
+            <div class="spinner">
+                <div class="loader-percentage" id="loaderPercentage">0%</div>
+            </div>
+            <div class="loader-text" id="loaderText">Loading...</div>
+        </div>
+    </div>
 
     <div class="max-w-7xl mx-auto p-4 sm:p-8">
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -940,6 +1065,32 @@
             let lastMotarBets = []; // Track last Motar bet IDs for undo
             let lastCommanPanaBets = []; // Track last Comman Pana bet IDs for undo
 
+            // Loader Functions
+            const loaderOverlay = document.getElementById('loaderOverlay');
+            const loaderPercentage = document.getElementById('loaderPercentage');
+            const loaderText = document.getElementById('loaderText');
+
+            function showLoader(text = 'Loading...', percentage = 0) {
+                loaderOverlay.classList.add('active');
+                document.body.classList.add('loading');
+                loaderText.textContent = text;
+                loaderPercentage.textContent = percentage + '%';
+            }
+
+            function updateLoader(percentage, text = null) {
+                loaderPercentage.textContent = percentage + '%';
+                if (text) {
+                    loaderText.textContent = text;
+                }
+            }
+
+            function hideLoader() {
+                loaderOverlay.classList.remove('active');
+                document.body.classList.remove('loading');
+                loaderPercentage.textContent = '0%';
+                loaderText.textContent = 'Loading...';
+            }
+
             // Modal Elements
             const modal = document.getElementById('universalModal');
             const closeModalBtn = document.getElementById('closeModal');
@@ -1356,60 +1507,78 @@
             }
 
             async function placeSingleBet(number, amount) {
-                const res = await fetch(API.PLACE_BET, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                    body: JSON.stringify({ number, amount })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    if (!bets[number]) bets[number] = { total: 0, history: [] };
-                    bets[number].total += parseFloat(amount);
-                    bets[number].history.push({ id: data.bet_id, amount: parseFloat(amount) });
-                    updateBetTotal(number);
+                showLoader('Placing bet...', 20);
+                try {
+                    updateLoader(40, 'Processing request...');
+                    const res = await fetch(API.PLACE_BET, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                        body: JSON.stringify({ number, amount })
+                    });
+                    updateLoader(70, 'Saving bet...');
+                    const data = await res.json();
+                    if (data.success) {
+                        if (!bets[number]) bets[number] = { total: 0, history: [] };
+                        bets[number].total += parseFloat(amount);
+                        bets[number].history.push({ id: data.bet_id, amount: parseFloat(amount) });
+                        updateBetTotal(number);
+                        updateLoader(100, 'Complete!');
+                    }
+                    return data;
+                } finally {
+                    setTimeout(() => hideLoader(), 300);
                 }
-                return data;
             }
 
             async function placeBulkBet(type, amount, column = null, jodiType = null, panelType = null) {
-                const payload = { type, amount };
-                if (type === 'JODI') {
-                    // Support both single column (number) and multiple columns (array)
-                    payload.columns = Array.isArray(column) ? column : [column];
-                    payload.jodi_type = jodiType;
-                } else if (type === 'DADAR') {
-                    // Support both single column (number) and multiple columns (array)
-                    payload.columns = Array.isArray(column) ? column : [column];
-                } else if (type === 'SINGLE' || type === 'SP' || type === 'DP') {
-                    // Support both single column (number) and multiple columns (array)
-                    if (column !== null) {
+                showLoader(`Placing ${type} bets...`, 10);
+                try {
+                    const payload = { type, amount };
+                    updateLoader(20, 'Preparing data...');
+                    if (type === 'JODI') {
+                        // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
+                        payload.jodi_type = jodiType;
+                    } else if (type === 'DADAR') {
+                        // Support both single column (number) and multiple columns (array)
+                        payload.columns = Array.isArray(column) ? column : [column];
+                    } else if (type === 'SINGLE' || type === 'SP' || type === 'DP') {
+                        // Support both single column (number) and multiple columns (array)
+                        if (column !== null) {
+                            payload.columns = Array.isArray(column) ? column : [column];
+                        }
+                    } else if (type === 'ABR_CUT') {
+                        // Support both single column (number) and multiple columns (array)
+                        payload.columns = Array.isArray(column) ? column : [column];
+                    } else if (type === 'JODI_PANEL') {
+                        // Support both single column (number) and multiple columns (array)
+                        payload.columns = Array.isArray(column) ? column : [column];
+                        payload.panel_type = panelType;
                     }
-                } else if (type === 'ABR_CUT') {
-                    // Support both single column (number) and multiple columns (array)
-                    payload.columns = Array.isArray(column) ? column : [column];
-                } else if (type === 'JODI_PANEL') {
-                    // Support both single column (number) and multiple columns (array)
-                    payload.columns = Array.isArray(column) ? column : [column];
-                    payload.panel_type = panelType;
-                }
-                const res = await fetch(API.PLACE_BULK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.success) {
-                    data.bets.forEach(bet => {
-                        const num = bet.number;
-                        if (!bets[num]) bets[num] = { total: 0, history: [] };
-                        bets[num].total += parseFloat(bet.amount);
-                        bets[num].history.push({ id: bet.id, amount: parseFloat(bet.amount) });
-                        updateBetTotal(num);
+                    updateLoader(40, 'Sending request...');
+                    const res = await fetch(API.PLACE_BULK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+                        body: JSON.stringify(payload)
                     });
-                    lastBulkAction = { id: data.bulk_action_id, type, total_bets: data.total_bets };
+                    updateLoader(60, 'Processing bets...');
+                    const data = await res.json();
+                    if (data.success) {
+                        updateLoader(80, 'Updating totals...');
+                        data.bets.forEach(bet => {
+                            const num = bet.number;
+                            if (!bets[num]) bets[num] = { total: 0, history: [] };
+                            bets[num].total += parseFloat(bet.amount);
+                            bets[num].history.push({ id: bet.id, amount: parseFloat(bet.amount) });
+                            updateBetTotal(num);
+                        });
+                        lastBulkAction = { id: data.bulk_action_id, type, total_bets: data.total_bets };
+                        updateLoader(100, 'Complete!');
+                    }
+                    return data;
+                } finally {
+                    setTimeout(() => hideLoader(), 300);
                 }
-                return data;
             }
 
             async function deleteBet(betId, number) {
@@ -2721,9 +2890,19 @@
             });
 
             // Initialize
-            await loadBets();
-            await getLastBulkAction();
-            await updateTotalAmount();
+            showLoader('Initializing...', 10);
+            try {
+                updateLoader(30, 'Loading bets...');
+                await loadBets();
+                updateLoader(70, 'Loading settings...');
+                await getLastBulkAction();
+                await updateTotalAmount();
+                updateLoader(100, 'Ready!');
+            } catch (err) {
+                console.error('Initialization error:', err);
+            } finally {
+                setTimeout(() => hideLoader(), 500);
+            }
         });
     </script>
 </body>
