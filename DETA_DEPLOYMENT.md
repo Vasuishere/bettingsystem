@@ -1,19 +1,34 @@
 # Deploy Django Betting System to Deta Space
 
 ## Prerequisites
-1. Install Space CLI: `curl -fsSL https://get.deta.dev/space-cli.sh | sh` (Linux/Mac) or download from https://deta.space/docs/en/build/quick-starts
+1. Download Space CLI from: https://github.com/deta/space-cli/releases
 2. Create Deta Space account at https://deta.space
 
-## Deployment Steps
+## Installation Methods
 
-### 1. Install Deta Space CLI
-```bash
-# Windows (PowerShell)
-iwr https://get.deta.dev/space-cli.ps1 -useb | iex
+### Method 1: Direct Download (Recommended for Windows)
+1. Go to https://github.com/deta/space-cli/releases/latest
+2. Download `space-cli-windows-amd64.exe`
+3. Rename it to `space.exe`
+4. Move it to `C:\Windows\System32\` or add to PATH
+5. Restart PowerShell and verify: `space version`
 
-# Verify installation
-space version
+### Method 2: Using Scoop (Windows Package Manager)
+```powershell
+# Install Scoop if you don't have it
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
+
+# Install Space CLI
+scoop bucket add deta https://github.com/deta/scoop-space-cli
+scoop install space-cli
 ```
+
+### Method 3: Manual Setup
+1. Download from https://github.com/deta/space-cli/releases
+2. Extract to a folder (e.g., `C:\space-cli\`)
+3. Add to PATH environment variable
+4. Restart PowerShell
 
 ### 2. Login to Deta Space
 ```bash
