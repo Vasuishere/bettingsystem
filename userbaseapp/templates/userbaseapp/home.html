@@ -348,6 +348,80 @@
             border-color: currentColor !important;
             background-color: rgba(var(--tw-color-rgb), 0.1);
         }
+
+        /* Sidebar Styles */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ffffff, #f9fafb);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .hamburger-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .hamburger-btn span {
+            width: 28px;
+            height: 3px;
+            background: #4f46e5;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover span {
+            background: #6366f1;
+        }
+
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
     </style>
 </head>
 
@@ -355,19 +429,165 @@
 
     <div id="toastContainer" class="toast-container"></div>
 
+    <!-- Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="p-6">
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-between mb-8 pb-4 border-b-2 border-indigo-200">
+                <h2 class="text-2xl font-bold text-indigo-700">Settings</h2>
+                <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Bazar Selector -->
+            <div class="mb-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <label for="bazarSelectorSidebar" class="text-lg font-bold text-gray-800">Select Bazar</label>
+                </div>
+                <select id="bazarSelectorSidebar" class="w-full px-4 py-3 border-2 border-indigo-300 rounded-lg focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 text-base font-semibold text-gray-700 bg-gradient-to-r from-indigo-50 to-blue-50 cursor-pointer shadow-md hover:shadow-lg transition-all">
+                    <option value="SRIDEVI_OPEN" selected>Sridevi Open</option>
+                    <option value="SRIDEVI_CLOSED">Sridevi Closed</option>
+                    <option value="TIME_OPEN">Time Open</option>
+                    <option value="TIME_CLOSED">Time Closed</option>
+                    <option value="DIVAS_MILAN_OPEN">Divas Milan Open</option>
+                    <option value="DIVAS_MILAN_CLOSED">Divas Milan Closed</option>
+                    <option value="KALYAN_OPEN">Kalyan Open</option>
+                    <option value="KALYAN_CLOSED">Kalyan Closed</option>
+                    <option value="NIGHT_MILAN_OPEN">Night Milan Open</option>
+                    <option value="NIGHT_MILAN_CLOSED">Night Milan Closed</option>
+                </select>
+                <div class="mt-2 px-3 py-2 bg-indigo-50 rounded-lg border border-indigo-200">
+                    <p class="text-sm text-gray-600">Current: <span class="font-bold text-indigo-700" id="currentBazarDisplaySidebar">Sridevi Open</span></p>
+                </div>
+            </div>
+
+            <!-- Date Selector -->
+            <div class="mb-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <label for="dateSelectorSidebar" class="text-lg font-bold text-gray-800">Select Date</label>
+                </div>
+                <select id="dateSelectorSidebar" class="w-full px-4 py-3 border-2 border-green-300 rounded-lg focus:ring-4 focus:ring-green-200 focus:border-green-500 text-base font-semibold text-gray-700 bg-gradient-to-r from-green-50 to-teal-50 cursor-pointer shadow-md hover:shadow-lg transition-all">
+                    <!-- Dates will be populated by JavaScript -->
+                </select>
+                <div class="mt-2 px-3 py-2 bg-green-50 rounded-lg border border-green-200">
+                    <p class="text-sm text-gray-600">Selected: <span class="font-bold text-green-700" id="currentDateDisplaySidebar">Today</span></p>
+                </div>
+            </div>
+
+            <!-- User Info -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
+                <div class="flex items-center gap-3 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <p class="text-gray-700 text-base font-medium">Logged in as:</p>
+                </div>
+                <p class="text-xl font-bold text-indigo-700 ml-9">{{ request.user.get_username }}</p>
+            </div>
+
+            <!-- Database Storage Info -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border-2 border-blue-200">
+                <div class="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                    </svg>
+                    <span class="text-sm font-semibold text-blue-700">Database Storage</span>
+                </div>
+                
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-600" id="storageUsed">Loading...</span>
+                        <span class="font-bold text-blue-700" id="storagePercentage">--%</span>
+                    </div>
+                    
+                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div id="storageProgressBar" class="h-3 rounded-full transition-all duration-500" style="width: 0%; background: linear-gradient(to right, #3b82f6, #06b6d4);"></div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500" id="databaseType">-</p>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <a href="{% url 'userbaseapp:logout' %}"
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+            </a>
+        </div>
+    </div>
+
     <!-- Loader Overlay -->
     <div id="loaderOverlay" class="loader-overlay">
         <div class="loader-container">
-            <div class="loader">
-                <div class="box1"></div>
-                <div class="box2"></div>
-                <div class="box3"></div>
+            <div class="spinner">
+                <div class="loader-percentage" id="loaderPercentage">0%</div>
             </div>
             <div class="loader-text" id="loaderText">Loading...</div>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto p-4 sm:p-8">
+        <!-- Header with Bazar Info (Left) and Action Buttons (Right) -->
+        <div class="mb-6 bg-white rounded-xl shadow-lg p-4 border-2 border-indigo-200 flex items-center justify-between flex-wrap gap-4">
+            <!-- Left Side: Bazar Name, Date, Total Balance -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border-2 border-indigo-300 shadow-sm">
+                    <span class="text-xs font-medium text-indigo-600">Bazar</span>
+                    <p class="text-sm font-bold text-indigo-800" id="currentBazarDisplay">Sridevi Open</p>
+                </div>
+                <div class="px-4 py-2 bg-gradient-to-r from-green-100 to-teal-100 rounded-lg border-2 border-green-300 shadow-sm">
+                    <span class="text-xs font-medium text-green-600">Date</span>
+                    <p class="text-sm font-bold text-green-800" id="currentDateDisplay">Today</p>
+                </div>
+                <!-- Desktop total balance -->
+                <div class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-300 shadow-sm flex-col">
+                    <span class="text-xs font-medium text-yellow-600">Total Balance</span>
+                    <p class="text-lg font-bold text-orange-700" id="totalBalance">₹0</p>
+                </div>
+                <!-- Mobile total balance -->
+                <div class="sm:hidden px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-300 shadow-sm">
+                    <span class="text-xs font-medium text-yellow-600">Balance</span>
+                    <p class="text-lg font-bold text-orange-700" id="totalBalanceMobile">₹0</p>
+                </div>
+            </div>
+            
+            <!-- Right Side: History, Quick Bet, Hamburger Menu -->
+            <div class="flex items-center gap-2">
+                <button id="toggleHistoryBtn" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="hidden sm:inline">History</span>
+                </button>
+                <button id="toggleQuickBetBtn" class="px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-medium rounded-lg shadow-md transition-all duration-200 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    <span class="hidden sm:inline">Quick Bet</span>
+                </button>
+                <button id="openSidebar" class="hamburger-btn" aria-label="Open menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
                 <button id="page-1-btn"
@@ -378,33 +598,6 @@
                     class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All DP</strong>
                 </button>
-            </div>
-            <div class="flex items-center gap-4">
-                <button id="toggleHistoryBtn"
-                    class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg font-medium rounded-lg text-sm px-4 py-2.5 flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    History
-                </button>
-                <button id="toggleQuickBetBtn"
-                    class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-4 py-2.5 flex items-center gap-2 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Quick Bet
-                </button>
-                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg shadow-md">
-                    <p class="text-xs font-medium">Total Balance</p>
-                    <p class="text-xl font-bold" id="totalBalance">₹0</p>
-                </div>
-                <div class="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-inner border border-gray-200">
-                    <p class="text-gray-700 text-sm sm:text-base font-medium">
-                        Welcome, <span class="font-semibold text-indigo-700">{{ request.user.get_username }}</span>
-                    </p>
-                    <a href="{% url 'userbaseapp:logout' %}"
-                        class="px-3 py-1 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition text-sm">Logout</a>
-                </div>
             </div>
         </div>
 
@@ -1043,6 +1236,24 @@
                 PLACE_COMMAN_PANA: '/place-comman-pana-bet/',
                 PLACE_SET_PANA: '/place-set-pana-bet/',
                 GET_BULK_HISTORY: '/get-bulk-action-history/',
+                GET_DATABASE_STORAGE: '/get-database-storage/',
+            };
+
+            // Bazar and Date State
+            let currentBazar = 'SRIDEVI_OPEN';
+            let currentDate = new Date().toISOString().split('T')[0];
+            
+            const bazarNames = {
+                'SRIDEVI_OPEN': 'Sridevi Open',
+                'SRIDEVI_CLOSED': 'Sridevi Closed',
+                'TIME_OPEN': 'Time Open',
+                'TIME_CLOSED': 'Time Closed',
+                'DIVAS_MILAN_OPEN': 'Divas Milan Open',
+                'DIVAS_MILAN_CLOSED': 'Divas Milan Closed',
+                'KALYAN_OPEN': 'Kalyan Open',
+                'KALYAN_CLOSED': 'Kalyan Closed',
+                'NIGHT_MILAN_OPEN': 'Night Milan Open',
+                'NIGHT_MILAN_CLOSED': 'Night Milan Closed'
             };
 
             const rowLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
@@ -1066,20 +1277,28 @@
             let selectedAbrColumns = []; // Array to store selected columns for multi-selection
             let lastMotarBets = []; // Track last Motar bet IDs for undo
             let lastCommanPanaBets = []; // Track last Comman Pana bet IDs for undo
+            let currentPage = 1; // Initialize current page to 1 (All SP)
 
             // Loader Functions
             const loaderOverlay = document.getElementById('loaderOverlay');
             const loaderText = document.getElementById('loaderText');
+            const loaderPercentage = document.getElementById('loaderPercentage');
 
-            function showLoader(text = 'Loading...') {
+            function showLoader(text = 'Loading...', percentage = 0) {
                 loaderOverlay.classList.add('active');
                 document.body.classList.add('loading');
                 loaderText.textContent = text;
+                if (loaderPercentage) {
+                    loaderPercentage.textContent = percentage + '%';
+                }
             }
 
-            function updateLoader(text) {
+            function updateLoader(text, percentage = null) {
                 if (text) {
                     loaderText.textContent = text;
+                }
+                if (percentage !== null && loaderPercentage) {
+                    loaderPercentage.textContent = percentage + '%';
                 }
             }
 
@@ -1087,6 +1306,9 @@
                 loaderOverlay.classList.remove('active');
                 document.body.classList.remove('loading');
                 loaderText.textContent = 'Loading...';
+                if (loaderPercentage) {
+                    loaderPercentage.textContent = '0%';
+                }
             }
 
             // Modal Elements
@@ -1482,25 +1704,29 @@
             // API Functions
             async function loadBets() {
                 try {
-                    const res = await fetch(API.LOAD_BETS);
+                    const res = await fetch(`${API.LOAD_BETS}?bazar=${currentBazar}&date=${currentDate}`);
                     const data = await res.json();
                     if (data.success) {
                         bets = data.bets;
-                        renderPage(1);
+                        renderPage(currentPage);
+                    } else {
+                        console.error('Load bets failed:', data);
                     }
                 } catch (err) {
                     console.error('Error loading bets:', err);
+                    throw err; // Re-throw to be caught by Promise.allSettled
                 }
             }
 
             async function getLastBulkAction() {
                 try {
-                    const res = await fetch(API.GET_LAST_BULK);
+                    const res = await fetch(`${API.GET_LAST_BULK}?bazar=${currentBazar}&date=${currentDate}`);
                     const data = await res.json();
                     lastBulkAction = data.has_action ? data.action : null;
                     updateUndoButton();
                 } catch (err) {
                     console.error('Error getting last bulk:', err);
+                    throw err; // Re-throw to be caught by Promise.allSettled
                 }
             }
 
@@ -1511,7 +1737,7 @@
                     const res = await fetch(API.PLACE_BET, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
-                        body: JSON.stringify({ number, amount })
+                        body: JSON.stringify({ number, amount, bazar: currentBazar, date: currentDate })
                     });
                     updateLoader('Saving bet...');
                     const data = await res.json();
@@ -1531,7 +1757,7 @@
             async function placeBulkBet(type, amount, column = null, jodiType = null, panelType = null) {
                 showLoader(`Placing ${type} bets...`, 10);
                 try {
-                    const payload = { type, amount };
+                    const payload = { type, amount, bazar: currentBazar, date: currentDate };
                     updateLoader('Preparing data...');
                     if (type === 'JODI') {
                         // Support both single column (number) and multiple columns (array)
@@ -1688,11 +1914,14 @@
 
             async function updateTotalAmount() {
                 try {
-                    const res = await fetch(API.GET_BET_TOTAL);
+                    const res = await fetch(`${API.GET_BET_TOTAL}?bazar=${currentBazar}&date=${currentDate}`);
                     const data = await res.json();
                     if (data.success) {
+                        const totalAmount = `₹${parseFloat(data.total_amount).toLocaleString('en-IN')}`;
                         const totalElement = document.getElementById('totalBalance');
-                        totalElement.textContent = `₹${parseFloat(data.total_amount).toLocaleString('en-IN')}`;
+                        const totalElementMobile = document.getElementById('totalBalanceMobile');
+                        if (totalElement) totalElement.textContent = totalAmount;
+                        if (totalElementMobile) totalElementMobile.textContent = totalAmount;
                     }
                 } catch (err) {
                     console.error('Error fetching total amount:', err);
@@ -1935,7 +2164,9 @@
                             },
                             body: JSON.stringify({ 
                                 digits: motarInput,
-                                amount: amount
+                                amount: amount,
+                                bazar: currentBazar,
+                                date: currentDate
                             })
                         });
                         
@@ -2011,7 +2242,9 @@
                             body: JSON.stringify({ 
                                 digit: parseInt(digitInput),
                                 amount: amount,
-                                type: betType
+                                type: betType,
+                                bazar: currentBazar,
+                                date: currentDate
                             })
                         });
                         
@@ -2084,7 +2317,9 @@
                             },
                             body: JSON.stringify({ 
                                 number: parseInt(numberInput),
-                                amount: amount
+                                amount: amount,
+                                bazar: currentBazar,
+                                date: currentDate
                             })
                         });
                         
@@ -2880,6 +3115,232 @@
                 showToast('Refreshed', 'History data updated', 'success');
             });
 
+            // Sidebar functions
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebar');
+            const closeSidebarBtn = document.getElementById('closeSidebar');
+            const bazarSelectorSidebar = document.getElementById('bazarSelectorSidebar');
+            const dateSelectorSidebar = document.getElementById('dateSelectorSidebar');
+
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+                openSidebarBtn.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                openSidebarBtn.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            openSidebarBtn.addEventListener('click', openSidebar);
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // Load database storage info
+            async function loadDatabaseStorage() {
+                try {
+                    const res = await fetch(API.GET_DATABASE_STORAGE);
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        const storageUsed = document.getElementById('storageUsed');
+                        const storagePercentage = document.getElementById('storagePercentage');
+                        const storageProgressBar = document.getElementById('storageProgressBar');
+                        const databaseType = document.getElementById('databaseType');
+                        
+                        storageUsed.textContent = `${data.storage_used_mb} MB / ${data.storage_total_mb} MB`;
+                        storagePercentage.textContent = `${data.percentage}%`;
+                        storageProgressBar.style.width = `${Math.min(data.percentage, 100)}%`;
+                        databaseType.textContent = data.database_type;
+                        
+                        // Change color based on usage
+                        if (data.percentage >= 90) {
+                            storageProgressBar.style.background = 'linear-gradient(to right, #ef4444, #dc2626)'; // Red
+                        } else if (data.percentage >= 70) {
+                            storageProgressBar.style.background = 'linear-gradient(to right, #f59e0b, #d97706)'; // Orange
+                        } else {
+                            storageProgressBar.style.background = 'linear-gradient(to right, #3b82f6, #06b6d4)'; // Blue
+                        }
+                    } else {
+                        console.error('Failed to load storage info:', data.error);
+                        document.getElementById('storageUsed').textContent = 'Error loading';
+                    }
+                } catch (err) {
+                    console.error('Error loading database storage:', err);
+                    document.getElementById('storageUsed').textContent = 'N/A';
+                }
+            }
+
+            // Populate last 10 days dates (both main and sidebar)
+            function populateDates() {
+                const dateSelectors = [dateSelectorSidebar];
+                const today = new Date();
+                
+                dateSelectors.forEach(dateSelector => {
+                    // Clear existing options
+                    dateSelector.innerHTML = '';
+                    
+                    for (let i = 0; i < 10; i++) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() - i);
+                        const dateStr = date.toISOString().split('T')[0];
+                        const option = document.createElement('option');
+                        option.value = dateStr;
+                        
+                        if (i === 0) {
+                            option.textContent = 'Today (' + date.toLocaleDateString() + ')';
+                            option.selected = true;
+                        } else if (i === 1) {
+                            option.textContent = 'Yesterday (' + date.toLocaleDateString() + ')';
+                        } else {
+                            option.textContent = date.toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            });
+                        }
+                        
+                        dateSelector.appendChild(option);
+                    }
+                });
+            }
+
+            // Update display text
+            function updateBazarDateDisplay() {
+                const bazarDisplay = document.getElementById('currentBazarDisplay');
+                const dateDisplay = document.getElementById('currentDateDisplay');
+                const bazarDisplaySidebar = document.getElementById('currentBazarDisplaySidebar');
+                const dateDisplaySidebar = document.getElementById('currentDateDisplaySidebar');
+                
+                const displayText = bazarNames[currentBazar];
+                const dateText = dateSelectorSidebar.options[dateSelectorSidebar.selectedIndex].text;
+                
+                bazarDisplay.textContent = displayText;
+                dateDisplay.textContent = dateText;
+                bazarDisplaySidebar.textContent = displayText;
+                dateDisplaySidebar.textContent = dateText;
+                
+                // Sync selectors
+                bazarSelectorSidebar.value = currentBazar;
+                dateSelectorSidebar.value = currentDate;
+            }
+
+            // Bazar change handler (sidebar)
+            bazarSelectorSidebar.addEventListener('change', async function(e) {
+                const newBazar = e.target.value;
+                
+                // Prevent duplicate execution
+                if (newBazar === currentBazar) {
+                    return;
+                }
+                
+                try {
+                    showLoader('Switching bazar...', 0);
+                    console.log('Switching from', currentBazar, 'to', newBazar);
+                    
+                    currentBazar = newBazar;
+                    updateBazarDateDisplay();
+                    
+                    // Close sidebar
+                    closeSidebar();
+                    
+                    // Clear current data immediately for instant feedback
+                    bets = {};
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
+                    
+                    // Reset page to 1
+                    currentPage = 1;
+                    
+                    // Reload all data for new bazar in parallel
+                    updateLoader('Loading bets...', 33);
+                    const [betsResult, bulkResult, totalResult] = await Promise.allSettled([
+                        loadBets(),
+                        getLastBulkAction(),
+                        updateTotalAmount()
+                    ]);
+                    
+                    updateLoader('Processing data...', 80);
+                    // Check for errors
+                    const errors = [betsResult, bulkResult, totalResult].filter(r => r.status === 'rejected');
+                    if (errors.length > 0) {
+                        console.error('Errors during bazar switch:', errors);
+                    }
+                    
+                    updateLoader('Complete!', 100);
+                    hideLoader();
+                    showToast('Bazar Changed', `Switched to ${bazarNames[currentBazar]}`, 'success');
+                    console.log('Bazar switch complete');
+                } catch (error) {
+                    console.error('Error switching bazar:', error);
+                    hideLoader();
+                    showToast('Error', 'Failed to switch bazar. Please try again.', 'error');
+                    // Revert to previous bazar on error
+                    e.target.value = currentBazar;
+                    updateBazarDateDisplay();
+                }
+            });
+
+            // Date change handler (sidebar)
+            dateSelectorSidebar.addEventListener('change', async function(e) {
+                const newDate = e.target.value;
+                
+                // Prevent duplicate execution
+                if (newDate === currentDate) {
+                    return;
+                }
+                
+                try {
+                    showLoader('Loading data...', 0);
+                    console.log('Changing from', currentDate, 'to', newDate);
+                    
+                    currentDate = newDate;
+                    updateBazarDateDisplay();
+                    
+                    // Close sidebar
+                    closeSidebar();
+                    
+                    // Clear current data immediately for instant feedback
+                    bets = {};
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
+                    
+                    // Reset page to 1
+                    currentPage = 1;
+                    
+                    // Reload all data for new date in parallel
+                    updateLoader('Loading bets...', 33);
+                    const [betsResult, bulkResult, totalResult] = await Promise.allSettled([
+                        loadBets(),
+                        getLastBulkAction(),
+                        updateTotalAmount()
+                    ]);
+                    
+                    updateLoader('Processing data...', 80);
+                    // Check for errors
+                    const errors = [betsResult, bulkResult, totalResult].filter(r => r.status === 'rejected');
+                    if (errors.length > 0) {
+                        console.error('Errors during date change:', errors);
+                    }
+                    
+                    updateLoader('Complete!', 100);
+                    hideLoader();
+                    const selectedText = e.target.options[e.target.selectedIndex].text;
+                    showToast('Date Changed', `Showing data for ${selectedText}`, 'success');
+                    console.log('Date change complete');
+                } catch (error) {
+                    console.error('Error changing date:', error);
+                    hideLoader();
+                    showToast('Error', 'Failed to load data. Please try again.', 'error');
+                    // Revert to previous date on error
+                    e.target.value = currentDate;
+                    updateBazarDateDisplay();
+                }
+            });
+
             // Close modal on outside click
             historyModal.addEventListener('click', function(e) {
                 if (e.target === historyModal) {
@@ -2887,15 +3348,22 @@
                 }
             });
 
+            // Initialize dates
+            populateDates();
+            updateBazarDateDisplay();
+            
+            // Load database storage info
+            loadDatabaseStorage();
+
             // Initialize
-            showLoader('Initializing...');
+            showLoader('Initializing...', 0);
             try {
-                updateLoader('Loading bets...');
-                await loadBets();
-                updateLoader('Loading settings...');
+                updateLoader('Loading bets...', 25);
+                await loadBets(); // This calls renderPage(currentPage) internally
+                updateLoader('Loading settings...', 60);
                 await getLastBulkAction();
                 await updateTotalAmount();
-                updateLoader('Ready!');
+                updateLoader('Ready!', 100);
             } catch (err) {
                 console.error('Initialization error:', err);
             } finally {

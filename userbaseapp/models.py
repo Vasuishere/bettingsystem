@@ -42,12 +42,29 @@ class Bet(models.Model):
         ('PENDING', 'Pending'),
     ]
     
+    BAZAR_CHOICES = [
+        ('SRIDEVI_OPEN', 'Sridevi Open'),
+        ('SRIDEVI_CLOSED', 'Sridevi Closed'),
+        ('TIME_OPEN', 'Time Open'),
+        ('TIME_CLOSED', 'Time Closed'),
+        ('DIVAS_MILAN_OPEN', 'Divas Milan Open'),
+        ('DIVAS_MILAN_CLOSED', 'Divas Milan Closed'),
+        ('KALYAN_OPEN', 'Kalyan Open'),
+        ('KALYAN_CLOSED', 'Kalyan Closed'),
+        ('NIGHT_MILAN_OPEN', 'Night Milan Open'),
+        ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
+    ]
+    
     # Core fields
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bets', db_index=True)
     number = models.CharField(max_length=10, db_index=True)  # "000", "999", "137", etc.
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # Bazar and Date
+    bazar = models.CharField(max_length=30, choices=BAZAR_CHOICES, default='SRIDEVI_OPEN', db_index=True)
+    bet_date = models.DateField(default=timezone.now, db_index=True)  # Date of bet placement
     
     # Bulk action tracking
     bulk_action = models.ForeignKey(
@@ -94,6 +111,8 @@ class Bet(models.Model):
             models.Index(fields=['bet_type', 'column_number']),
             models.Index(fields=['bulk_action', 'created_at']),
             models.Index(fields=['family_group', 'bet_type']),
+            models.Index(fields=['user', 'bazar', 'bet_date']),
+            models.Index(fields=['bazar', 'bet_date']),
         ]
         verbose_name = 'Bet'
         verbose_name_plural = 'Bets'
@@ -134,12 +153,29 @@ class BulkBetAction(models.Model):
         ('COMPLETED', 'Completed'),
     ]
     
+    BAZAR_CHOICES = [
+        ('SRIDEVI_OPEN', 'Sridevi Open'),
+        ('SRIDEVI_CLOSED', 'Sridevi Closed'),
+        ('TIME_OPEN', 'Time Open'),
+        ('TIME_CLOSED', 'Time Closed'),
+        ('DIVAS_MILAN_OPEN', 'Divas Milan Open'),
+        ('DIVAS_MILAN_CLOSED', 'Divas Milan Closed'),
+        ('KALYAN_OPEN', 'Kalyan Open'),
+        ('KALYAN_CLOSED', 'Kalyan Closed'),
+        ('NIGHT_MILAN_OPEN', 'Night Milan Open'),
+        ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
+    ]
+    
     # Core fields
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bulk_actions', db_index=True)
     action_type = models.CharField(max_length=20, choices=ACTION_TYPES, db_index=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     total_bets = models.IntegerField(default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Total amount across all bets
+    
+    # Bazar and Date
+    bazar = models.CharField(max_length=30, choices=BAZAR_CHOICES, default='SRIDEVI_OPEN', db_index=True)
+    action_date = models.DateField(default=timezone.now, db_index=True)
     
     # Column and type tracking
     jodi_column = models.IntegerField(null=True, blank=True, db_index=True)  # 1-10 (used for first column in multi-column)
@@ -177,6 +213,8 @@ class BulkBetAction(models.Model):
             models.Index(fields=['user', 'status']),
             models.Index(fields=['action_type', 'created_at']),
             models.Index(fields=['is_undone', 'status']),
+            models.Index(fields=['user', 'bazar', 'action_date']),
+            models.Index(fields=['bazar', 'action_date']),
         ]
         verbose_name = 'Bulk Bet Action'
         verbose_name_plural = 'Bulk Bet Actions'

@@ -7,10 +7,11 @@ from .models import CustomUser, Bet, BulkBetAction
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page, cache_control
-from django.db import transaction
+from django.db import transaction, connection
 from django.db.models import Sum
 from decimal import Decimal
 import json
+import os
 
 
 # Jodi Vagar number mappings
@@ -224,6 +225,8 @@ def place_bet(request):
         data = json.loads(request.body.decode('utf-8'))
         number = data.get('number')
         amount = data.get('amount')
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
 
         if not number or not amount:
             return JsonResponse({'error': 'Missing number or amount'}, status=400)
@@ -232,11 +235,20 @@ def place_bet(request):
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
 
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+
         bet = Bet.objects.create(
             user=request.user,
             number=str(number),
             amount=amount,
-            bet_type='SINGLE'
+            bet_type='SINGLE',
+            bazar=bazar,
+            bet_date=bet_date
         )
 
         return JsonResponse({
@@ -262,6 +274,8 @@ def place_bulk_bet(request):
         data = json.loads(request.body.decode('utf-8'))
         bet_type = data.get('type')  # 'SP', 'DP', 'JODI', 'DADAR', 'EKI', 'BEKI', or 'ABR_CUT'
         amount = data.get('amount')
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
 
         if not bet_type or not amount:
             return JsonResponse({'error': 'Missing type or amount'}, status=400)
@@ -269,6 +283,13 @@ def place_bulk_bet(request):
         amount = Decimal(str(amount))
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
 
         # Determine which numbers to bet on
         if bet_type == 'SP':
@@ -408,7 +429,9 @@ def place_bulk_bet(request):
             amount=amount,
             total_bets=len(numbers),
             jodi_column=jodi_column,
-            jodi_type=data.get('jodi_type') if bet_type == 'JODI' else (data.get('panel_type') if bet_type == 'JODI_PANEL' else None)
+            jodi_type=data.get('jodi_type') if bet_type == 'JODI' else (data.get('panel_type') if bet_type == 'JODI_PANEL' else None),
+            bazar=bazar,
+            action_date=bet_date
         )
 
         # Create all bets
@@ -474,7 +497,9 @@ def place_bulk_bet(request):
                 bulk_action=bulk_action,
                 bet_type=bet_type,
                 column_number=column_num,
-                sub_type=sub_type
+                sub_type=sub_type,
+                bazar=bazar,
+                bet_date=bet_date
             )
             bets_created.append({
                 'id': bet.id,
@@ -504,7 +529,25 @@ def place_bulk_bet(request):
 def load_bets(request):
     """Load all bets for the current user organized by number"""
     try:
-        user_bets = Bet.objects.filter(user=request.user).select_related('user').order_by('-created_at')
+        bazar = request.GET.get('bazar', 'SRIDEVI_OPEN')
+        date_str = request.GET.get('date')
+        
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
+        # Optimized query - only fetch needed fields and use index
+        user_bets = Bet.objects.filter(
+            user=request.user,
+            bazar=bazar,
+            bet_date=bet_date
+        ).only(
+            'id', 'number', 'amount', 'created_at', 
+            'bet_type', 'column_number', 'sub_type'
+        ).order_by('-created_at')
         
         bets_dict = {}
         for bet in user_bets:
@@ -615,9 +658,25 @@ def undo_bulk_action(request):
 def get_last_bulk_action(request):
     """Get the last bulk action for undo button visibility"""
     try:
+        bazar = request.GET.get('bazar', 'SRIDEVI_OPEN')
+        date_str = request.GET.get('date')
+        
+        # Parse date if provided
+        from django.utils import timezone
+        action_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            action_date = datetime.fromisoformat(date_str).date()
+        
+        # Optimized query - only fetch needed fields
         last_action = BulkBetAction.objects.filter(
             user=request.user,
-            is_undone=False
+            is_undone=False,
+            bazar=bazar,
+            action_date=action_date
+        ).only(
+            'id', 'action_type', 'amount', 'total_bets',
+            'jodi_column', 'jodi_type', 'created_at'
         ).first()
         
         if not last_action:
@@ -669,10 +728,26 @@ def get_bet_summary(request):
 @login_required
 def get_bet_total(request):
     try:
-        total_amount = Bet.objects.filter(user=request.user).aggregate(Sum('amount'))['amount__sum'] or 0
+        bazar = request.GET.get('bazar', 'SRIDEVI_OPEN')
+        date_str = request.GET.get('date')
+        
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
+        # Optimized aggregation - uses database-level SUM for better performance
+        total_amount = Bet.objects.filter(
+            user=request.user,
+            bazar=bazar,
+            bet_date=bet_date
+        ).aggregate(total=Sum('amount'))['total'] or 0
+        
         return JsonResponse({
             'success': True,
-            'total_amount': total_amount
+            'total_amount': float(total_amount)
         })
     except Exception as e:
         return JsonResponse({
@@ -915,6 +990,8 @@ def place_motar_bet(request):
         data = json.loads(request.body.decode('utf-8'))
         digits = data.get('digits', '')
         amount = data.get('amount')
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
         
         # Validate input
         if not digits or not digits.isdigit():
@@ -930,6 +1007,13 @@ def place_motar_bet(request):
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
         
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
         # Generate numbers server-side
         numbers = generate_three_digit_numbers(digits)
         
@@ -941,7 +1025,9 @@ def place_motar_bet(request):
             user=request.user,
             action_type='MOTAR',
             amount=amount,
-            total_bets=len(numbers)
+            total_bets=len(numbers),
+            bazar=bazar,
+            action_date=bet_date
         )
         
         # Create bets and track IDs for undo functionality
@@ -954,7 +1040,9 @@ def place_motar_bet(request):
                 number=str(number),
                 amount=amount,
                 bet_type='MOTAR',
-                bulk_action=bulk_action
+                bulk_action=bulk_action,
+                bazar=bazar,
+                bet_date=bet_date
             )
             bet_ids.append(bet.id)
             bets_created.append({
@@ -989,6 +1077,8 @@ def place_comman_pana_bet(request):
         digit = data.get('digit')
         amount = data.get('amount')
         bet_type = data.get('type', '36')  # '36' or '56', default to 36
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
         
         # Validate input
         if digit is None:
@@ -1004,6 +1094,13 @@ def place_comman_pana_bet(request):
         amount = Decimal(str(amount))
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
         
         # Find numbers based on type
         if bet_type == '56':
@@ -1026,7 +1123,9 @@ def place_comman_pana_bet(request):
             action_type=action_type,
             amount=amount,
             total_bets=len(numbers),
-            jodi_type=int(digit)  # Store the digit in jodi_type field for reference
+            jodi_type=int(digit),  # Store the digit in jodi_type field for reference
+            bazar=bazar,
+            action_date=bet_date
         )
         
         # Create bets and track IDs for undo functionality
@@ -1039,7 +1138,9 @@ def place_comman_pana_bet(request):
                 number=str(number),
                 amount=amount,
                 bet_type=bet_type_name,
-                bulk_action=bulk_action
+                bulk_action=bulk_action,
+                bazar=bazar,
+                bet_date=bet_date
             )
             bet_ids.append(bet.id)
             bets_created.append({
@@ -1074,6 +1175,8 @@ def place_set_pana_bet(request):
         data = json.loads(request.body.decode('utf-8'))
         number = data.get('number')
         amount = data.get('amount')
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
         
         # Validate inputs
         if not number:
@@ -1091,6 +1194,13 @@ def place_set_pana_bet(request):
         if amount <= 0:
             return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
         
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
         # Find the family group
         family_name, family_numbers = find_family_group_by_number(number)
         
@@ -1104,7 +1214,9 @@ def place_set_pana_bet(request):
             user=request.user,
             action_type='SET_PANA',
             amount=amount,
-            total_bets=len(family_numbers)
+            total_bets=len(family_numbers),
+            bazar=bazar,
+            action_date=bet_date
         )
         
         # Create bets for all numbers in the family
@@ -1117,7 +1229,9 @@ def place_set_pana_bet(request):
                 number=str(num),
                 amount=amount,
                 bet_type='SET_PANA',
-                bulk_action=bulk_action
+                bulk_action=bulk_action,
+                bazar=bazar,
+                bet_date=bet_date
             )
             bet_ids.append(bet.id)
             bets_created.append({
@@ -1141,3 +1255,61 @@ def place_set_pana_bet(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_database_storage(request):
+    """Get database storage usage information"""
+    try:
+        # Check if using PostgreSQL (production/Aiven) or SQLite (development)
+        db_engine = connection.settings_dict['ENGINE']
+        
+        if 'postgresql' in db_engine:
+            # For PostgreSQL (Aiven)
+            with connection.cursor() as cursor:
+                # Get database size in bytes
+                cursor.execute("SELECT pg_database_size(current_database());")
+                size_bytes = cursor.fetchone()[0]
+                
+            # Convert to MB
+            size_mb = size_bytes / (1024 * 1024)
+            # Aiven free tier limit: 1 GB = 1024 MB
+            max_storage_mb = 1024
+            percentage = (size_mb / max_storage_mb) * 100
+            
+            return JsonResponse({
+                'success': True,
+                'storage_used_mb': round(size_mb, 2),
+                'storage_total_mb': max_storage_mb,
+                'percentage': round(percentage, 2),
+                'database_type': 'PostgreSQL (Aiven)'
+            })
+        else:
+            # For SQLite (development)
+            db_path = connection.settings_dict['NAME']
+            if os.path.exists(db_path):
+                size_bytes = os.path.getsize(db_path)
+                size_mb = size_bytes / (1024 * 1024)
+                # Use same 1GB limit for consistency
+                max_storage_mb = 1024
+                percentage = (size_mb / max_storage_mb) * 100
+                
+                return JsonResponse({
+                    'success': True,
+                    'storage_used_mb': round(size_mb, 2),
+                    'storage_total_mb': max_storage_mb,
+                    'percentage': round(percentage, 2),
+                    'database_type': 'SQLite (Development)'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Database file not found'
+                }, status=404)
+                
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)

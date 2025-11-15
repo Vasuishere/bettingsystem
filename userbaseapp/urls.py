@@ -45,4 +45,7 @@ urlpatterns = [
     path('get-bet-summary/', views.get_bet_summary, name='get_bet_summary'),
     path('get-bet-total/', views.get_bet_total, name='get_bet_total'),
     path('get-bulk-action-history/', views.get_bulk_action_history, name='get_bulk_action_history'),
+    
+    # Database storage info
+    path('get-database-storage/', views.get_database_storage, name='get_database_storage'),
 ]
