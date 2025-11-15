@@ -39,3 +39,8 @@ Thumbs.db
 # Static files (if collected)
 /staticfiles/
 /static_root/
+
+# Desktop App (don't upload to GitHub)
+desktop_app/
+desktop_app/**
+!desktop_app/README.md
