@@ -358,8 +358,10 @@
     <!-- Loader Overlay -->
     <div id="loaderOverlay" class="loader-overlay">
         <div class="loader-container">
-            <div class="spinner">
-                <div class="loader-percentage" id="loaderPercentage">0%</div>
+            <div class="loader">
+                <div class="box1"></div>
+                <div class="box2"></div>
+                <div class="box3"></div>
             </div>
             <div class="loader-text" id="loaderText">Loading...</div>
         </div>
@@ -1067,18 +1069,15 @@
 
             // Loader Functions
             const loaderOverlay = document.getElementById('loaderOverlay');
-            const loaderPercentage = document.getElementById('loaderPercentage');
             const loaderText = document.getElementById('loaderText');
 
-            function showLoader(text = 'Loading...', percentage = 0) {
+            function showLoader(text = 'Loading...') {
                 loaderOverlay.classList.add('active');
                 document.body.classList.add('loading');
                 loaderText.textContent = text;
-                loaderPercentage.textContent = percentage + '%';
             }
 
-            function updateLoader(percentage, text = null) {
-                loaderPercentage.textContent = percentage + '%';
+            function updateLoader(text) {
                 if (text) {
                     loaderText.textContent = text;
                 }
@@ -1087,7 +1086,6 @@
             function hideLoader() {
                 loaderOverlay.classList.remove('active');
                 document.body.classList.remove('loading');
-                loaderPercentage.textContent = '0%';
                 loaderText.textContent = 'Loading...';
             }
 
@@ -1507,22 +1505,22 @@
             }
 
             async function placeSingleBet(number, amount) {
-                showLoader('Placing bet...', 20);
+                showLoader('Placing bet...');
                 try {
-                    updateLoader(40, 'Processing request...');
+                    updateLoader('Processing request...');
                     const res = await fetch(API.PLACE_BET, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                         body: JSON.stringify({ number, amount })
                     });
-                    updateLoader(70, 'Saving bet...');
+                    updateLoader('Saving bet...');
                     const data = await res.json();
                     if (data.success) {
                         if (!bets[number]) bets[number] = { total: 0, history: [] };
                         bets[number].total += parseFloat(amount);
                         bets[number].history.push({ id: data.bet_id, amount: parseFloat(amount) });
                         updateBetTotal(number);
-                        updateLoader(100, 'Complete!');
+                        updateLoader('Complete!');
                     }
                     return data;
                 } finally {
@@ -1534,7 +1532,7 @@
                 showLoader(`Placing ${type} bets...`, 10);
                 try {
                     const payload = { type, amount };
-                    updateLoader(20, 'Preparing data...');
+                    updateLoader('Preparing data...');
                     if (type === 'JODI') {
                         // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
@@ -1555,16 +1553,16 @@
                         payload.columns = Array.isArray(column) ? column : [column];
                         payload.panel_type = panelType;
                     }
-                    updateLoader(40, 'Sending request...');
+                    updateLoader('Sending request...');
                     const res = await fetch(API.PLACE_BULK, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
                         body: JSON.stringify(payload)
                     });
-                    updateLoader(60, 'Processing bets...');
+                    updateLoader('Processing bets...');
                     const data = await res.json();
                     if (data.success) {
-                        updateLoader(80, 'Updating totals...');
+                        updateLoader('Updating totals...');
                         data.bets.forEach(bet => {
                             const num = bet.number;
                             if (!bets[num]) bets[num] = { total: 0, history: [] };
@@ -1573,7 +1571,7 @@
                             updateBetTotal(num);
                         });
                         lastBulkAction = { id: data.bulk_action_id, type, total_bets: data.total_bets };
-                        updateLoader(100, 'Complete!');
+                        updateLoader('Complete!');
                     }
                     return data;
                 } finally {
@@ -2890,14 +2888,14 @@
             });
 
             // Initialize
-            showLoader('Initializing...', 10);
+            showLoader('Initializing...');
             try {
-                updateLoader(30, 'Loading bets...');
+                updateLoader('Loading bets...');
                 await loadBets();
-                updateLoader(70, 'Loading settings...');
+                updateLoader('Loading settings...');
                 await getLastBulkAction();
                 await updateTotalAmount();
-                updateLoader(100, 'Ready!');
+                updateLoader('Ready!');
             } catch (err) {
                 console.error('Initialization error:', err);
             } finally {

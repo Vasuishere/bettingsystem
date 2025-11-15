@@ -17,6 +17,260 @@
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.75);
         }
+
+        /* Loader Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            backdrop-filter: blur(4px);
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loader {
+            width: 112px;
+            height: 112px;
+            position: relative;
+        }
+
+        .box1,
+        .box2,
+        .box3 {
+            border: 16px solid #f5f5f5;
+            box-sizing: border-box;
+            position: absolute;
+            display: block;
+        }
+
+        .box1 {
+            width: 112px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+            animation: abox1 4s 1s forwards ease-in-out infinite;
+        }
+
+        .box2 {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+            animation: abox2 4s 1s forwards ease-in-out infinite;
+        }
+
+        .box3 {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+            animation: abox3 4s 1s forwards ease-in-out infinite;
+        }
+
+        @keyframes abox1 {
+            0% {
+                width: 112px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            12.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            25% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            37.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            50% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            62.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+            75% {
+                width: 48px;
+                height: 112px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            87.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            100% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+        }
+
+        @keyframes abox2 {
+            0% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            12.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            25% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            37.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            50% {
+                width: 112px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+            62.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            75% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            87.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            100% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+        }
+
+        @keyframes abox3 {
+            0% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            12.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            25% {
+                width: 48px;
+                height: 112px;
+                margin-top: 0px;
+                margin-left: 64px;
+            }
+            37.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px;
+            }
+            50% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px;
+            }
+            62.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px;
+            }
+            75% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px;
+            }
+            87.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px;
+            }
+            100% {
+                width: 112px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0px;
+            }
+        }
+
+        .loader-text {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Disable pointer events during loading */
+        body.loading {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        body.loading .loader-overlay {
+            pointer-events: auto;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -32,6 +286,18 @@
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Loader Overlay -->
+    <div id="loaderOverlay" class="loader-overlay">
+        <div class="loader-container">
+            <div class="loader">
+                <div class="box1"></div>
+                <div class="box2"></div>
+                <div class="box3"></div>
+            </div>
+            <div class="loader-text" id="loaderText">Signing in...</div>
+        </div>
+    </div>
 
     <!-- Login Card -->
     <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl transition duration-300 hover:shadow-3xl">
@@ -101,17 +367,30 @@
     </div>
 
     <script>
-        // JavaScript to handle the modal visibility
+        // JavaScript to handle the modal visibility and form submission with loader
         document.addEventListener('DOMContentLoaded', () => {
             const qrButton = document.getElementById('qr-button');
             const qrModal = document.getElementById('qr-modal');
             const closeModalBtn = document.getElementById('close-modal-btn');
-            const modalContent = qrModal.querySelector('div.z-10'); // Get the actual modal content box
+            const modalContent = qrModal.querySelector('div.z-10');
+            const loaderOverlay = document.getElementById('loaderOverlay');
+            const form = document.querySelector('form');
+
+            // Loader functions
+            function showLoader() {
+                loaderOverlay.classList.add('active');
+                document.body.classList.add('loading');
+            }
+
+            function hideLoader() {
+                loaderOverlay.classList.remove('active');
+                document.body.classList.remove('loading');
+            }
 
             // Function to show the modal
             const showModal = () => {
                 qrModal.classList.remove('hidden');
-                document.body.classList.add('overflow-hidden'); // Prevent background scrolling
+                document.body.classList.add('overflow-hidden');
             };
 
             // Function to hide the modal
@@ -120,25 +399,34 @@
                 document.body.classList.remove('overflow-hidden');
             };
 
-            // Event listener for the QR button
-            qrButton.addEventListener('click', showModal);
+            // Event listener for the QR button (if exists)
+            if (qrButton) {
+                qrButton.addEventListener('click', showModal);
+            }
 
             // Event listener for the close button inside the modal
-            closeModalBtn.addEventListener('click', hideModal);
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', hideModal);
+            }
 
             // Event listener to close the modal when clicking outside of the content
-            qrModal.addEventListener('click', (event) => {
-                // Only hide if the click target is the modal overlay itself, not the content
-                if (event.target === qrModal || event.target.classList.contains('modal-overlay')) {
-                    hideModal();
-                }
-            });
+            if (qrModal) {
+                qrModal.addEventListener('click', (event) => {
+                    if (event.target === qrModal || event.target.classList.contains('modal-overlay')) {
+                        hideModal();
+                    }
+                });
+            }
 
-            // Prevent form submission for this demo
-            const form = document.querySelector('form');
+            // Handle form submission with loader
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                console.log('Login attempt prevented for demo purposes.');
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                if (email && password) {
+                    showLoader();
+                    // Form will submit naturally, loader will show during navigation
+                }
             });
         });
     </script>
