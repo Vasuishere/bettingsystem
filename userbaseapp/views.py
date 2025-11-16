@@ -207,8 +207,57 @@ def login_view(request):
 @cache_control(max_age=3600, private=True)
 def home(request):
     """Home page after successful login"""
+    from datetime import datetime, timedelta
+    
+    # Prepare bazar choices for template
+    bazar_choices = [
+        {'value': 'SRIDEVI_OPEN', 'label': 'Sridevi Open'},
+        {'value': 'SRIDEVI_CLOSED', 'label': 'Sridevi Closed'},
+        {'value': 'TIME_OPEN', 'label': 'Time Open'},
+        {'value': 'TIME_CLOSED', 'label': 'Time Closed'},
+        {'value': 'DIVAS_MILAN_OPEN', 'label': 'Divas Milan Open'},
+        {'value': 'DIVAS_MILAN_CLOSED', 'label': 'Divas Milan Closed'},
+        {'value': 'KALYAN_OPEN', 'label': 'Kalyan Open'},
+        {'value': 'KALYAN_CLOSED', 'label': 'Kalyan Closed'},
+        {'value': 'NIGHT_MILAN_OPEN', 'label': 'Night Milan Open'},
+        {'value': 'NIGHT_MILAN_CLOSED', 'label': 'Night Milan Closed'},
+    ]
+    
+    # Generate date options (last 30 days + next 7 days)
+    today = datetime.now().date()
+    date_options = []
+    for i in range(30, -8, -1):  # 30 days ago to 7 days ahead
+        date = today - timedelta(days=i)
+        date_options.append({
+            'value': date.strftime('%Y-%m-%d'),
+            'label': date.strftime('%d %b %Y'),
+            'is_today': date == today
+        })
+    
+    # Row labels for spreadsheet
+    row_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V']
+    
+    # Bazar names mapping
+    bazar_names = {
+        'SRIDEVI_OPEN': 'Sridevi Open',
+        'SRIDEVI_CLOSED': 'Sridevi Closed',
+        'TIME_OPEN': 'Time Open',
+        'TIME_CLOSED': 'Time Closed',
+        'DIVAS_MILAN_OPEN': 'Divas Milan Open',
+        'DIVAS_MILAN_CLOSED': 'Divas Milan Closed',
+        'KALYAN_OPEN': 'Kalyan Open',
+        'KALYAN_CLOSED': 'Kalyan Closed',
+        'NIGHT_MILAN_OPEN': 'Night Milan Open',
+        'NIGHT_MILAN_CLOSED': 'Night Milan Closed'
+    }
+    
     return render(request, 'userbaseapp/home.html', {
-        'ALL_COLUMN_DATA': json.dumps(ALL_COLUMN_DATA)
+        'ALL_COLUMN_DATA': json.dumps(ALL_COLUMN_DATA),
+        'bazar_choices': bazar_choices,
+        'date_options': date_options,
+        'row_labels': row_labels,
+        'bazar_names_json': json.dumps(bazar_names),
+        'current_date': today.strftime('%Y-%m-%d')
     })
 
 
@@ -759,9 +808,30 @@ def get_bet_total(request):
 @login_required
 @require_http_methods(["GET"])
 def get_bulk_action_history(request):
-    """Get all bulk action history for the current user"""
+    """Get all bulk action history for the current user with optional bazar and date filtering"""
     try:
-        bulk_actions = BulkBetAction.objects.filter(user=request.user).select_related('user').order_by('-created_at')
+        # Get filter parameters
+        bazar = request.GET.get('bazar', None)
+        date_str = request.GET.get('date', None)
+        
+        # Start with base query
+        bulk_actions = BulkBetAction.objects.filter(user=request.user).select_related('user')
+        
+        # Apply bazar filter if provided
+        if bazar:
+            bulk_actions = bulk_actions.filter(bazar=bazar)
+        
+        # Apply date filter if provided
+        if date_str:
+            from datetime import datetime
+            try:
+                filter_date = datetime.fromisoformat(date_str).date()
+                bulk_actions = bulk_actions.filter(action_date=filter_date)
+            except ValueError:
+                pass  # Invalid date format, skip filtering
+        
+        # Order by newest first
+        bulk_actions = bulk_actions.order_by('-created_at')
         
         history_data = []
         for action in bulk_actions:
@@ -773,7 +843,9 @@ def get_bulk_action_history(request):
                 'jodi_column': action.jodi_column,
                 'jodi_type': action.jodi_type,
                 'created_at': action.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'is_undone': action.is_undone
+                'is_undone': action.is_undone,
+                'bazar': action.bazar,
+                'action_date': action.action_date.strftime('%Y-%m-%d') if action.action_date else None
             })
         
         return JsonResponse({
