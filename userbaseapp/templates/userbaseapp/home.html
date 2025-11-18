@@ -3015,10 +3015,13 @@
             // Build valid numbers set from ALL_COLUMN_DATA (already defined above)
             allColumnData.forEach(column => {
                 column.forEach(num => {
-                    const numStr = String(num);
-                    if (numStr.length === 3) {
-                        validNumbers.add(numStr);
+                    // Handle both numbers and '000' string
+                    let numStr = String(num);
+                    // Pad numbers to 3 digits (e.g., 0 becomes '000', 1 becomes '001')
+                    if (numStr.length < 3) {
+                        numStr = numStr.padStart(3, '0');
                     }
+                    validNumbers.add(numStr);
                 });
             });
 
@@ -3263,6 +3266,9 @@
 
                 const betsToPlace = [];
 
+                console.log('Quick Bet: Starting validation for', numberInputs.length, 'rows');
+                console.log('Valid numbers count:', validNumbers.size);
+
                 for (let i = 0; i < numberInputs.length; i++) {
                     const number = numberInputs[i].value.trim();
                     const amount = amountInputs[i].value.trim();
@@ -3275,6 +3281,7 @@
                         }
 
                         if (!validNumbers.has(number)) {
+                            console.error(`Number ${number} not in validNumbers set`);
                             showToast('Invalid Number', `Row ${i + 1}: ${number} is not allowed`, 'error');
                             return;
                         }
@@ -3299,6 +3306,8 @@
                     return;
                 }
 
+                console.log('Quick Bet: Placing', betsToPlace.length, 'bets');
+
                 // Place all bets
                 let successCount = 0;
                 let failCount = 0;
@@ -3314,7 +3323,9 @@
                             },
                             body: JSON.stringify({
                                 number: bet.number,
-                                amount: bet.amount
+                                amount: bet.amount,
+                                bazar: currentBazar,
+                                date: currentDate
                             })
                         });
 

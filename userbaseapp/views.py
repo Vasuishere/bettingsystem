@@ -550,13 +550,16 @@ def place_bulk_bet(request):
                 bazar=bazar,
                 bet_date=bet_date
             )
+            # Convert to IST for display
+            from django.utils import timezone as tz
+            local_time = tz.localtime(bet.created_at)
             bets_created.append({
                 'id': bet.id,
                 'number': bet.number,
                 'amount': str(bet.amount),
                 'bet_type': bet.bet_type,
                 'column': column_num,
-                'created_at': bet.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                'created_at': local_time.strftime('%Y-%m-%d %I:%M:%S %p IST')
             })
 
         return JsonResponse({
@@ -606,10 +609,12 @@ def load_bets(request):
                     'history': []
                 }
             bets_dict[bet.number]['total'] += float(bet.amount)
+            # Convert to IST for display
+            local_time = timezone.localtime(bet.created_at)
             bets_dict[bet.number]['history'].append({
                 'id': bet.id,
                 'amount': float(bet.amount),
-                'created_at': bet.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'created_at': local_time.strftime('%Y-%m-%d %I:%M:%S %p IST'),
                 'bet_type': bet.bet_type,
                 'column': bet.column_number,
                 'sub_type': bet.sub_type
@@ -734,6 +739,9 @@ def get_last_bulk_action(request):
                 'has_action': False
             })
         
+        # Convert to IST for display
+        from django.utils import timezone as tz
+        local_time = tz.localtime(last_action.created_at)
         return JsonResponse({
             'success': True,
             'has_action': True,
@@ -744,7 +752,7 @@ def get_last_bulk_action(request):
                 'total_bets': last_action.total_bets,
                 'jodi_column': last_action.jodi_column,
                 'jodi_type': last_action.jodi_type,
-                'created_at': last_action.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                'created_at': local_time.strftime('%Y-%m-%d %I:%M:%S %p IST')
             }
         })
     except Exception as e:
@@ -876,6 +884,9 @@ def get_bulk_action_history(request):
         
         history_data = []
         for action in bulk_actions:
+            # Convert to IST for display
+            from django.utils import timezone as tz
+            local_time = tz.localtime(action.created_at)
             history_data.append({
                 'id': action.id,
                 'action_type': action.action_type,
@@ -883,7 +894,7 @@ def get_bulk_action_history(request):
                 'total_bets': action.total_bets,
                 'jodi_column': action.jodi_column,
                 'jodi_type': action.jodi_type,
-                'created_at': action.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'created_at': local_time.strftime('%Y-%m-%d %I:%M:%S %p IST'),
                 'is_undone': action.is_undone,
                 'bazar': action.bazar,
                 'action_date': action.action_date.strftime('%Y-%m-%d') if action.action_date else None
