@@ -1556,6 +1556,7 @@
                 UNDO_BULK: '/undo-bulk-action/',
                 GET_LAST_BULK: '/get-last-bulk-action/',
                 GET_BET_TOTAL: '/get-bet-total/',
+                GET_ALL_BET_TOTALS: '/get-all-bet-totals/',
                 GENERATE_MOTAR: '/generate-motar-numbers/',
                 FIND_COMMAN_PANA: '/find-comman-pana-numbers/',
                 PLACE_MOTAR: '/place-motar-bet/',
@@ -2118,6 +2119,8 @@
                         if (hist.length === 0) delete bets[number];
                     }
                     updateBetTotal(number);
+                    // Refresh from database to ensure accuracy
+                    await refreshAllBetTotals();
                 }
                 return data;
             }
@@ -2198,6 +2201,7 @@
                 if (data.success) {
                     showToast('Success', data.message, 'success');
                     await loadBets();
+                    await refreshAllBetTotals();
                     lastBulkAction = null;
                     await getLastBulkAction();
                     await updateTotalAmount();
@@ -2227,6 +2231,39 @@
                 const el = document.getElementById(`bet-total-${number}`);
                 if (el) {
                     el.textContent = bets[number]?.total ? `${bets[number].total}` : '';
+                }
+            }
+
+            // Fetch all bet totals from database and update UI
+            async function refreshAllBetTotals() {
+                try {
+                    const res = await fetch(`${API.GET_ALL_BET_TOTALS}?bazar=${currentBazar}&date=${currentDate}`);
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        // Update local bets object with database values
+                        const dbTotals = data.bet_totals;
+                        
+                        // Clear existing bets and update with database values
+                        for (const number in bets) {
+                            bets[number].total = 0;
+                        }
+                        
+                        // Update with fresh database values
+                        for (const number in dbTotals) {
+                            if (!bets[number]) {
+                                bets[number] = { total: 0, history: [] };
+                            }
+                            bets[number].total = dbTotals[number];
+                        }
+                        
+                        // Update all visible bet total elements
+                        for (const number in bets) {
+                            updateBetTotal(number);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error refreshing bet totals:', err);
                 }
             }
 
@@ -2334,6 +2371,7 @@
                         showToast('Success!', `Bet of ${amount} placed on ${currentNumber}`, 'success');
                         closeModal();
                         await updateTotalAmount();
+                        await refreshAllBetTotals();
                     } else {
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
@@ -2357,6 +2395,7 @@
                         renderPage(1);
                         await getLastBulkAction();
                         await updateTotalAmount();
+                        await refreshAllBetTotals();
                     } else {
                         showToast('Error', result.error || 'Failed to place Jodi bet', 'error');
                     }
@@ -2392,6 +2431,7 @@
                         renderPage(1);
                         await getLastBulkAction();
                         await updateTotalAmount();
+                        await refreshAllBetTotals();
                     } else {
                         showToast('Error', result.error || 'Failed to place ABR Cut bet', 'error');
                     }
@@ -2415,6 +2455,7 @@
                         renderPage(1);
                         await getLastBulkAction();
                         await updateTotalAmount();
+                        await refreshAllBetTotals();
                     } else {
                         showToast('Error', result.error || 'Failed to place Jodi Panel bet', 'error');
                     }
@@ -2501,6 +2542,7 @@
                             closeModal();
                             renderPage(1);
                             await updateTotalAmount();
+                            await refreshAllBetTotals();
                             updateUndoButton();
                         } else {
                             showToast('Error', data.error || 'Failed to place Motar bets', 'error');
@@ -2579,6 +2621,7 @@
                             closeModal();
                             renderPage(1);
                             await updateTotalAmount();
+                            await refreshAllBetTotals();
                             updateUndoButton();
                         } else {
                             showToast('Error', data.error || 'Failed to place Common Pana bets', 'error');
@@ -2646,6 +2689,7 @@
                             renderPage(1);
                             await getLastBulkAction();
                             await updateTotalAmount();
+                            await refreshAllBetTotals();
                             updateUndoButton();
                         } else {
                             showToast('Error', data.error || 'Failed to place Set Pana bets', 'error');
@@ -3311,6 +3355,7 @@
                     // Reload bets and update total
                     await loadBets();
                     await updateTotalAmount();
+                    await refreshAllBetTotals();
                     renderPage(1);
                 } else if (successCount > 0 && failCount > 0) {
                     showToast('Partial Success', `${successCount} bet(s) placed, ${failCount} failed: ${failedBets.join(', ')}`, 'warning');
@@ -3318,6 +3363,7 @@
                     // Reload bets and update total
                     await loadBets();
                     await updateTotalAmount();
+                    await refreshAllBetTotals();
                     renderPage(1);
                 } else if (failCount > 0) {
                     showToast('Failed', `All ${failCount} bet(s) failed to place: ${failedBets.join(', ')}`, 'error');
@@ -3700,15 +3746,16 @@
 
                     // Reload all data for new bazar in parallel
                     updateLoader('Loading bets...');
-                    const [betsResult, bulkResult, totalResult] = await Promise.allSettled([
+                    const [betsResult, bulkResult, totalResult, syncResult] = await Promise.allSettled([
                         loadBets(),
                         getLastBulkAction(),
-                        updateTotalAmount()
+                        updateTotalAmount(),
+                        refreshAllBetTotals()
                     ]);
 
                     updateLoader('Processing data...');
                     // Check for errors
-                    const errors = [betsResult, bulkResult, totalResult].filter(r => r.status === 'rejected');
+                    const errors = [betsResult, bulkResult, totalResult, syncResult].filter(r => r.status === 'rejected');
                     if (errors.length > 0) {
                         console.error('Errors during bazar switch:', errors);
                     }
@@ -3755,15 +3802,16 @@
 
                     // Reload all data for new date in parallel
                     updateLoader('Loading bets...');
-                    const [betsResult, bulkResult, totalResult] = await Promise.allSettled([
+                    const [betsResult, bulkResult, totalResult, syncResult] = await Promise.allSettled([
                         loadBets(),
                         getLastBulkAction(),
-                        updateTotalAmount()
+                        updateTotalAmount(),
+                        refreshAllBetTotals()
                     ]);
 
                     updateLoader('Processing data...');
                     // Check for errors
-                    const errors = [betsResult, bulkResult, totalResult].filter(r => r.status === 'rejected');
+                    const errors = [betsResult, bulkResult, totalResult, syncResult].filter(r => r.status === 'rejected');
                     if (errors.length > 0) {
                         console.error('Errors during date change:', errors);
                     }
@@ -3825,11 +3873,27 @@
             // Render initial page immediately (All SP numbers)
             renderPage(1);
 
+            // Set up periodic polling for multi-device synchronization
+            // Refresh bet totals every 10 seconds to show updates from other devices
+            let syncInterval = setInterval(async () => {
+                try {
+                    await refreshAllBetTotals();
+                } catch (err) {
+                    console.error('Sync error:', err);
+                }
+            }, 10000); // 10 seconds
+
+            // Clear interval on page unload to prevent memory leaks
+            window.addEventListener('beforeunload', () => {
+                clearInterval(syncInterval);
+            });
+
             // Initialize
             showLoader('Initializing...');
             try {
                 updateLoader('Loading bets...');
                 await loadBets(); // This will update bet totals and re-render the page
+                await refreshAllBetTotals(); // Initial fetch from database
                 updateLoader('Loading settings...');
                 await getLastBulkAction();
                 await updateTotalAmount();

@@ -807,6 +807,47 @@ def get_bet_total(request):
 
 @login_required
 @require_http_methods(["GET"])
+def get_all_bet_totals(request):
+    """Get bet totals for all numbers grouped by number - for real-time sync across devices"""
+    try:
+        bazar = request.GET.get('bazar', 'SRIDEVI_OPEN')
+        date_str = request.GET.get('date')
+        
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
+        # Optimized query - group by number and sum amounts at database level
+        from django.db.models import Sum
+        bet_totals = Bet.objects.filter(
+            user=request.user,
+            bazar=bazar,
+            bet_date=bet_date
+        ).values('number').annotate(
+            total=Sum('amount')
+        ).order_by('number')
+        
+        # Convert to dictionary for easy lookup: {number: total}
+        totals_dict = {}
+        for item in bet_totals:
+            totals_dict[item['number']] = float(item['total'])
+        
+        return JsonResponse({
+            'success': True,
+            'bet_totals': totals_dict
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
 def get_bulk_action_history(request):
     """Get all bulk action history for the current user with optional bazar and date filtering"""
     try:

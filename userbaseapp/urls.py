@@ -44,6 +44,7 @@ urlpatterns = [
     # Summary/Statistics
     path('get-bet-summary/', views.get_bet_summary, name='get_bet_summary'),
     path('get-bet-total/', views.get_bet_total, name='get_bet_total'),
+    path('get-all-bet-totals/', views.get_all_bet_totals, name='get_all_bet_totals'),
     path('get-bulk-action-history/', views.get_bulk_action_history, name='get_bulk_action_history'),
     
     # Database storage info
