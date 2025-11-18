@@ -221,6 +221,8 @@ def home(request):
         {'value': 'KALYAN_CLOSED', 'label': 'Kalyan Closed'},
         {'value': 'NIGHT_MILAN_OPEN', 'label': 'Night Milan Open'},
         {'value': 'NIGHT_MILAN_CLOSED', 'label': 'Night Milan Closed'},
+        {'value': 'MAIN_BAZAR', 'label': 'Main Bazar'},
+        {'value': 'MAIN_BAZAR_CLOSED', 'label': 'Main Bazar Closed'},
     ]
     
     # Generate date options (last 30 days + next 7 days)
@@ -248,7 +250,9 @@ def home(request):
         'KALYAN_OPEN': 'Kalyan Open',
         'KALYAN_CLOSED': 'Kalyan Closed',
         'NIGHT_MILAN_OPEN': 'Night Milan Open',
-        'NIGHT_MILAN_CLOSED': 'Night Milan Closed'
+        'NIGHT_MILAN_CLOSED': 'Night Milan Closed',
+        'MAIN_BAZAR': 'Main Bazar',
+        'MAIN_BAZAR_CLOSED': 'Main Bazar Closed'
     }
     
     return render(request, 'userbaseapp/home.html', {

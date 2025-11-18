@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,490 +15,63 @@
         }
     </script>
     <style>
-        .spreadsheet-cell {
-            padding: 5px 8px;
-            border-right: 1px solid #e5e7eb;
-            min-width: 100px;
-            text-align: left;
-            font-size: 0.9rem;
-            height: 30px;
-            white-space: nowrap;
-        }
-
-        .header-cell {
-            background-color: #f3f4f6;
-            font-weight: 600;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .row-number-cell {
-            background-color: #f3f4f6;
-            font-weight: 600;
-            text-align: center;
-            min-width: 50px;
-            position: sticky;
-            left: 0;
-            z-index: 15;
-            border-right: 2px solid #d1d5db;
-        }
-
-        .data-row:hover .spreadsheet-cell {
-            background-color: #f9fafb;
-        }
-
-        .bet-button {
-            background-color: #4f46e5;
-            color: white;
-            border-radius: 9999px;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-            margin-left: 4px;
-            cursor: pointer;
-        }
-
-        .bet-button:hover {
-            background-color: #4338ca;
-        }
-
-        .delete-button {
-            background-color: #ef4444;
-            color: white;
-            border-radius: 4px;
-            padding: 2px 8px;
-            font-size: 0.75rem;
-            margin-left: 8px;
-            cursor: pointer;
-            border: none;
-        }
-
-        .delete-button:hover {
-            background-color: #dc2626;
-        }
-
-        .amount-button {
-            padding: 8px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            background-color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .amount-button:hover {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
-        }
-
-        .amount-button.selected {
-            border-color: #4f46e5;
-            background-color: #4f46e5;
-            color: white;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 320px;
-            max-width: 420px;
-            pointer-events: auto;
-            transform: translateX(120%);
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            border-left: 4px solid;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-left-color: #22c55e;
-        }
-
-        .toast.error {
-            border-left-color: #ef4444;
-        }
-
-        .toast.warning {
-            border-left-color: #f59e0b;
-        }
-
-        .toast-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* Loader Overlay */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            backdrop-filter: blur(4px);
-        }
-
-        .loader-overlay.active {
-            display: flex;
-        }
-
-        .loader-container {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .loader {
-            width: 112px;
-            height: 112px;
-            position: relative;
-        }
-
-        .box1,
-        .box2,
-        .box3 {
-            border: 16px solid #f5f5f5;
-            box-sizing: border-box;
-            position: absolute;
-            display: block;
-        }
-
-        .box1 {
-            width: 112px;
-            height: 48px;
-            margin-top: 64px;
-            margin-left: 0px;
-            animation: abox1 4s 1s forwards ease-in-out infinite;
-        }
-
-        .box2 {
-            width: 48px;
-            height: 48px;
-            margin-top: 0px;
-            margin-left: 0px;
-            animation: abox2 4s 1s forwards ease-in-out infinite;
-        }
-
-        .box3 {
-            width: 48px;
-            height: 48px;
-            margin-top: 0px;
-            margin-left: 64px;
-            animation: abox3 4s 1s forwards ease-in-out infinite;
-        }
-
-        @keyframes abox1 {
-            0% {
-                width: 112px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            12.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            25% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            37.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            50% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            62.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-            75% {
-                width: 48px;
-                height: 112px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            87.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            100% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-        }
-
-        @keyframes abox2 {
-            0% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            12.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            25% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            37.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            50% {
-                width: 112px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 0px;
-            }
-            62.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            75% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            87.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            100% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-        }
-
-        @keyframes abox3 {
-            0% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            12.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            25% {
-                width: 48px;
-                height: 112px;
-                margin-top: 0px;
-                margin-left: 64px;
-            }
-            37.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 64px;
-            }
-            50% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 64px;
-            }
-            62.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 64px;
-            }
-            75% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 64px;
-            }
-            87.5% {
-                width: 48px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 64px;
-            }
-            100% {
-                width: 112px;
-                height: 48px;
-                margin-top: 64px;
-                margin-left: 0px;
-            }
-        }
-
-        .loader-text {
-            color: #fff;
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
-        }
-            25% {
-                transform: translateX(-100%);
-            }
-
-            50% {
-                transform: translateX(-100%) translateY(-100%);
-            }
-
-            75% {
-                transform: translateY(-100%);
-            }
-        }
-
-        /* Disable pointer events during loading */
-        body.loading {
-            pointer-events: none;
-            user-select: none;
-        }
-
-        body.loading .loader-overlay {
-            pointer-events: auto;
-        }
-
-        .toast.success .toast-icon {
-            background-color: #dcfce7;
-            color: #16a34a;
-        }
-
-        .toast.error .toast-icon {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
-
-        .toast.warning .toast-icon {
-            background-color: #fef3c7;
-            color: #d97706;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .toast.success .toast-title {
-            color: #16a34a;
-        }
-
-        .toast.error .toast-title {
-            color: #dc2626;
-        }
-
-        .toast.warning .toast-title {
-            color: #d97706;
-        }
-
-        .toast-message {
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .toast-close:hover {
-            background-color: #f3f4f6;
-            color: #4b5563;
-        }
-
+        .spreadsheet-cell{padding:5px 8px;border-right:1px solid #e5e7eb;min-width:100px;text-align:left;font-size:1.08rem;height:30px;white-space:nowrap}
+        .header-cell{background-color:#f3f4f6;font-weight:600;text-align:center;position:sticky;top:0;z-index:10}
+        .row-number-cell{background-color:#f3f4f6;font-weight:600;text-align:center;min-width:50px;position:sticky;left:0;z-index:15;border-right:2px solid #d1d5db}
+        .data-row:hover .spreadsheet-cell{background-color:#f9fafb}
+        .bet-button{background-color:#4f46e5;color:white;border-radius:9999px;padding:2px 6px;font-size:.7rem;margin-left:4px;cursor:pointer}
+        .bet-button:hover{background-color:#4338ca}
+        .delete-button{background-color:#ef4444;color:white;border-radius:4px;padding:2px 8px;font-size:.75rem;margin-left:8px;cursor:pointer;border:none}
+        .delete-button:hover{background-color:#dc2626}
+        .amount-button{padding:8px 16px;border:2px solid #e5e7eb;border-radius:8px;background-color:white;cursor:pointer;transition:all .2s;font-weight:500}
+        .amount-button:hover{border-color:#4f46e5;background-color:#eef2ff}
+        .amount-button.selected{border-color:#4f46e5;background-color:#4f46e5;color:white}
+        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+        .toast{background:white;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.15);padding:16px 20px;display:flex;align-items:center;gap:12px;min-width:320px;max-width:420px;pointer-events:auto;transform:translateX(120%);transition:transform .4s cubic-bezier(.68,-.55,.265,1.55);border-left:4px solid}
+        .toast.show{transform:translateX(0)}
+        .toast.success{border-left-color:#22c55e}
+        .toast.error{border-left-color:#ef4444}
+        .toast.warning{border-left-color:#f59e0b}
+        .toast-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .toast.success .toast-icon{background-color:#dcfce7;color:#16a34a}
+        .toast.error .toast-icon{background-color:#fee2e2;color:#dc2626}
+        .toast.warning .toast-icon{background-color:#fef3c7;color:#d97706}
+        .toast-content{flex:1}
+        .toast-title{font-weight:600;font-size:16px;margin-bottom:4px}
+        .toast.success .toast-title{color:#16a34a}
+        .toast.error .toast-title{color:#dc2626}
+        .toast.warning .toast-title{color:#d97706}
+        .toast-message{color:#6b7280;font-size:14px}
+        .toast-close{background:none;border:none;color:#9ca3af;cursor:pointer;font-size:20px;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .2s}
+        .toast-close:hover{background-color:#f3f4f6;color:#4b5563}osition:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(4px)}
+        .loader-overlay.active{display:flex}
+        .loader-container{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px}
+        .loader{width:112px;height:112px;position:relative}
+        .box1,.box2,.box3{border:16px solid #f5f5f5;box-sizing:border-box;position:absolute;display:block}
+        .box1{width:112px;height:48px;margin-top:64px;margin-left:0;animation:abox1 4s 1s forwards ease-in-out infinite}
+        .box2{width:48px;height:48px;margin-top:0;margin-left:0;animation:abox2 4s 1s forwards ease-in-out infinite}
+        .box3{width:48px;height:48px;margin-top:0;margin-left:64px;animation:abox3 4s 1s forwards ease-in-out infinite}
+        @keyframes abox1{0%{width:112px;height:48px;margin-top:64px;margin-left:0}12.5%,25%,37.5%,50%,62.5%{width:48px;height:48px;margin-top:64px;margin-left:0}75%{width:48px;height:112px;margin-top:0;margin-left:0}87.5%,100%{width:48px;height:48px;margin-top:0;margin-left:0}}
+        @keyframes abox2{0%,12.5%,25%,37.5%{width:48px;height:48px;margin-top:0;margin-left:0}50%{width:112px;height:48px;margin-top:0;margin-left:0}62.5%,75%,87.5%,100%{width:48px;height:48px;margin-top:0;margin-left:64px}}
+        @keyframes abox3{0%,12.5%{width:48px;height:48px;margin-top:0;margin-left:64px}25%{width:48px;height:112px;margin-top:0;margin-left:64px}37.5%,50%,62.5%,75%,87.5%{width:48px;height:48px;margin-top:64px;margin-left:64px}100%{width:112px;height:48px;margin-top:64px;margin-left:0}}
+        .loader-text{color:#fff;font-size:16px;font-weight:500;text-align:center}
+        body.loading{pointer-events:none;user-select:none}
+        body.loading .loader-overlay{pointer-events:auto}
         .modal-content {
             max-height: 85vh;
             display: flex;
             flex-direction: column;
         }
-
         .modal-body-scrollable {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
         }
-
         /* Checkbox label styling - highlight when checked */
         label:has(input[type="checkbox"]:checked) {
             border-color: currentColor !important;
             background-color: rgba(var(--tw-color-rgb), 0.1);
         }
-
         /* Sidebar Styles */
         .sidebar-overlay {
             position: fixed;
@@ -513,12 +85,10 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-
         .sidebar-overlay.active {
             display: block;
             opacity: 1;
         }
-
         .sidebar {
             position: fixed;
             top: 0;
@@ -532,11 +102,9 @@
             transition: right 0.3s ease;
             overflow-y: auto;
         }
-
         .sidebar.active {
             right: 0;
         }
-
         .hamburger-btn {
             display: flex;
             flex-direction: column;
@@ -549,7 +117,6 @@
             padding: 0;
             z-index: 10;
         }
-
         .hamburger-btn span {
             width: 28px;
             height: 3px;
@@ -557,32 +124,27 @@
             border-radius: 2px;
             transition: all 0.3s ease;
         }
-
         .hamburger-btn:hover span {
             background: #6366f1;
         }
-
         .hamburger-btn.active span:nth-child(1) {
             transform: rotate(45deg) translate(8px, 8px);
         }
-
         .hamburger-btn.active span:nth-child(2) {
             opacity: 0;
         }
-
         .hamburger-btn.active span:nth-child(3) {
             transform: rotate(-45deg) translate(8px, -8px);
         }
+        .highlight-limit {
+            background-color: #d5db82 !important;
+        }
     </style>
 </head>
-
 <body class="bg-gray-50 min-h-screen font-sans">
-
     <div id="toastContainer" class="toast-container"></div>
-
     <!-- Sidebar Overlay -->
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
         <div class="p-6">
@@ -597,7 +159,6 @@
                     </svg>
                 </button>
             </div>
-
             <!-- Bazar Selector -->
             <div class="mb-6">
                 <div class="flex items-center gap-2 mb-3">
@@ -620,7 +181,6 @@
                             id="currentBazarDisplaySidebar">{{ bazar_choices.0.label }}</span></p>
                 </div>
             </div>
-
             <!-- Date Selector -->
             <div class="mb-6">
                 <div class="flex items-center gap-2 mb-3">
@@ -642,7 +202,6 @@
                             id="currentDateDisplaySidebar">Today</span></p>
                 </div>
             </div>
-
             <!-- User Info -->
             <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
                 <div class="flex items-center gap-3 mb-2">
@@ -655,7 +214,6 @@
                 </div>
                 <p class="text-xl font-bold text-indigo-700 ml-9">{{ request.user.get_username }}</p>
             </div>
-
             <!-- Database Storage Info -->
             <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border-2 border-blue-200">
                 <div class="flex items-center gap-2 mb-3">
@@ -666,22 +224,18 @@
                     </svg>
                     <span class="text-sm font-semibold text-blue-700">Database Storage</span>
                 </div>
-
                 <div class="space-y-2">
                     <div class="flex justify-between items-center text-xs">
                         <span class="text-gray-600" id="storageUsed">Loading...</span>
                         <span class="font-bold text-blue-700" id="storagePercentage">--%</span>
                     </div>
-
                     <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div id="storageProgressBar" class="h-3 rounded-full transition-all duration-500"
                             style="width: 0%; background: linear-gradient(to right, #3b82f6, #06b6d4);"></div>
                     </div>
-
                     <p class="text-xs text-gray-500" id="databaseType">-</p>
                 </div>
             </div>
-
             <!-- Show All Bet Types Toggle -->
             <div class="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200">
                 <div class="flex items-center justify-between">
@@ -702,7 +256,6 @@
                 </div>
                 <p class="text-xs text-gray-500 mt-2">When ON, shows all bet type buttons</p>
             </div>
-
             <!-- Logout Button -->
             <a href="{% url 'userbaseapp:logout' %}"
                 class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105">
@@ -715,10 +268,8 @@
             </a>
         </div>
     </div>
-
     <!-- Loader Overlay -->
     {% include 'userbaseapp/loader.html' %}
-
     <div class="max-w-7xl mx-auto p-4 sm:p-8">
         <!-- Header with Bazar Info (Left) and Action Buttons (Right) -->
         <div
@@ -739,7 +290,7 @@
                 <div
                     class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-300 shadow-sm flex-col">
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-medium text-yellow-600">Total Balance</span>
+                        <span class="text-xs font-medium text-yellow-600">Count</span>
                         <button id="refreshBalanceBtn" title="Refresh Balance" class="text-yellow-600 hover:text-yellow-800 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -762,7 +313,6 @@
                     <p class="text-lg font-bold text-orange-700" id="totalBalanceMobile">0</p>
                 </div>
             </div>
-
             <!-- Right Side: History, Quick Bet, Hamburger Menu -->
             <div class="flex items-center gap-2">
                 <button id="toggleHistoryBtn"
@@ -789,20 +339,30 @@
                 </button>
             </div>
         </div>
-
         <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div id="pagination-buttons" class="flex flex-wrap items-center gap-3">
                 <button id="page-1-btn"
                     class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All SP</strong>
                 </button>
+                <div class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
+                    <label for="sp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">SP Limit</label>
+                    <input type="number" id="sp-limit-input" 
+                        class="w-20 px-2 py-1 text-sm border-2 border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="0" min="0">
+                </div>
                 <button id="page-2-btn"
                     class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All DP</strong>
                 </button>
+                <div class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
+                    <label for="dp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">DP Limit</label>
+                    <input type="number" id="dp-limit-input" 
+                        class="w-20 px-2 py-1 text-sm border-2 border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="0" min="0">
+                </div>
             </div>
         </div>
-
         <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
             <div class="overflow-x-auto">
                 <table id="spreadsheet-table" class="min-w-full divide-y divide-gray-200 border-collapse table-auto">
@@ -825,7 +385,6 @@
                 </table>
             </div>
         </div>
-
         <div id="betButtonsContainer" class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-end px-4 sm:px-0">
             <button id="all-sp-btn"
                 class="text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
@@ -865,7 +424,6 @@
             </button>
         </div>
     </div>
-
     <!-- Bulk Action History Modal (Full Screen) -->
     <div id="historyModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
         <div class="bg-white rounded-2xl shadow-2xl w-11/12 h-5/6 flex flex-col">
@@ -875,7 +433,6 @@
                 <button id="closeHistoryModal"
                     class="text-gray-500 hover:text-gray-700 text-3xl font-bold">&times;</button>
             </div>
-
             <!-- Excel-like Table -->
             <div class="flex-1 overflow-auto p-6">
                 <div class="overflow-x-auto">
@@ -917,7 +474,6 @@
                     </table>
                 </div>
             </div>
-
             <!-- Footer with Stats -->
             <div class="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                 <div class="flex justify-between items-center">
@@ -943,16 +499,14 @@
             </div>
         </div>
     </div>
-
-    <!-- Quick Bet Entry Table (Bottom Left) -->
+    <!-- Quick Bet Entry Table (Bottom Right) -->
     <div id="quickBetContainer"
-        class="hidden fixed bottom-4 left-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40"
+        class="hidden fixed bottom-4 right-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40"
         style="width: 320px;">
         <div class="flex justify-between items-center mb-3">
             <h3 class="text-lg font-bold text-indigo-700">Quick Bet Entry</h3>
             <button id="closeQuickBetBtn" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
         </div>
-
         <div class="overflow-auto" style="max-height: 300px;">
             <table class="w-full border-collapse">
                 <thead class="bg-indigo-100 sticky top-0">
@@ -1017,7 +571,6 @@
                 </tbody>
             </table>
         </div>
-
         <!-- Same Amount for All Checkbox -->
         <div class="mt-3 flex items-center gap-2 px-2 py-2 bg-blue-50 rounded-lg border border-blue-200">
             <input type="checkbox" id="sameAmountCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
@@ -1025,7 +578,6 @@
                 Use same amount for all numbers
             </label>
         </div>
-
         <div class="mt-3 flex gap-2">
             <button id="quickBetOkayBtn"
                 class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md transition">
@@ -1037,7 +589,6 @@
             </button>
         </div>
     </div>
-
     <!-- Universal Modal -->
     <div id="universalModal"
         class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -1049,7 +600,6 @@
                     <h2 id="modalTitle" class="text-xl font-semibold text-gray-800">Place a Bet</h2>
                     <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
                 </div>
-
                 <!-- Tab Navigation -->
                 <div class="border-b flex">
                     <button id="placeTab"
@@ -1062,7 +612,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Scrollable Content Area -->
             <div class="px-6 pb-6 overflow-y-auto flex-1" style="min-height: 0;">
                 <!-- Place Bet Content -->
@@ -1136,7 +685,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- Jodi Options -->
                         <div id="jodiOptions" class="hidden space-y-4">
                             <div>
@@ -1214,7 +762,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- Eki/Beki/Dadar Options -->
                         <div id="ekiBekiOptions" class="hidden space-y-4">
                             <div>
@@ -1227,7 +774,6 @@
                                 </select>
                             </div>
                         </div>
-
                         <!-- ABR Cut Options -->
                         <div id="abrCutOptions" class="hidden space-y-4">
                             <div>
@@ -1296,7 +842,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- Jodi Panel Options -->
                         <div id="jodiPanelOptions" class="hidden space-y-4">
                             <div>
@@ -1374,7 +919,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- Motar Options -->
                         <div id="motarOptions" class="hidden space-y-4">
                             <div>
@@ -1397,8 +941,7 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- Comman Pana 36 Options -->
+                        <!-- Comman Pana Options -->
                         <div id="commanPanaOptions" class="hidden space-y-4">
                             <div>
                                 <label class="block mb-2 text-sm font-medium text-gray-700">Select Common Bet
@@ -1445,7 +988,6 @@
                                 </p>
                             </div>
                         </div>
-
                         <!-- Set Pana Options -->
                         <div id="setPanaOptions" class="hidden space-y-4">
                             <div>
@@ -1470,7 +1012,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Column Bet Options -->
                         <!-- Select All Columns Checkbox (for Jodi, Dadar, ABR Cut, Jodi Panel) -->
                         <div id="selectAllColumnsContainer" class="hidden mb-4">
                             <label class="flex items-center space-x-2 cursor-pointer">
@@ -1480,7 +1022,6 @@
                             </label>
                             <p class="text-xs text-gray-500 mt-1 ml-7">Check this to place bets on all 10 columns</p>
                         </div>
-
                         <!-- Amount Selection -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Quick amounts:</label>
@@ -1490,7 +1031,6 @@
                                 <button class="amount-button" data-amount="2.5">2.5</button>
                                 <button class="amount-button" data-amount="5">5</button>
                             </div>
-
                             <div class="relative my-4">
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="w-full border-t border-gray-300"></div>
@@ -1499,7 +1039,6 @@
                                     <span class="px-2 bg-white text-gray-500">OR</span>
                                 </div>
                             </div>
-
                             <label for="customAmount" class="block text-sm font-medium text-gray-700 mb-2">Custom
                                 amount:</label>
                             <input type="number" id="customAmount" placeholder="e.g. 1, 123, 246..." min="1" max="5000"
@@ -1507,7 +1046,6 @@
                                 class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                             <p class="text-xs text-gray-500 mt-1">Min: 1 | Max: 5,000 | Any amount allowed</p>
                         </div>
-
                         <!-- Action Buttons -->
                         <div class="space-y-2 pt-2">
                             <div class="flex gap-2">
@@ -1517,7 +1055,6 @@
                                     class="flex-1 px-4 py-2 bg-indigo-600 rounded-lg text-white font-semibold hover:bg-indigo-700 transition">Place
                                     Bet</button>
                             </div>
-
                             <button id="undoBtn"
                                 class="w-full px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition hidden">
                                 Undo Last Action
@@ -1525,7 +1062,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- History Content -->
                 <div id="historyContent" class="hidden">
                     <div id="historyList" class="space-y-2">
@@ -1537,7 +1073,6 @@
             </div>
         </div>
     </div>
-
     <script>
         /* eslint-disable */
         // Django template variables - rendered server-side before JavaScript execution
@@ -1545,9 +1080,7 @@
         const rowLabelsJSON = {{ row_labels|safe }};
         const allColumnDataJSON = {{ ALL_COLUMN_DATA|safe }};
         /* eslint-enable */
-
         document.addEventListener('DOMContentLoaded', async () => {
-            // API Endpoints
             const API = {
                 PLACE_BET: '/place-bet/',
                 PLACE_BULK: '/place-bulk-bet/',
@@ -1565,17 +1098,12 @@
                 GET_BULK_HISTORY: '/get-bulk-action-history/',
                 GET_DATABASE_STORAGE: '/get-database-storage/',
             };
-
-            // Bazar and Date State
             // Restore last selected bazar from localStorage, or use default
             let currentBazar = localStorage.getItem('selectedBazar') || '{{ bazar_choices.0.value }}';
             let currentDate = '{{ current_date }}';
-
-            // Use the pre-loaded data
             const bazarNames = bazarNamesJSON;
             const rowLabels = rowLabelsJSON;
             const allColumnData = allColumnDataJSON;
-
             let bets = {};
             let currentNumber = null;
             let currentBetType = null; // 'SINGLE', 'SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT'
@@ -1584,30 +1112,25 @@
             let lastMotarBets = []; // Track last Motar bet IDs for undo
             let lastCommanPanaBets = []; // Track last Comman Pana bet IDs for undo
             let currentPage = 1; // Initialize current page to 1 (All SP)
-
-            // Loader Functions
+            let spAmountLimit = null; // SP amount limit for highlighting
+            let dpAmountLimit = null; // DP amount limit for highlighting
             const loaderOverlay = document.getElementById('loaderOverlay');
             const loaderText = document.getElementById('loaderText');
-
             function showLoader(text = 'Loading...') {
                 loaderOverlay.classList.add('active');
                 document.body.classList.add('loading');
                 loaderText.textContent = text;
             }
-
             function updateLoader(text) {
                 if (text) {
                     loaderText.textContent = text;
                 }
             }
-
             function hideLoader() {
                 loaderOverlay.classList.remove('active');
                 document.body.classList.remove('loading');
                 loaderText.textContent = 'Loading...';
             }
-
-            // Modal Elements
             const modal = document.getElementById('universalModal');
             const closeModalBtn = document.getElementById('closeModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -1631,22 +1154,18 @@
             const commanPanaOptions = document.getElementById('commanPanaOptions');
             const setPanaOptions = document.getElementById('setPanaOptions');
             const tbody = document.getElementById('spreadsheet-body');
-
             function getCSRFToken() {
                 return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
             }
-
             function showToast(title, message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-
             const icons = {
                 success: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
                 error: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
                 warning: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
             };
-
             toast.innerHTML = `
                     <div class="toast-icon">${icons[type] || icons.success}</div>
                     <div class="toast-content">
@@ -1655,7 +1174,6 @@
                     </div>
                     <button class="toast-close">&times;</button>
                 `;
-
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
             const timeoutId = setTimeout(() => removeToast(toast), 3000);
@@ -1664,37 +1182,26 @@
                 removeToast(toast);
             };
             }
-
             function removeToast(toast) {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
             }
-
             // Open Modal Function
             function openModal(betType, number = null, title = 'Place a Bet') {
                 currentBetType = betType;
                 currentNumber = number;
-
                 modal.classList.remove('hidden');
                 modalTitle.textContent = title;
-
-                // Reset form
                 customAmountInput.value = '';
                 amountButtons.forEach(b => b.classList.remove('selected'));
-
-                // Reset selected columns when opening modal
                 selectedAbrColumns = [];
-
                 // Uncheck all checkboxes
                 document.querySelectorAll('.betColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.jodiColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.abrCutColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.jodiPanelColumnCheckbox').forEach(cb => cb.checked = false);
-
-                // Reset "Select All Columns" checkbox
                 const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
                 selectAllCheckbox.checked = false;
-
                 // Show/hide specific options
                 columnOptions.classList.add('hidden');
                 jodiOptions.classList.add('hidden');
@@ -1704,23 +1211,16 @@
                 motarOptions.classList.add('hidden');
                 commanPanaOptions.classList.add('hidden');
                 setPanaOptions.classList.add('hidden');
-
-                // Reset Motar input
                 if (motarOptions) {
                     document.getElementById('motarNumberInput').value = '';
                     document.getElementById('motarGeneratedNumbers').classList.add('hidden');
                 }
-
-                // Reset Comman Pana input
                 if (commanPanaOptions) {
                     document.getElementById('commanPanaDigitInput').value = '';
                     document.getElementById('commanPanaGeneratedNumbers').classList.add('hidden');
                 }
-
-                // Reset Set Pana input
                 document.getElementById('setPanaNumberInput').value = '';
                 document.getElementById('setPanaFamilyInfo').classList.add('hidden');
-
                 // Show/hide "Select All Columns" checkbox (only for JODI, ABR_CUT, JODI_PANEL)
                 // Note: DADAR is now part of EKI_BEKI dropdown, so it's handled differently
                 const selectAllContainer = document.getElementById('selectAllColumnsContainer');
@@ -1729,7 +1229,6 @@
                 } else {
                     selectAllContainer.classList.add('hidden');
                 }
-
                 if (betType === 'SINGLE' || betType === 'SP' || betType === 'DP') {
                     columnOptions.classList.remove('hidden');
                 } else if (betType === 'JODI') {
@@ -1747,37 +1246,25 @@
                 } else if (betType === 'SET_PANA') {
                     setPanaOptions.classList.remove('hidden');
                 }
-
-                // Switch to Place tab
                 switchToPlaceTab();
-
-                // Update undo button for all bet types
                 updateUndoButton();
             }
-
             // Close Modal Function
             function closeModal() {
                 modal.classList.add('hidden');
                 currentBetType = null;
                 currentNumber = null;
                 selectedAbrColumns = [];
-
                 // Uncheck all checkboxes
                 document.querySelectorAll('.betColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.jodiColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.abrCutColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.jodiPanelColumnCheckbox').forEach(cb => cb.checked = false);
-
-                // Reset Motar inputs
                 document.getElementById('motarNumberInput').value = '';
                 document.getElementById('motarGeneratedNumbers').classList.add('hidden');
-
-                // Reset "Select All Columns" checkbox
                 const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
                 selectAllCheckbox.checked = false;
             }
-
-            // Get selected columns from checkboxes
             function getSelectedColumns(checkboxClass) {
                 const selected = [];
                 document.querySelectorAll(`.${checkboxClass}:checked`).forEach(cb => {
@@ -1785,16 +1272,12 @@
                 });
                 return selected;
             }
-
-            // Switch to Place Tab
             function switchToPlaceTab() {
                 placeContent.classList.remove('hidden');
                 historyContent.classList.add('hidden');
                 placeTab.classList.add('border-indigo-600', 'text-indigo-600');
                 historyTab.classList.remove('border-indigo-600', 'text-indigo-600');
             }
-
-            // Switch to History Tab
             function switchToHistoryTab() {
                 placeContent.classList.add('hidden');
                 historyContent.classList.remove('hidden');
@@ -1802,29 +1285,20 @@
                 placeTab.classList.remove('border-indigo-600', 'text-indigo-600');
                 renderHistory();
             }
-
-            // Update Undo Button Visibility
             function updateUndoButton() {
-                // Handle Motar undo separately
                 if (currentBetType === 'MOTAR' && lastMotarBets.length > 0) {
                     undoBtn.textContent = `Undo Last Motar (${lastMotarBets.length} bets)`;
                     undoBtn.classList.remove('hidden');
                     return;
                 }
-
-                // Handle Comman Pana undo separately
                 if (currentBetType === 'COMMAN_PANA' && lastCommanPanaBets.length > 0) {
                     undoBtn.textContent = `Undo Last Comman Pana (${lastCommanPanaBets.length} bets)`;
                     undoBtn.classList.remove('hidden');
                     return;
                 }
-
-                // Reset button text for other types
                 undoBtn.textContent = 'Undo Last Action';
-
                 if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT', 'JODI_PANEL'].includes(currentBetType)) {
                     if (currentBetType === 'EKI_BEKI') {
-                        // Only show undo for matching EKI/BEKI type
                         const selectedType = document.getElementById('ekiBekiType').value;
                         if (lastBulkAction.type === selectedType) {
                             undoBtn.classList.remove('hidden');
@@ -1840,40 +1314,29 @@
                 }
                 undoBtn.classList.add('hidden');
             }
-
-            // Render History
             function renderHistory() {
                 historyList.innerHTML = '';
-
                 let relevantBets = [];
-
                 if (currentBetType === 'SINGLE') {
                     const history = bets[currentNumber]?.history || [];
                     if (history.length === 0) {
                         historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No bets yet.</div>';
                         return;
                     }
-
                     history.forEach((bet, i) => {
                         const li = document.createElement('li');
                         li.classList.add('flex', 'flex-col', 'bg-gray-50', 'p-3', 'rounded', 'gap-1');
-
                         const mainRow = document.createElement('div');
                         mainRow.classList.add('flex', 'justify-between', 'items-center');
-
                         const infoDiv = document.createElement('div');
                         infoDiv.classList.add('flex', 'flex-col');
-
                         const amountText = document.createElement('span');
                         amountText.classList.add('font-semibold');
                         amountText.textContent = `${bet.amount}`;
-
                         const metaText = document.createElement('span');
                         metaText.classList.add('text-xs', 'text-gray-500');
                         metaText.textContent = `${bet.created_at} • ${bet.bet_type || 'SINGLE'}`;
-
                         infoDiv.append(amountText, metaText);
-
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.classList.add('delete-button');
@@ -1881,7 +1344,6 @@
                             await deleteBet(bet.id, currentNumber);
                             renderHistory();
                         };
-
                         mainRow.append(infoDiv, delBtn);
                         li.appendChild(mainRow);
                         historyList.appendChild(li);
@@ -1896,33 +1358,25 @@
                                 number
                             }))
                         );
-
                     if (relevantBets.length === 0) {
                         historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No Dadar bets found</div>';
                         return;
                     }
-
                     relevantBets.forEach((bet) => {
                         const li = document.createElement('li');
                         li.className = 'flex flex-col bg-gray-50 p-3 rounded gap-1';
-
                         const mainRow = document.createElement('div');
                         mainRow.className = 'flex justify-between items-center';
-
                         const infoDiv = document.createElement('div');
                         infoDiv.className = 'flex flex-col';
-
                         const numberAmount = document.createElement('span');
                         numberAmount.className = 'font-semibold';
                         numberAmount.textContent = `${bet.number}: ${bet.amount}`;
-
                         const metaText = document.createElement('span');
                         metaText.className = 'text-xs text-gray-500';
                         const columnInfo = bet.column ? `Col ${bet.column} • ` : '';
                         metaText.textContent = `${bet.created_at} • ${columnInfo}${bet.bet_type || 'DADAR'}`;
-
                         infoDiv.append(numberAmount, metaText);
-
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.className = 'delete-button';
@@ -1930,7 +1384,6 @@
                             await deleteBet(bet.id, bet.number);
                             renderHistory();
                         };
-
                         mainRow.append(infoDiv, delBtn);
                         li.appendChild(mainRow);
                         historyList.appendChild(li);
@@ -1945,7 +1398,6 @@
                     } else if (ekiBekiType === 'DADAR') {
                         targetNumbers = new Set([100, 110, 112, 113, 114, 115, 116, 117, 118, 119].map(String));
                     }
-
                     relevantBets = Object.entries(bets)
                         .filter(([number]) => targetNumbers.has(number))
                         .flatMap(([number, data]) =>
@@ -1954,32 +1406,24 @@
                                 number
                             }))
                         );
-
                     if (relevantBets.length === 0) {
                         historyList.innerHTML = `<div class="p-4 text-center text-gray-500">No ${ekiBekiType} bets found</div>`;
                         return;
                     }
-
                     relevantBets.forEach((bet) => {
                         const li = document.createElement('li');
                         li.className = 'flex flex-col bg-gray-50 p-3 rounded gap-1';
-
                         const mainRow = document.createElement('div');
                         mainRow.className = 'flex justify-between items-center';
-
                         const infoDiv = document.createElement('div');
                         infoDiv.className = 'flex flex-col';
-
                         const numberAmount = document.createElement('span');
                         numberAmount.className = 'font-semibold';
                         numberAmount.textContent = `${bet.number}: ${bet.amount}`;
-
                         const metaText = document.createElement('span');
                         metaText.className = 'text-xs text-gray-500';
                         metaText.textContent = `${bet.created_at} • ${bet.sub_type || bet.bet_type || ekiBekiType}`;
-
                         infoDiv.append(numberAmount, metaText);
-
                         const delBtn = document.createElement('button');
                         delBtn.textContent = 'Delete';
                         delBtn.className = 'delete-button';
@@ -1987,7 +1431,6 @@
                             await deleteBet(bet.id, bet.number);
                             renderHistory();
                         };
-
                         mainRow.append(infoDiv, delBtn);
                         li.appendChild(mainRow);
                         historyList.appendChild(li);
@@ -1996,8 +1439,6 @@
                     historyList.innerHTML = '<div class="p-4 text-center text-gray-500">No history available</div>';
                 }
             }
-
-            // API Functions
             async function loadBets() {
                 try {
                     const res = await fetch(`${API.LOAD_BETS}?bazar=${currentBazar}&date=${currentDate}`);
@@ -2013,7 +1454,6 @@
                     throw err; // Re-throw to be caught by Promise.allSettled
                 }
             }
-
             async function getLastBulkAction() {
                 try {
                     const res = await fetch(`${API.GET_LAST_BULK}?bazar=${currentBazar}&date=${currentDate}`);
@@ -2025,7 +1465,6 @@
                     throw err; // Re-throw to be caught by Promise.allSettled
                 }
             }
-
             async function placeSingleBet(number, amount) {
                 showLoader('Placing bet...');
                 try {
@@ -2049,29 +1488,23 @@
                     setTimeout(() => hideLoader(), 300);
                 }
             }
-
             async function placeBulkBet(type, amount, column = null, jodiType = null, panelType = null) {
                 showLoader(`Placing ${type} bets...`);
                 try {
                     const payload = { type, amount, bazar: currentBazar, date: currentDate };
                     updateLoader('Preparing data...');
                     if (type === 'JODI') {
-                        // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
                         payload.jodi_type = jodiType;
                     } else if (type === 'DADAR') {
-                        // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
                     } else if (type === 'SINGLE' || type === 'SP' || type === 'DP') {
-                        // Support both single column (number) and multiple columns (array)
                         if (column !== null) {
                             payload.columns = Array.isArray(column) ? column : [column];
                         }
                     } else if (type === 'ABR_CUT') {
-                        // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
                     } else if (type === 'JODI_PANEL') {
-                        // Support both single column (number) and multiple columns (array)
                         payload.columns = Array.isArray(column) ? column : [column];
                         payload.panel_type = panelType;
                     }
@@ -2100,7 +1533,6 @@
                     setTimeout(() => hideLoader(), 300);
                 }
             }
-
             async function deleteBet(betId, number) {
                 const res = await fetch(API.DELETE_BET, {
                     method: 'POST',
@@ -2119,20 +1551,15 @@
                         if (hist.length === 0) delete bets[number];
                     }
                     updateBetTotal(number);
-                    // Refresh from database to ensure accuracy
                     await refreshAllBetTotals();
                 }
                 return data;
             }
-
             async function undoBulkAction() {
-                // Handle Motar undo
                 if (currentBetType === 'MOTAR' && lastMotarBets.length > 0) {
                     if (!confirm(`Undo last Motar action (${lastMotarBets.length} bets)?`)) return;
-
                     let successCount = 0;
                     let failCount = 0;
-
                     for (const bet of lastMotarBets) {
                         const result = await deleteBet(bet.bet_id, bet.number);
                         if (result.success) {
@@ -2141,7 +1568,6 @@
                             failCount++;
                         }
                     }
-
                     if (successCount > 0) {
                         showToast('Success', `${successCount} Motar bets undone`, 'success');
                         lastMotarBets = []; // Clear tracked bets
@@ -2149,21 +1575,15 @@
                         renderPage(1);
                         updateUndoButton(); // Hide undo button
                     }
-
                     if (failCount > 0) {
                         showToast('Warning', `Failed to undo ${failCount} bets`, 'warning');
                     }
-
                     return;
                 }
-
-                // Handle Comman Pana undo
                 if (currentBetType === 'COMMAN_PANA' && lastCommanPanaBets.length > 0) {
                     if (!confirm(`Undo last Comman Pana action (${lastCommanPanaBets.length} bets)?`)) return;
-
                     let successCount = 0;
                     let failCount = 0;
-
                     for (const bet of lastCommanPanaBets) {
                         const result = await deleteBet(bet.bet_id, bet.number);
                         if (result.success) {
@@ -2172,7 +1592,6 @@
                             failCount++;
                         }
                     }
-
                     if (successCount > 0) {
                         showToast('Success', `${successCount} Comman Pana bets undone`, 'success');
                         lastCommanPanaBets = []; // Clear tracked bets
@@ -2180,18 +1599,13 @@
                         renderPage(1);
                         updateUndoButton(); // Hide undo button
                     }
-
                     if (failCount > 0) {
                         showToast('Warning', `Failed to undo ${failCount} bets`, 'warning');
                     }
-
                     return;
                 }
-
-                // Handle bulk action undo
                 if (!lastBulkAction) return showToast('Error', 'No bulk action to undo', 'warning');
                 if (!confirm(`Undo last ${lastBulkAction.type} bulk action (${lastBulkAction.total_bets} bets)?`)) return;
-
                 const res = await fetch(API.UNDO_BULK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
@@ -2210,7 +1624,6 @@
                     showToast('Error', data.message || 'Failed to undo', 'error');
                 }
             }
-
             async function updateTotalAmount() {
                 try {
                     const res = await fetch(`${API.GET_BET_TOTAL}?bazar=${currentBazar}&date=${currentDate}`);
@@ -2226,55 +1639,43 @@
                     console.error('Error fetching total amount:', err);
                 }
             }
-
             function updateBetTotal(number) {
                 const el = document.getElementById(`bet-total-${number}`);
                 if (el) {
                     el.textContent = bets[number]?.total ? `${bets[number].total}` : '';
                 }
             }
-
-            // Fetch all bet totals from database and update UI
             async function refreshAllBetTotals() {
                 try {
                     const res = await fetch(`${API.GET_ALL_BET_TOTALS}?bazar=${currentBazar}&date=${currentDate}`);
                     const data = await res.json();
-                    
                     if (data.success) {
-                        // Update local bets object with database values
                         const dbTotals = data.bet_totals;
-                        
-                        // Clear existing bets and update with database values
                         for (const number in bets) {
                             bets[number].total = 0;
                         }
-                        
-                        // Update with fresh database values
                         for (const number in dbTotals) {
                             if (!bets[number]) {
                                 bets[number] = { total: 0, history: [] };
                             }
                             bets[number].total = dbTotals[number];
                         }
-                        
-                        // Update all visible bet total elements
                         for (const number in bets) {
                             updateBetTotal(number);
                         }
+                        highlightCellsByLimit();
                     }
                 } catch (err) {
                     console.error('Error refreshing bet totals:', err);
                 }
             }
-
             function renderPage(page) {
                 tbody.innerHTML = '';
                 const start = page === 1 ? 0 : 13;
                 const end = page === 1 ? 11 : 22;
-
+                currentPage = page;
                 const page1Btn = document.getElementById('page-1-btn');
                 const page2Btn = document.getElementById('page-2-btn');
-
                 if (page === 1) {
                     page1Btn.classList.add('bg-indigo-600', 'text-white');
                     page1Btn.classList.remove('bg-gray-300', 'text-gray-800');
@@ -2286,7 +1687,6 @@
                     page1Btn.classList.add('bg-gray-300', 'text-gray-800');
                     page1Btn.classList.remove('bg-indigo-600', 'text-white');
                 }
-
                 for (let i = start; i <= end; i++) {
                     const row = document.createElement('tr');
                     const dataIndex = i > 12 ? i - 1 : i;
@@ -2294,36 +1694,31 @@
                     rowNum.textContent = rowLabels[dataIndex] || (dataIndex + 1);
                     rowNum.classList.add('spreadsheet-cell', 'row-number-cell');
                     row.appendChild(rowNum);
-
                     for (let j = 0; j < 10; j++) {
                         const cell = document.createElement('td');
                         cell.classList.add('spreadsheet-cell', 'text-gray-700');
                         const value = allColumnData[j][dataIndex];
-
                         if (value) {
                             const span = document.createElement('span');
                             span.textContent = value;
-
+                            span.style.fontWeight = '600';
                             const plus = document.createElement('button');
                             plus.textContent = '+';
                             plus.classList.add('bet-button');
                             plus.onclick = () => openModal('SINGLE', value, `Place a Bet on ${value}`);
-
                             const total = document.createElement('span');
                             total.classList.add('ml-2', 'text-sm', 'font-semibold', 'text-green-600');
                             total.id = `bet-total-${value}`;
                             if (bets[value]?.total) total.textContent = `${bets[value].total}`;
-
                             cell.append(span, plus, total);
                         }
                         row.appendChild(cell);
                     }
                     tbody.appendChild(row);
                 }
+                highlightCellsByLimit();
             }
-
             // Event Listeners
-
             // Amount button selection
             amountButtons.forEach(btn => {
                 btn.onclick = () => {
@@ -2332,20 +1727,15 @@
                     customAmountInput.value = '';
                 };
             });
-
             customAmountInput.addEventListener('input', () => {
                 amountButtons.forEach(b => b.classList.remove('selected'));
             });
-
-            // Modal close
             closeModalBtn.onclick = closeModal;
             cancelBtn.onclick = closeModal;
             modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
             // Tab switching
             placeTab.onclick = switchToPlaceTab;
             historyTab.onclick = switchToHistoryTab;
-
             // Confirm Bet
             confirmBtn.onclick = async () => {
                 let amount = 0;
@@ -2355,16 +1745,13 @@
                 } else {
                     amount = parseFloat(customAmountInput.value);
                 }
-
                 if (!amount || amount <= 0) {
                     return showToast('Invalid Amount', 'Please select or enter an amount', 'warning');
                 }
-
                 if (!selected) {
                     if (amount < 1) return showToast('Amount Too Low', 'Minimum is 1', 'warning');
                     if (amount > 5000) return showToast('Amount Too High', 'Maximum is 5,000', 'warning');
                 }
-
                 if (currentBetType === 'SINGLE') {
                     const result = await placeSingleBet(currentNumber, amount);
                     if (result.success) {
@@ -2376,15 +1763,11 @@
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
                 } else if (currentBetType === 'JODI') {
-                    // Get selected columns from checkboxes
                     const columns = getSelectedColumns('jodiColumnCheckbox');
-
                     if (columns.length === 0) {
                         return showToast('No Columns Selected', 'Please select at least one column', 'warning');
                     }
-
                     const jodiType = parseInt(document.getElementById('jodiType').value);
-
                     const result = await placeBulkBet('JODI', amount, columns, jodiType);
                     if (result.success) {
                         const columnText = columns.length > 1
@@ -2401,8 +1784,6 @@
                     }
                 } else if (currentBetType === 'EKI_BEKI') {
                     const ekiBekiType = document.getElementById('ekiBekiType').value;
-
-                    // Handle all types (EKI, BEKI, DADAR) the same way - no column selection
                     const result = await placeBulkBet(ekiBekiType, amount);
                     if (result.success) {
                         showToast('Success!', `${ekiBekiType} bet placed on ${result.total_bets} numbers`, 'success');
@@ -2414,13 +1795,10 @@
                         showToast('Error', result.error || 'Failed to place bet', 'error');
                     }
                 } else if (currentBetType === 'ABR_CUT') {
-                    // Get selected columns from checkboxes
                     const columns = getSelectedColumns('abrCutColumnCheckbox');
-
                     if (columns.length === 0) {
                         return showToast('No Columns Selected', 'Please select at least one column', 'warning');
                     }
-
                     const result = await placeBulkBet('ABR_CUT', amount, columns);
                     if (result.success) {
                         const columnText = columns.length > 1
@@ -2436,15 +1814,11 @@
                         showToast('Error', result.error || 'Failed to place ABR Cut bet', 'error');
                     }
                 } else if (currentBetType === 'JODI_PANEL') {
-                    // Get selected columns from checkboxes
                     const columns = getSelectedColumns('jodiPanelColumnCheckbox');
-
                     if (columns.length === 0) {
                         return showToast('No Columns Selected', 'Please select at least one column', 'warning');
                     }
-
                     const panelType = parseInt(document.getElementById('jodiPanelType').value);
-
                     const result = await placeBulkBet('JODI_PANEL', amount, columns, null, panelType);
                     if (result.success) {
                         const columnText = columns.length > 1
@@ -2460,12 +1834,10 @@
                         showToast('Error', result.error || 'Failed to place Jodi Panel bet', 'error');
                     }
                 } else if (['SP', 'DP'].includes(currentBetType)) {
-                    // Get selected columns from checkboxes based on bet type
                     let columns = null;
                     // For SP/DP, columns are optional
                     columns = getSelectedColumns('betColumnCheckbox');
                     columns = columns.length > 0 ? columns : null;
-
                     const result = await placeBulkBet(currentBetType, amount, columns);
                     if (result.success) {
                         let message = `${successCount} bets placed successfully`;
@@ -2485,11 +1857,9 @@
                     }
                 } else if (currentBetType === 'MOTAR') {
                     const motarInput = document.getElementById('motarNumberInput').value;
-
                     if (!motarInput || motarInput.length < 4 || motarInput.length > 10) {
                         return showToast('Invalid Input', 'Please enter a 4-10 digit number', 'warning');
                     }
-
                     try {
                         // Call Django API to place all Motar bets in one transaction
                         const res = await fetch(API.PLACE_MOTAR, {
@@ -2505,13 +1875,9 @@
                                 date: currentDate
                             })
                         });
-
                         const data = await res.json();
-
                         if (data.success) {
-                            // Update frontend bets
                             lastMotarBets = []; // Clear previous tracking
-
                             data.bets.forEach(bet => {
                                 const num = bet.number;
                                 if (!bets[num]) bets[num] = { total: 0, history: [] };
@@ -2522,7 +1888,6 @@
                                     bet_type: 'MOTAR'
                                 });
                                 updateBetTotal(num);
-
                                 // Track for undo
                                 lastMotarBets.push({
                                     bet_id: bet.bet_id,
@@ -2530,14 +1895,11 @@
                                     amount: parseFloat(bet.amount)
                                 });
                             });
-
-                            // Update last bulk action
                             lastBulkAction = {
                                 id: data.bulk_action_id,
                                 type: 'MOTAR',
                                 total_bets: data.total_bets
                             };
-
                             showToast('Success!', `Motar: ${data.total_bets} bets placed from ${motarInput}`, 'success');
                             closeModal();
                             renderPage(1);
@@ -2555,19 +1917,15 @@
                     const digitInput = document.getElementById('commanPanaDigitInput').value;
                     const is36Checked = document.getElementById('commanPana36Checkbox').checked;
                     const is56Checked = document.getElementById('commanPana56Checkbox').checked;
-
                     if (!digitInput || digitInput.length !== 1 || !/^[0-9]$/.test(digitInput)) {
                         return showToast('Invalid Input', 'Please enter a single digit (0-9)', 'warning');
                     }
-
                     if (!is36Checked && !is56Checked) {
                         return showToast('Select Type', 'Please select Common Pana 36 or 56', 'warning');
                     }
-
                     const betType = is56Checked ? '56' : '36';
                     const betTypeName = is56Checked ? 'COMMAN_PANA_56' : 'COMMAN_PANA_36';
                     const betLabel = is56Checked ? 'Common Pana 56' : 'Common Pana 36';
-
                     try {
                         // Call Django API to place all Common Pana bets in one transaction
                         const res = await fetch(API.PLACE_COMMAN_PANA, {
@@ -2584,13 +1942,9 @@
                                 date: currentDate
                             })
                         });
-
                         const data = await res.json();
-
                         if (data.success) {
-                            // Update frontend bets
                             lastCommanPanaBets = []; // Clear previous tracking
-
                             data.bets.forEach(bet => {
                                 const num = bet.number;
                                 if (!bets[num]) bets[num] = { total: 0, history: [] };
@@ -2601,7 +1955,6 @@
                                     bet_type: betTypeName
                                 });
                                 updateBetTotal(num);
-
                                 // Track for undo
                                 lastCommanPanaBets.push({
                                     bet_id: bet.bet_id,
@@ -2609,14 +1962,11 @@
                                     amount: parseFloat(bet.amount)
                                 });
                             });
-
-                            // Update last bulk action
                             lastBulkAction = {
                                 id: data.bulk_action_id,
                                 type: betTypeName,
                                 total_bets: data.total_bets
                             };
-
                             showToast('Success!', `${betLabel}: ${data.total_bets} bets placed for digit ${digitInput}`, 'success');
                             closeModal();
                             renderPage(1);
@@ -2632,19 +1982,15 @@
                     }
                 } else if (currentBetType === 'SET_PANA') {
                     const numberInput = document.getElementById('setPanaNumberInput').value;
-
                     if (!numberInput || numberInput.length !== 3 || !/^[0-9]{3}$/.test(numberInput)) {
                         return showToast('Invalid Input', 'Please enter exactly 3 digits', 'warning');
                     }
-
                     // Check if family info is displayed (means number is valid)
                     const familyInfoDiv = document.getElementById('setPanaFamilyInfo');
                     if (familyInfoDiv.classList.contains('hidden')) {
                         return showToast('Invalid Number', 'Number not found in any family group', 'warning');
                     }
-
                     const familyName = document.getElementById('setPanaFamilyName').textContent;
-
                     try {
                         // Call Django API to place all Set Pana bets in one transaction
                         const res = await fetch(API.PLACE_SET_PANA, {
@@ -2660,11 +2006,8 @@
                                 date: currentDate
                             })
                         });
-
                         const data = await res.json();
-
                         if (data.success) {
-                            // Update frontend bets
                             data.bets.forEach(bet => {
                                 const num = bet.number;
                                 if (!bets[num]) bets[num] = { total: 0, history: [] };
@@ -2676,14 +2019,11 @@
                                 });
                                 updateBetTotal(num);
                             });
-
-                            // Update last bulk action
                             lastBulkAction = {
                                 id: data.bulk_action_id,
                                 type: 'SET_PANA',
                                 total_bets: data.total_bets
                             };
-
                             showToast('Success!', `Set Pana: ${data.total_bets} bets placed for family ${familyName}`, 'success');
                             closeModal();
                             renderPage(1);
@@ -2700,19 +2040,15 @@
                     }
                 }
             };
-
             // Undo button
             undoBtn.onclick = undoBulkAction;
-
             // Eki/Beki/Dadar type change listener to update undo button
             document.getElementById('ekiBekiType').addEventListener('change', function () {
                 updateUndoButton();
             });
-
             // "Select All Columns" checkbox event listener
             document.getElementById('selectAllColumnsCheckbox').addEventListener('change', function () {
                 let checkboxClass;
-
                 // Determine which checkboxes to select based on current bet type
                 if (currentBetType === 'ABR_CUT') {
                     checkboxClass = 'abrCutColumnCheckbox';
@@ -2723,7 +2059,6 @@
                 } else {
                     return;
                 }
-
                 if (this.checked) {
                     // Check all checkboxes
                     document.querySelectorAll(`.${checkboxClass}`).forEach(cb => {
@@ -2738,57 +2073,109 @@
                     showToast('Columns Cleared', 'All columns have been deselected', 'success');
                 }
             });
-
             // Page navigation
             document.getElementById('page-1-btn').onclick = () => renderPage(1);
             document.getElementById('page-2-btn').onclick = () => renderPage(2);
-
+            // Load saved limits from localStorage
+            const savedSpLimit = localStorage.getItem('spAmountLimit');
+            const savedDpLimit = localStorage.getItem('dpAmountLimit');
+            if (savedSpLimit) {
+                spAmountLimit = parseFloat(savedSpLimit);
+                document.getElementById('sp-limit-input').value = savedSpLimit;
+            }
+            if (savedDpLimit) {
+                dpAmountLimit = parseFloat(savedDpLimit);
+                document.getElementById('dp-limit-input').value = savedDpLimit;
+            }
+            // SP Limit Input
+            document.getElementById('sp-limit-input').addEventListener('input', function(e) {
+                const value = e.target.value;
+                if (value === '' || value === '0') {
+                    spAmountLimit = null;
+                    localStorage.removeItem('spAmountLimit');
+                    highlightCellsByLimit();
+                    return;
+                }
+                const numLimit = parseFloat(value);
+                if (!isNaN(numLimit) && numLimit > 0) {
+                    spAmountLimit = numLimit;
+                    localStorage.setItem('spAmountLimit', numLimit);
+                    if (currentPage === 1) {
+                        highlightCellsByLimit();
+                    }
+                }
+            });
+            // DP Limit Input
+            document.getElementById('dp-limit-input').addEventListener('input', function(e) {
+                const value = e.target.value;
+                if (value === '' || value === '0') {
+                    dpAmountLimit = null;
+                    localStorage.removeItem('dpAmountLimit');
+                    highlightCellsByLimit();
+                    return;
+                }
+                const numLimit = parseFloat(value);
+                if (!isNaN(numLimit) && numLimit > 0) {
+                    dpAmountLimit = numLimit;
+                    localStorage.setItem('dpAmountLimit', numLimit);
+                    if (currentPage === 2) {
+                        highlightCellsByLimit();
+                    }
+                }
+            });
+            // Function to highlight cells based on amount limit
+            function highlightCellsByLimit() {
+                // Remove all existing highlights first
+                document.querySelectorAll('.spreadsheet-cell').forEach(cell => {
+                    cell.classList.remove('highlight-limit');
+                });
+                const limit = currentPage === 1 ? spAmountLimit : dpAmountLimit;
+                if (limit === null) return;
+                document.querySelectorAll('span[id^="bet-total-"]').forEach(betTotalSpan => {
+                    const amount = parseFloat(betTotalSpan.textContent) || 0;
+                    if (amount > 0 && amount >= limit) {
+                        const cell = betTotalSpan.closest('.spreadsheet-cell');
+                        if (cell) {
+                            cell.classList.add('highlight-limit');
+                        }
+                    }
+                });
+            }
             // Bet action buttons
             document.getElementById('all-sp-btn').onclick = () => {
                 openModal('SP', null, 'Place Bet on ALL SP (120 numbers)');
             };
-
             document.getElementById('all-dp-btn').onclick = () => {
                 openModal('DP', null, 'Place Bet on ALL DP (100 numbers)');
             };
-
             document.getElementById('jodi-btn').onclick = () => {
                 openModal('JODI', null, 'Jodi Vagar');
             };
-
             document.getElementById('eki-beki-btn').onclick = () => {
                 openModal('EKI_BEKI', null, 'Eki/Beki/Dadar');
             };
-
             document.getElementById('abr-cut-btn').onclick = () => {
                 openModal('ABR_CUT', null, 'ABR Cut');
             };
-
             document.getElementById('jodi-panel-btn').onclick = () => {
                 openModal('JODI_PANEL', null, 'Jodi Panel');
             };
-
             document.getElementById('motar-btn').onclick = () => {
                 openModal('MOTAR', null, 'Motar');
             };
-
             document.getElementById('comman-pana-btn').onclick = () => {
-                openModal('COMMAN_PANA', null, 'Comman Pana 36');
+                openModal('COMMAN_PANA', null, 'Common Bet');
             };
-
             document.getElementById('set-pana-btn').onclick = () => {
                 openModal('SET_PANA', null, 'Set Pana');
             };
-
             // Motar number input handler - call Django API for preview
             document.getElementById('motarNumberInput').addEventListener('input', async function (e) {
                 let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
                 e.target.value = value;
-
                 const generatedDiv = document.getElementById('motarGeneratedNumbers');
                 const displayDiv = document.getElementById('motarNumbersDisplay');
                 const countSpan = document.getElementById('motarNumbersCount');
-
                 if (value.length >= 4 && value.length <= 10) {
                     try {
                         // Call Django API to generate numbers
@@ -2800,17 +2187,13 @@
                             },
                             body: JSON.stringify({ digits: value })
                         });
-
                         const data = await res.json();
-
                         if (data.success) {
                             const numbers = data.numbers;
-
                             // Display generated numbers
                             displayDiv.innerHTML = numbers.map(num =>
                                 `<span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-sm font-mono">${num}</span>`
                             ).join('');
-
                             countSpan.textContent = numbers.length;
                             generatedDiv.classList.remove('hidden');
                         } else {
@@ -2824,29 +2207,23 @@
                     generatedDiv.classList.add('hidden');
                 }
             });
-
             // Comman Pana digit input handler - call Django API for preview
             document.getElementById('commanPanaDigitInput').addEventListener('input', async function (e) {
                 let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
                 if (value.length > 1) value = value.slice(0, 1); // Limit to 1 digit
                 e.target.value = value;
-
                 const generatedDiv = document.getElementById('commanPanaGeneratedNumbers');
                 const displayDiv = document.getElementById('commanPanaNumbersDisplay');
                 const countSpan = document.getElementById('commanPanaNumbersCount');
-
                 if (value.length === 1) {
                     // Check which type is selected
                     const is36Checked = document.getElementById('commanPana36Checkbox').checked;
                     const is56Checked = document.getElementById('commanPana56Checkbox').checked;
-
                     if (!is36Checked && !is56Checked) {
                         showToast('Select Type', 'Please select Common Pana 36 or 56', 'warning');
                         return;
                     }
-
                     const betType = is56Checked ? '56' : '36';
-
                     try {
                         // Call Django API to find numbers
                         const res = await fetch(API.FIND_COMMAN_PANA, {
@@ -2860,17 +2237,13 @@
                                 type: betType
                             })
                         });
-
                         const data = await res.json();
-
                         if (data.success) {
                             const numbers = data.numbers;
-
                             // Display found numbers
                             displayDiv.innerHTML = numbers.map(num =>
                                 `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-mono">${num}</span>`
                             ).join('');
-
                             countSpan.textContent = numbers.length;
                             generatedDiv.classList.remove('hidden');
                         } else {
@@ -2884,7 +2257,6 @@
                     generatedDiv.classList.add('hidden');
                 }
             });
-
             // Add checkbox change listeners for Common Pana types
             document.getElementById('commanPana36Checkbox').addEventListener('change', function () {
                 if (this.checked) {
@@ -2896,7 +2268,6 @@
                     digitInput.dispatchEvent(new Event('input'));
                 }
             });
-
             document.getElementById('commanPana56Checkbox').addEventListener('change', function () {
                 if (this.checked) {
                     document.getElementById('commanPana36Checkbox').checked = false;
@@ -2907,17 +2278,14 @@
                     digitInput.dispatchEvent(new Event('input'));
                 }
             });
-
             // Set Pana number input handler - show family information
             document.getElementById('setPanaNumberInput').addEventListener('input', function (e) {
                 let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
                 e.target.value = value;
-
                 const familyInfoDiv = document.getElementById('setPanaFamilyInfo');
                 const familyNameSpan = document.getElementById('setPanaFamilyName');
                 const familyNumbersDiv = document.getElementById('setPanaFamilyNumbers');
                 const countSpan = document.getElementById('setPanaFamilyCount');
-
                 if (value.length === 3) {
                     // Find which family this number belongs to
                     const familyPanaNumbers = {
@@ -2957,11 +2325,9 @@
                         'G34': [338, 888, 388, 333],
                         'G35': [500, 555, 550, 0]
                     };
-
                     const numberInt = parseInt(value);
                     let foundFamily = null;
                     let foundNumbers = [];
-
                     for (const [family, numbers] of Object.entries(familyPanaNumbers)) {
                         if (numbers.includes(numberInt)) {
                             foundFamily = family;
@@ -2969,7 +2335,6 @@
                             break;
                         }
                     }
-
                     if (foundFamily) {
                         familyNameSpan.textContent = foundFamily;
                         familyNumbersDiv.innerHTML = foundNumbers.map(num =>
@@ -2985,7 +2350,6 @@
                     familyInfoDiv.classList.add('hidden');
                 }
             });
-
             // Add event listeners to all column checkboxes for visual feedback
             function addCheckboxListeners(checkboxClass, highlightColor) {
                 document.querySelectorAll(`.${checkboxClass}`).forEach(checkbox => {
@@ -3001,21 +2365,17 @@
                     });
                 });
             }
-
             // Add listeners for all checkbox types
             addCheckboxListeners('betColumnCheckbox', 'indigo');
             addCheckboxListeners('jodiColumnCheckbox', 'purple');
             addCheckboxListeners('abrCutColumnCheckbox', 'pink');
             addCheckboxListeners('jodiPanelColumnCheckbox', 'teal');
-
             // Quick Bet Entry functionality
             let quickBetRowCounter = 2;
             const validNumbers = new Set();
-
             // Build valid numbers set from ALL_COLUMN_DATA (already defined above)
             allColumnData.forEach(column => {
                 column.forEach(num => {
-                    // Handle both numbers and '000' string
                     let numStr = String(num);
                     // Pad numbers to 3 digits (e.g., 0 becomes '000', 1 becomes '001')
                     if (numStr.length < 3) {
@@ -3024,16 +2384,11 @@
                     validNumbers.add(numStr);
                 });
             });
-
-            // Handle number input - validate 3-digit number from ALL_COLUMN_DATA
             document.addEventListener('input', function (e) {
                 if (e.target.classList.contains('quick-bet-number')) {
                     const input = e.target;
                     const rowNum = input.dataset.row;
-
-                    // Only allow digits
                     input.value = input.value.replace(/[^0-9]/g, '');
-
                     // Check if it's a valid 3-digit number
                     if (input.value.length === 3) {
                         if (!validNumbers.has(input.value)) {
@@ -3046,45 +2401,35 @@
                     } else {
                         input.classList.remove('border-red-500', 'bg-red-50', 'border-green-500', 'bg-green-50');
                     }
-
                     // Auto-add new row when user starts typing in the last row
                     const allRows = document.querySelectorAll('#quickBetTableBody tr');
                     const lastRow = allRows[allRows.length - 1];
                     const lastRowNum = parseInt(lastRow.dataset.row);
-
                     if (parseInt(rowNum) === lastRowNum && input.value.length > 0) {
                         addQuickBetRow();
                     }
                 }
             });
-
-            // Handle Enter key to jump to next input field
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     const target = e.target;
-                
                     // Check if it's a quick bet input field
                     if (target.classList.contains('quick-bet-number') || target.classList.contains('quick-bet-amount')) {
                         e.preventDefault(); // Prevent form submission
-                    
                         const currentRow = parseInt(target.dataset.row);
                         const isNumberField = target.classList.contains('quick-bet-number');
-                    
                         // Check if "same amount" checkbox is checked
                         const sameAmountCheckbox = document.getElementById('sameAmountCheckbox');
-                        
                         if (isNumberField) {
                             // If checkbox is checked, skip to next row's number field
                             if (sameAmountCheckbox.checked) {
                                 const nextRow = currentRow + 1;
                                 let nextNumberInput = document.querySelector(`.quick-bet-number[data-row="${nextRow}"]`);
-                            
                                 // If next row doesn't exist, create it
                                 if (!nextNumberInput) {
                                     addQuickBetRow();
                                     nextNumberInput = document.querySelector(`.quick-bet-number[data-row="${nextRow}"]`);
                                 }
-                            
                                 if (nextNumberInput) {
                                     nextNumberInput.focus();
                                 }
@@ -3099,13 +2444,11 @@
                             // Jump from amount field to number field in next row
                             const nextRow = currentRow + 1;
                             let nextNumberInput = document.querySelector(`.quick-bet-number[data-row="${nextRow}"]`);
-                        
                             // If next row doesn't exist, create it
                             if (!nextNumberInput) {
                                 addQuickBetRow();
                                 nextNumberInput = document.querySelector(`.quick-bet-number[data-row="${nextRow}"]`);
                             }
-                        
                             if (nextNumberInput) {
                                 nextNumberInput.focus();
                             }
@@ -3113,14 +2456,11 @@
                     }
                 }
             });
-
             // Same Amount Checkbox - auto-fill amounts from first row
             document.getElementById('sameAmountCheckbox').addEventListener('change', function () {
                 if (this.checked) {
-                    // Get the first row's amount
                     const firstAmountInput = document.querySelector('.quick-bet-amount[data-row="1"]');
                     const firstAmount = firstAmountInput.value;
-
                     if (firstAmount && parseFloat(firstAmount) > 0) {
                         // Fill all other amount fields with the same value
                         const allAmountInputs = document.querySelectorAll('.quick-bet-amount');
@@ -3147,14 +2487,12 @@
                     });
                 }
             });
-
             // Watch first row amount input - update others when checkbox is checked
             document.addEventListener('input', function (e) {
                 if (e.target.classList.contains('quick-bet-amount') && e.target.dataset.row === '1') {
                     const sameAmountCheckbox = document.getElementById('sameAmountCheckbox');
                     if (sameAmountCheckbox.checked) {
                         const firstAmount = e.target.value;
-                        // Update all other amount fields
                         const allAmountInputs = document.querySelectorAll('.quick-bet-amount');
                         allAmountInputs.forEach(input => {
                             if (input.dataset.row !== '1') {
@@ -3164,7 +2502,6 @@
                     }
                 }
             });
-
             // Add new row to quick bet table
             function addQuickBetRow() {
                 quickBetRowCounter++;
@@ -3196,7 +2533,6 @@
                         </td>
                     `;
                 tbody.appendChild(newRow);
-
                 // If "same amount" checkbox is checked, apply the first row's amount to new row
                 const sameAmountCheckbox = document.getElementById('sameAmountCheckbox');
                 if (sameAmountCheckbox.checked) {
@@ -3210,22 +2546,18 @@
                     }
                 }
             }
-
             // Remove row button event listener (event delegation)
             document.getElementById('quickBetTableBody').addEventListener('click', function (e) {
                 const removeBtn = e.target.closest('.remove-row-btn');
                 if (removeBtn) {
                     const row = removeBtn.closest('tr');
                     const tbody = document.getElementById('quickBetTableBody');
-
                     // Prevent removing if only one row left
                     if (tbody.querySelectorAll('tr').length <= 1) {
                         showToast('Cannot Remove', 'At least one row must remain', 'warning');
                         return;
                     }
-
                     row.remove();
-
                     // Re-number remaining rows
                     const remainingRows = tbody.querySelectorAll('tr');
                     remainingRows.forEach((row, index) => {
@@ -3236,10 +2568,7 @@
                             input.dataset.row = rowNum;
                         });
                     });
-
-                    // Update counter to match the highest row number
                     quickBetRowCounter = remainingRows.length;
-
                     // If "same amount" checkbox is checked and we removed a row, re-apply the logic
                     const sameAmountCheckbox = document.getElementById('sameAmountCheckbox');
                     if (sameAmountCheckbox.checked) {
@@ -3258,41 +2587,33 @@
                     }
                 }
             });
-
             // Place bets button
             document.getElementById('quickBetOkayBtn').addEventListener('click', async function () {
                 const numberInputs = document.querySelectorAll('.quick-bet-number');
                 const amountInputs = document.querySelectorAll('.quick-bet-amount');
-
                 const betsToPlace = [];
-
                 console.log('Quick Bet: Starting validation for', numberInputs.length, 'rows');
                 console.log('Valid numbers count:', validNumbers.size);
-
                 for (let i = 0; i < numberInputs.length; i++) {
                     const number = numberInputs[i].value.trim();
                     const amount = amountInputs[i].value.trim();
-
                     if (number && amount) {
                         // Validate number
                         if (number.length !== 3) {
                             showToast('Invalid Entry', `Row ${i + 1}: Number must be 3 digits`, 'error');
                             return;
                         }
-
                         if (!validNumbers.has(number)) {
                             console.error(`Number ${number} not in validNumbers set`);
                             showToast('Invalid Number', `Row ${i + 1}: ${number} is not allowed`, 'error');
                             return;
                         }
-
                         // Validate amount
                         const amountNum = parseFloat(amount);
                         if (isNaN(amountNum) || amountNum <= 0) {
                             showToast('Invalid Amount', `Row ${i + 1}: Amount must be greater than 0`, 'error');
                             return;
                         }
-
                         betsToPlace.push({ number, amount: amountNum });
                     } else if (number || amount) {
                         // One field filled but not the other
@@ -3300,19 +2621,15 @@
                         return;
                     }
                 }
-
                 if (betsToPlace.length === 0) {
                     showToast('No Bets', 'Please enter at least one bet', 'warning');
                     return;
                 }
-
                 console.log('Quick Bet: Placing', betsToPlace.length, 'bets');
-
                 // Place all bets
                 let successCount = 0;
                 let failCount = 0;
                 const failedBets = [];
-
                 for (const bet of betsToPlace) {
                     try {
                         const response = await fetch(API.PLACE_BET, {
@@ -3328,12 +2645,9 @@
                                 date: currentDate
                             })
                         });
-
                         const result = await response.json();
                         if (result.success) {
                             successCount++;
-
-                            // Update bets dictionary like the main placeSingleBet function does
                             const num = bet.number;
                             if (!bets[num]) bets[num] = { total: 0, history: [] };
                             bets[num].total += parseFloat(bet.amount);
@@ -3355,14 +2669,9 @@
                         console.error('Bet error:', error);
                     }
                 }
-
-                // Show result
                 if (successCount > 0 && failCount === 0) {
                     showToast('Success!', `${successCount} bet(s) placed successfully`, 'success');
-
-                    // Clear the table
                     document.getElementById('quickBetClearBtn').click();
-
                     // Reload bets and update total
                     await loadBets();
                     await updateTotalAmount();
@@ -3370,7 +2679,6 @@
                     renderPage(1);
                 } else if (successCount > 0 && failCount > 0) {
                     showToast('Partial Success', `${successCount} bet(s) placed, ${failCount} failed: ${failedBets.join(', ')}`, 'warning');
-
                     // Reload bets and update total
                     await loadBets();
                     await updateTotalAmount();
@@ -3380,8 +2688,6 @@
                     showToast('Failed', `All ${failCount} bet(s) failed to place: ${failedBets.join(', ')}`, 'error');
                 }
             });
-
-            // Clear button
             document.getElementById('quickBetClearBtn').addEventListener('click', function () {
                 const tbody = document.getElementById('quickBetTableBody');
                 tbody.innerHTML = `
@@ -3435,34 +2741,27 @@
                         </tr>
                     `;
                 quickBetRowCounter = 2;
-
                 // Uncheck the "same amount" checkbox
                 const sameAmountCheckbox = document.getElementById('sameAmountCheckbox');
                 sameAmountCheckbox.checked = false;
             });
-
             // Toggle Quick Bet Container
             document.getElementById('toggleQuickBetBtn').addEventListener('click', function () {
                 const container = document.getElementById('quickBetContainer');
                 container.classList.toggle('hidden');
             });
-
             document.getElementById('closeQuickBetBtn').addEventListener('click', function () {
                 document.getElementById('quickBetContainer').classList.add('hidden');
             });
-
             // History Modal Functions
             const historyModal = document.getElementById('historyModal');
             const historyTableBody = document.getElementById('historyTableBody');
-
             async function loadBulkActionHistory() {
                 try {
                     // Build URL with bazar and date filters
                     let url = `${API.GET_BULK_HISTORY}?bazar=${currentBazar}&date=${currentDate}`;
-
                     const res = await fetch(url);
                     const data = await res.json();
-
                     if (data.success) {
                         renderHistoryTable(data.history);
                         updateHistoryStats(data.history);
@@ -3474,10 +2773,8 @@
                     showToast('Error', 'Failed to load history', 'error');
                 }
             }
-
             function renderHistoryTable(history) {
                 historyTableBody.innerHTML = '';
-
                 if (history.length === 0) {
                     historyTableBody.innerHTML = `
                             <tr>
@@ -3488,11 +2785,9 @@
                         `;
                     return;
                 }
-
                 history.forEach((record, index) => {
                     const row = document.createElement('tr');
                     row.className = index % 2 === 0 ? 'bg-white hover:bg-purple-50' : 'bg-gray-50 hover:bg-purple-50';
-
                     // Action type with color coding
                     let actionTypeClass = 'bg-gray-100 text-gray-800';
                     if (record.action_type === 'SP') actionTypeClass = 'bg-lime-100 text-lime-800';
@@ -3507,12 +2802,10 @@
                     else if (record.action_type === 'COMMAN_PANA_36') actionTypeClass = 'bg-blue-100 text-blue-800';
                     else if (record.action_type === 'COMMAN_PANA_56') actionTypeClass = 'bg-indigo-100 text-indigo-800';
                     else if (record.action_type === 'SET_PANA') actionTypeClass = 'bg-violet-100 text-violet-800';
-
                     // Status badge
                     const statusBadge = record.is_undone
                         ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">Undone</span>'
                         : '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">Active</span>';
-
                     // Delete button - only show if not already undone
                     const deleteButton = record.is_undone
                         ? '<span class="text-gray-400 text-sm">-</span>'
@@ -3521,10 +2814,8 @@
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                             </button>`;
-
                     // Format bazar name
                     const bazarName = record.bazar ? bazarNames[record.bazar] || record.bazar : '-';
-
                     row.innerHTML = `
                             <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${record.id}</td>
                             <td class="border border-gray-300 px-4 py-2">
@@ -3540,27 +2831,22 @@
                             <td class="border border-gray-300 px-4 py-2 text-center">${statusBadge}</td>
                             <td class="border border-gray-300 px-4 py-2 text-center">${deleteButton}</td>
                         `;
-
                     historyTableBody.appendChild(row);
                 });
             }
-
             function updateHistoryStats(history) {
                 const totalRecords = history.length;
                 const totalAmount = history.reduce((sum, record) => sum + parseFloat(record.amount) * record.total_bets, 0);
                 const totalBets = history.reduce((sum, record) => sum + record.total_bets, 0);
-
                 document.getElementById('totalRecords').textContent = totalRecords;
                 document.getElementById('totalHistoryAmount').textContent = `${totalAmount.toLocaleString('en-IN')}`;
                 document.getElementById('totalHistoryBets').textContent = totalBets;
             }
-
             // Delete bulk action function
             window.deleteBulkAction = async function (bulkActionId) {
                 if (!confirm('Are you sure you want to delete this bulk action? All associated bets will be permanently deleted.')) {
                     return;
                 }
-
                 try {
                     const response = await fetch(API.UNDO_BULK, {
                         method: 'POST',
@@ -3570,27 +2856,20 @@
                         },
                         body: JSON.stringify({ bulk_action_id: bulkActionId })
                     });
-
                     // Check if response is ok
                     if (!response.ok) {
                         const errorData = await response.json();
                         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
                     }
-
                     const data = await response.json();
-
                     if (data.success) {
                         showToast('Deleted!', data.message, 'success');
-
                         // Reload history table
                         await loadBulkActionHistory();
-
                         // Reload bets and update totals
                         await loadBets();
                         await updateTotalAmount();
                         renderPage(1);
-
-                        // Update undo button visibility
                         await getLastBulkAction();
                     } else {
                         showToast('Error', data.message || 'Failed to delete bulk action', 'error');
@@ -3600,22 +2879,18 @@
                     showToast('Error', error.message || 'Failed to delete bulk action', 'error');
                 }
             };
-
             // Toggle History Modal
             document.getElementById('toggleHistoryBtn').addEventListener('click', function () {
                 historyModal.classList.remove('hidden');
                 loadBulkActionHistory();
             });
-
             document.getElementById('closeHistoryModal').addEventListener('click', function () {
                 historyModal.classList.add('hidden');
             });
-
             document.getElementById('refreshHistoryBtn').addEventListener('click', function () {
                 loadBulkActionHistory();
                 showToast('Refreshed', 'History data updated', 'success');
             });
-
             // Sidebar functions
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -3623,29 +2898,24 @@
             const closeSidebarBtn = document.getElementById('closeSidebar');
             const bazarSelectorSidebar = document.getElementById('bazarSelectorSidebar');
             const dateSelectorSidebar = document.getElementById('dateSelectorSidebar');
-
             function openSidebar() {
                 sidebar.classList.add('active');
                 sidebarOverlay.classList.add('active');
                 openSidebarBtn.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
-
             function closeSidebar() {
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
                 openSidebarBtn.classList.remove('active');
                 document.body.style.overflow = '';
             }
-
             openSidebarBtn.addEventListener('click', openSidebar);
             closeSidebarBtn.addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
-
             // Toggle button for showing all bet types
             const showAllBetTypesToggle = document.getElementById('showAllBetTypesToggle');
             const betButtonsContainer = document.getElementById('betButtonsContainer');
-
             // Function to update button visibility based on toggle state
             function updateBetButtonsVisibility() {
                 if (showAllBetTypesToggle && betButtonsContainer) {
@@ -3658,34 +2928,28 @@
                     }
                 }
             }
-
             // Initial visibility check on page load
             updateBetButtonsVisibility();
-
             if (showAllBetTypesToggle) {
                 showAllBetTypesToggle.addEventListener('change', function () {
                     updateBetButtonsVisibility();
                     showToast('Button Visibility', showAllBetTypesToggle.checked ? 'All bet type buttons visible' : 'Bet type buttons hidden', 'info');
                 });
             }
-
             // Load database storage info
             async function loadDatabaseStorage() {
                 try {
                     const res = await fetch(API.GET_DATABASE_STORAGE);
                     const data = await res.json();
-
                     if (data.success) {
                         const storageUsed = document.getElementById('storageUsed');
                         const storagePercentage = document.getElementById('storagePercentage');
                         const storageProgressBar = document.getElementById('storageProgressBar');
                         const databaseType = document.getElementById('databaseType');
-
                         storageUsed.textContent = `${data.storage_used_mb} MB / ${data.storage_total_mb} MB`;
                         storagePercentage.textContent = `${data.percentage}%`;
                         storageProgressBar.style.width = `${Math.min(data.percentage, 100)}%`;
                         databaseType.textContent = data.database_type;
-
                         // Change color based on usage
                         if (data.percentage >= 90) {
                             storageProgressBar.style.background = 'linear-gradient(to right, #ef4444, #dc2626)'; // Red
@@ -3703,58 +2967,41 @@
                     document.getElementById('storageUsed').textContent = 'N/A';
                 }
             }
-
             // Date population is now handled by Django template (see date_options in views.py)
             // No need for JavaScript date generation
-
-            // Update display text
             function updateBazarDateDisplay() {
                 const bazarDisplay = document.getElementById('currentBazarDisplay');
                 const dateDisplay = document.getElementById('currentDateDisplay');
                 const bazarDisplaySidebar = document.getElementById('currentBazarDisplaySidebar');
                 const dateDisplaySidebar = document.getElementById('currentDateDisplaySidebar');
-
                 const displayText = bazarNames[currentBazar];
                 const dateText = dateSelectorSidebar.options[dateSelectorSidebar.selectedIndex].text;
-
                 bazarDisplay.textContent = displayText;
                 dateDisplay.textContent = dateText;
                 bazarDisplaySidebar.textContent = displayText;
                 dateDisplaySidebar.textContent = dateText;
-
                 // Sync selectors
                 bazarSelectorSidebar.value = currentBazar;
                 dateSelectorSidebar.value = currentDate;
             }
-
-            // Bazar change handler (sidebar)
             bazarSelectorSidebar.addEventListener('change', async function (e) {
                 const newBazar = e.target.value;
-
                 // Prevent duplicate execution
                 if (newBazar === currentBazar) {
                     return;
                 }
-
                 try {
                     showLoader('Switching bazar...');
                     console.log('Switching from', currentBazar, 'to', newBazar);
-
                     currentBazar = newBazar;
                     // Save to localStorage to persist across page refreshes
                     localStorage.setItem('selectedBazar', newBazar);
                     updateBazarDateDisplay();
-
                     // Close sidebar
                     closeSidebar();
-
-                    // Clear current data immediately for instant feedback
                     bets = {};
                     tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
-
-                    // Reset page to 1
                     currentPage = 1;
-
                     // Reload all data for new bazar in parallel
                     updateLoader('Loading bets...');
                     const [betsResult, bulkResult, totalResult, syncResult] = await Promise.allSettled([
@@ -3763,14 +3010,12 @@
                         updateTotalAmount(),
                         refreshAllBetTotals()
                     ]);
-
                     updateLoader('Processing data...');
                     // Check for errors
                     const errors = [betsResult, bulkResult, totalResult, syncResult].filter(r => r.status === 'rejected');
                     if (errors.length > 0) {
                         console.error('Errors during bazar switch:', errors);
                     }
-
                     updateLoader('Complete!');
                     hideLoader();
                     showToast('Bazar Changed', `Switched to ${bazarNames[currentBazar]}`, 'success');
@@ -3784,33 +3029,23 @@
                     updateBazarDateDisplay();
                 }
             });
-
             // Date change handler (sidebar)
             dateSelectorSidebar.addEventListener('change', async function (e) {
                 const newDate = e.target.value;
-
                 // Prevent duplicate execution
                 if (newDate === currentDate) {
                     return;
                 }
-
                 try {
                     showLoader('Loading data...');
                     console.log('Changing from', currentDate, 'to', newDate);
-
                     currentDate = newDate;
                     updateBazarDateDisplay();
-
                     // Close sidebar
                     closeSidebar();
-
-                    // Clear current data immediately for instant feedback
                     bets = {};
                     tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
-
-                    // Reset page to 1
                     currentPage = 1;
-
                     // Reload all data for new date in parallel
                     updateLoader('Loading bets...');
                     const [betsResult, bulkResult, totalResult, syncResult] = await Promise.allSettled([
@@ -3819,14 +3054,12 @@
                         updateTotalAmount(),
                         refreshAllBetTotals()
                     ]);
-
                     updateLoader('Processing data...');
                     // Check for errors
                     const errors = [betsResult, bulkResult, totalResult, syncResult].filter(r => r.status === 'rejected');
                     if (errors.length > 0) {
                         console.error('Errors during date change:', errors);
                     }
-
                     updateLoader('Complete!');
                     hideLoader();
                     const selectedText = e.target.options[e.target.selectedIndex].text;
@@ -3841,25 +3074,19 @@
                     updateBazarDateDisplay();
                 }
             });
-
             // Close modal on outside click
             historyModal.addEventListener('click', function (e) {
                 if (e.target === historyModal) {
                     historyModal.classList.add('hidden');
                 }
             });
-
             // Initialize dates
             // Initial setup - dates are pre-populated by Django
             updateBazarDateDisplay();
-
             // Restore bazar selector to saved value
             if (bazarSelectorSidebar) bazarSelectorSidebar.value = currentBazar;
-
-            // Refresh balance button event listeners
             const refreshBalanceBtn = document.getElementById('refreshBalanceBtn');
             const refreshBalanceBtnMobile = document.getElementById('refreshBalanceBtnMobile');
-        
             if (refreshBalanceBtn) {
                 refreshBalanceBtn.addEventListener('click', async () => {
                     refreshBalanceBtn.classList.add('animate-spin');
@@ -3868,7 +3095,6 @@
                     showToast('Balance Updated', 'Total balance has been refreshed', 'success');
                 });
             }
-        
             if (refreshBalanceBtnMobile) {
                 refreshBalanceBtnMobile.addEventListener('click', async () => {
                     refreshBalanceBtnMobile.classList.add('animate-spin');
@@ -3877,15 +3103,10 @@
                     showToast('Balance Updated', 'Total balance has been refreshed', 'success');
                 });
             }
-
             // Load database storage info
             loadDatabaseStorage();
-
-            // Render initial page immediately (All SP numbers)
             renderPage(1);
-
             // Set up periodic polling for multi-device synchronization
-            // Refresh bet totals every 10 seconds to show updates from other devices
             let syncInterval = setInterval(async () => {
                 try {
                     await refreshAllBetTotals();
@@ -3893,12 +3114,9 @@
                     console.error('Sync error:', err);
                 }
             }, 10000); // 10 seconds
-
-            // Clear interval on page unload to prevent memory leaks
             window.addEventListener('beforeunload', () => {
                 clearInterval(syncInterval);
             });
-
             // Initialize
             showLoader('Initializing...');
             try {
@@ -3917,5 +3135,4 @@
         });
         </script>
 </body>
-
 </html>

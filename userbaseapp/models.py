@@ -53,6 +53,8 @@ class Bet(models.Model):
         ('KALYAN_CLOSED', 'Kalyan Closed'),
         ('NIGHT_MILAN_OPEN', 'Night Milan Open'),
         ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
+        ('MAIN_BAZAR', 'Main Bazar'),
+        ('MAIN_BAZAR_CLOSED', 'Main Bazar Closed'),
     ]
     
     # Core fields
@@ -164,6 +166,8 @@ class BulkBetAction(models.Model):
         ('KALYAN_CLOSED', 'Kalyan Closed'),
         ('NIGHT_MILAN_OPEN', 'Night Milan Open'),
         ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
+        ('MAIN_BAZAR', 'Main Bazar'),
+        ('MAIN_BAZAR_CLOSED', 'Main Bazar Closed'),
     ]
     
     # Core fields
