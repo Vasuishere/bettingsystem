@@ -105,6 +105,7 @@ class BetAdmin(admin.ModelAdmin):
             'COMMAN_PANA_36': '#3b82f6', # Blue
             'COMMAN_PANA_56': '#6366f1', # Indigo
             'SET_PANA': '#8b5cf6', # Violet
+            'COLUMN': '#10b981',  # Emerald
         }
         color = colors.get(obj.bet_type, '#6b7280')
         return format_html(

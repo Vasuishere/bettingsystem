@@ -49,4 +49,8 @@ urlpatterns = [
     
     # Database storage info
     path('get-database-storage/', views.get_database_storage, name='get_database_storage'),
+    
+    # Column betting
+    path('place-column-bet/', views.place_column_bet, name='place_column_bet'),
+    path('get-column-totals/', views.get_column_totals, name='get_column_totals'),
 ]

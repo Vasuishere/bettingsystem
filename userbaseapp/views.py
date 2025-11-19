@@ -1441,3 +1441,87 @@ def get_database_storage(request):
             'success': False,
             'error': str(e)
         }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def place_column_bet(request):
+    """Place a bet on a specific column number (1-10)"""
+    try:
+        data = json.loads(request.body)
+        column = int(data.get('column'))
+        amount = Decimal(str(data.get('amount')))
+        bazar = data.get('bazar')
+        bet_date = data.get('date')
+        
+        if not (1 <= column <= 10):
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid column number. Must be between 1 and 10.'
+            }, status=400)
+        
+        if amount <= 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'Amount must be greater than 0'
+            }, status=400)
+        
+        # Create the bet with column number as the "number" field
+        with transaction.atomic():
+            bet = Bet.objects.create(
+                user=request.user,
+                number=str(column),  # Store column number as string
+                amount=amount,
+                bet_type='COLUMN',
+                column_number=column,
+                bazar=bazar,
+                bet_date=bet_date
+            )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Bet placed on Column {column}',
+            'bet_id': bet.id,
+            'amount': float(amount),
+            'column': column
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_column_totals(request):
+    """Get total bet amounts for each column (1-10)"""
+    try:
+        bazar = request.GET.get('bazar')
+        bet_date = request.GET.get('date')
+        
+        # Get totals for each column
+        column_totals = {}
+        for col in range(1, 11):
+            total = Bet.objects.filter(
+                user=request.user,
+                bet_type='COLUMN',
+                column_number=col,
+                bazar=bazar,
+                bet_date=bet_date,
+                is_deleted=False
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            
+            column_totals[col] = float(total)
+        
+        return JsonResponse({
+            'success': True,
+            'column_totals': column_totals
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)

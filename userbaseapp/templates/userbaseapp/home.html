@@ -362,6 +362,12 @@
                         placeholder="0" min="0">
                 </div>
             </div>
+            <div class="flex justify-end">
+                <button id="column-bet-btn"
+                    class="text-white bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-emerald-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Column Bet
+                </button>
+            </div>
         </div>
         <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
             <div class="overflow-x-auto">
@@ -369,16 +375,66 @@
                     <thead>
                         <tr>
                             <th class="row-number-cell border-b-2 border-gray-300">Row</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">1</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">2</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">3</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">4</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">5</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">6</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">7</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">8</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">9</th>
-                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">10</th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>1</span>
+                                    <span id="column-total-1" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>2</span>
+                                    <span id="column-total-2" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>3</span>
+                                    <span id="column-total-3" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>4</span>
+                                    <span id="column-total-4" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>5</span>
+                                    <span id="column-total-5" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>6</span>
+                                    <span id="column-total-6" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>7</span>
+                                    <span id="column-total-7" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>8</span>
+                                    <span id="column-total-8" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>9</span>
+                                    <span id="column-total-9" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
+                            <th class="spreadsheet-cell header-cell border-b-2 border-gray-300">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span>10</span>
+                                    <span id="column-total-10" class="text-xs font-bold text-emerald-600"></span>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="spreadsheet-body"></tbody>
@@ -1013,6 +1069,74 @@
                             </div>
                         </div>
                         <!-- Column Bet Options -->
+                        <div id="columnBetOptions" class="hidden space-y-4">
+                            <div>
+                                <label class="block mb-2 text-sm font-medium text-gray-700">Select Column(s)</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="1"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">1</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="2"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">2</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="3"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">3</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="4"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">4</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="5"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">5</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="6"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">6</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="7"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">7</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="8"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">8</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="9"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">9</span>
+                                    </label>
+                                    <label
+                                        class="flex items-center space-x-2 cursor-pointer p-2 border-2 border-gray-300 rounded-lg hover:bg-emerald-50 transition">
+                                        <input type="checkbox" value="10"
+                                            class="columnBetCheckbox w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                                        <span class="text-sm font-medium">10</span>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">Select one or more columns to place bets</p>
+                            </div>
+                        </div>
                         <!-- Select All Columns Checkbox (for Jodi, Dadar, ABR Cut, Jodi Panel) -->
                         <div id="selectAllColumnsContainer" class="hidden mb-4">
                             <label class="flex items-center space-x-2 cursor-pointer">
@@ -1097,6 +1221,8 @@
                 PLACE_SET_PANA: '/place-set-pana-bet/',
                 GET_BULK_HISTORY: '/get-bulk-action-history/',
                 GET_DATABASE_STORAGE: '/get-database-storage/',
+                PLACE_COLUMN_BET: '/place-column-bet/',
+                GET_COLUMN_TOTALS: '/get-column-totals/',
             };
             // Restore last selected bazar from localStorage, or use default
             let currentBazar = localStorage.getItem('selectedBazar') || '{{ bazar_choices.0.value }}';
@@ -1211,6 +1337,7 @@
                 motarOptions.classList.add('hidden');
                 commanPanaOptions.classList.add('hidden');
                 setPanaOptions.classList.add('hidden');
+                document.getElementById('columnBetOptions').classList.add('hidden');
                 if (motarOptions) {
                     document.getElementById('motarNumberInput').value = '';
                     document.getElementById('motarGeneratedNumbers').classList.add('hidden');
@@ -1245,6 +1372,10 @@
                     commanPanaOptions.classList.remove('hidden');
                 } else if (betType === 'SET_PANA') {
                     setPanaOptions.classList.remove('hidden');
+                    selectAllContainer.classList.add('hidden');
+                } else if (betType === 'COLUMN') {
+                    document.getElementById('columnBetOptions').classList.remove('hidden');
+                    selectAllContainer.classList.add('hidden');
                 }
                 switchToPlaceTab();
                 updateUndoButton();
@@ -1260,6 +1391,7 @@
                 document.querySelectorAll('.jodiColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.abrCutColumnCheckbox').forEach(cb => cb.checked = false);
                 document.querySelectorAll('.jodiPanelColumnCheckbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.columnBetCheckbox').forEach(cb => cb.checked = false);
                 document.getElementById('motarNumberInput').value = '';
                 document.getElementById('motarGeneratedNumbers').classList.add('hidden');
                 const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
@@ -1669,6 +1801,24 @@
                     console.error('Error refreshing bet totals:', err);
                 }
             }
+            async function refreshColumnTotals() {
+                try {
+                    const res = await fetch(`${API.GET_COLUMN_TOTALS}?bazar=${currentBazar}&date=${currentDate}`);
+                    const data = await res.json();
+                    if (data.success) {
+                        const columnTotals = data.column_totals;
+                        for (let col = 1; col <= 10; col++) {
+                            const totalSpan = document.getElementById(`column-total-${col}`);
+                            if (totalSpan) {
+                                const total = columnTotals[col] || 0;
+                                totalSpan.textContent = total > 0 ? total : '';
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error refreshing column totals:', err);
+                }
+            }
             function renderPage(page) {
                 tbody.innerHTML = '';
                 const start = page === 1 ? 0 : 13;
@@ -2038,6 +2188,49 @@
                         console.error('Error placing Set Pana bets:', err);
                         showToast('Error', 'Failed to place Set Pana bets', 'error');
                     }
+                } else if (currentBetType === 'COLUMN') {
+                    const columns = getSelectedColumns('columnBetCheckbox');
+                    if (columns.length === 0) {
+                        return showToast('No Columns Selected', 'Please select at least one column', 'warning');
+                    }
+                    try {
+                        let successCount = 0;
+                        let failCount = 0;
+                        for (const column of columns) {
+                            const res = await fetch(API.PLACE_COLUMN_BET, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken()
+                                },
+                                body: JSON.stringify({
+                                    column: column,
+                                    amount: amount,
+                                    bazar: currentBazar,
+                                    date: currentDate
+                                })
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                                successCount++;
+                            } else {
+                                failCount++;
+                            }
+                        }
+                        if (successCount > 0) {
+                            const columnText = columns.length > 1 ? `${columns.length} columns (${columns.join(', ')})` : `Column ${columns[0]}`;
+                            showToast('Success!', `Bet of ${amount} placed on ${columnText}`, 'success');
+                            closeModal();
+                            await updateTotalAmount();
+                            await refreshColumnTotals();
+                        }
+                        if (failCount > 0) {
+                            showToast('Warning', `${failCount} column bet(s) failed`, 'warning');
+                        }
+                    } catch (err) {
+                        console.error('Error placing column bet:', err);
+                        showToast('Error', 'Failed to place column bet', 'error');
+                    }
                 }
             };
             // Undo button
@@ -2168,6 +2361,9 @@
             };
             document.getElementById('set-pana-btn').onclick = () => {
                 openModal('SET_PANA', null, 'Set Pana');
+            };
+            document.getElementById('column-bet-btn').onclick = () => {
+                openModal('COLUMN', null, 'Place Bet on Column Number');
             };
             // Motar number input handler - call Django API for preview
             document.getElementById('motarNumberInput').addEventListener('input', async function (e) {
@@ -2370,6 +2566,7 @@
             addCheckboxListeners('jodiColumnCheckbox', 'purple');
             addCheckboxListeners('abrCutColumnCheckbox', 'pink');
             addCheckboxListeners('jodiPanelColumnCheckbox', 'teal');
+            addCheckboxListeners('columnBetCheckbox', 'emerald');
             // Quick Bet Entry functionality
             let quickBetRowCounter = 2;
             const validNumbers = new Set();
@@ -3004,15 +3201,16 @@
                     currentPage = 1;
                     // Reload all data for new bazar in parallel
                     updateLoader('Loading bets...');
-                    const [betsResult, bulkResult, totalResult, syncResult] = await Promise.allSettled([
+                    const [betsResult, bulkResult, totalResult, syncResult, columnResult] = await Promise.allSettled([
                         loadBets(),
                         getLastBulkAction(),
                         updateTotalAmount(),
-                        refreshAllBetTotals()
+                        refreshAllBetTotals(),
+                        refreshColumnTotals()
                     ]);
                     updateLoader('Processing data...');
                     // Check for errors
-                    const errors = [betsResult, bulkResult, totalResult, syncResult].filter(r => r.status === 'rejected');
+                    const errors = [betsResult, bulkResult, totalResult, syncResult, columnResult].filter(r => r.status === 'rejected');
                     if (errors.length > 0) {
                         console.error('Errors during bazar switch:', errors);
                     }
@@ -3106,6 +3304,7 @@
             // Load database storage info
             loadDatabaseStorage();
             renderPage(1);
+            refreshColumnTotals();
             // Set up periodic polling for multi-device synchronization
             let syncInterval = setInterval(async () => {
                 try {
