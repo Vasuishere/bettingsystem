@@ -1,46 +1,308 @@
-# Database
+# ==========================================
+# SENSITIVE FILES - NEVER COMMIT
+# ==========================================
+
+# Environment variables (CRITICAL)
+.env
+.env.*
+!.env.example
+*.env
+
+# SSH Keys and Certificates
+*.pem
+*.key
+*.pub
+id_rsa*
+google_cloud_key*
+*.ppk
+
+# Database files
 *.sqlite3
 *.db
+db.sqlite3
+*.sql
+*.dump
 
-# Python
+# Secrets and credentials
+secrets.json
+credentials.json
+service-account*.json
+*.credentials
+
+# ==========================================
+# PYTHON
+# ==========================================
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
 
-# Virtual Environment
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
 venv/
 env/
 ENV/
+env.bak/
+venv.bak/
+.venv
 
-# Django
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# ==========================================
+# DJANGO
+# ==========================================
+
+# Django stuff
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
 
-# IDE
+# Static files
+/staticfiles/
+/static/
+/media/
+staticfiles/
+collected_static/
+
+# Django migrations (optional - uncomment if you want to hide)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# ==========================================
+# DEPLOYMENT & SERVER
+# ==========================================
+
+# Gunicorn
+gunicorn.pid
+gunicorn.sock
+
+# Supervisor logs
+supervisor.log
+supervisor.pid
+
+# Nginx logs
+nginx-access.log
+nginx-error.log
+
+# Application logs
+logs/
+*.log
+log/
+
+# Backup files
+*.sql
+*.dump
+*.backup
+backups/
+*.tar.gz
+*.zip
+
+# ==========================================
+# IDE & EDITORS
+# ==========================================
+
+# VS Code
 .vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
 .idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
 *~
 
-# OS
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# Environment variables
-.env
-.env.local
+# Linux
+.Trash-*
+.nfs*
 
-# Static files (if collected)
-/staticfiles/
-/static_root/
+# ==========================================
+# TEMPORARY & CACHE FILES
+# ==========================================
 
-# Desktop App (don't upload to GitHub)
-desktop_app/
-desktop_app/**
-!desktop_app/README.md
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.cache
+tmp/
+temp/
+
+# Cache directories
+.cache/
+__pycache__/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ==========================================
+# DOCUMENTATION (SENSITIVE)
+# ==========================================
+
+# Production guides with credentials
+PRODUCTION_GUIDE.md
+DEPLOYMENT_CREDENTIALS.md
+SERVER_ACCESS.md
+
+# Keep generic guides
+!DEPLOYMENT_GUIDE.md
+!SPEED_OPTIMIZATION_CHECKLIST.md
+!README.md
+
+# ==========================================
+# PROJECT SPECIFIC
+# ==========================================
+
+# Local configuration
+config.local.py
+settings_local.py
+local_settings.py
+
+# Test data
+test_data/
+fixtures/private/
+
+# User uploads
+uploads/
+user_files/
+
+# Node modules (if using frontend tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================================
+# CLOUD & DEPLOYMENT
+# ==========================================
+
+# Google Cloud
+.gcloud/
+gcloud-credentials.json
+
+# AWS
+.aws/
+*.pem
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Docker
+*.dockerignore
+docker-compose.override.yml
+
+# ==========================================
+# OTHER
+# ==========================================
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# mkdocs
+/site
+
+# End of .gitignore
