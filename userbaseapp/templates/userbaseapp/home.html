@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,63 +16,405 @@
         }
     </script>
     <style>
-        .spreadsheet-cell{padding:5px 8px;border-right:1px solid #e5e7eb;min-width:100px;text-align:left;font-size:1.08rem;height:30px;white-space:nowrap}
-        .header-cell{background-color:#f3f4f6;font-weight:600;text-align:center;position:sticky;top:0;z-index:10}
-        .row-number-cell{background-color:#f3f4f6;font-weight:600;text-align:center;min-width:50px;position:sticky;left:0;z-index:15;border-right:2px solid #d1d5db}
-        .data-row:hover .spreadsheet-cell{background-color:#f9fafb}
-        .bet-button{background-color:#4f46e5;color:white;border-radius:9999px;padding:2px 6px;font-size:.7rem;margin-left:4px;cursor:pointer}
-        .bet-button:hover{background-color:#4338ca}
-        .delete-button{background-color:#ef4444;color:white;border-radius:4px;padding:2px 8px;font-size:.75rem;margin-left:8px;cursor:pointer;border:none}
-        .delete-button:hover{background-color:#dc2626}
-        .amount-button{padding:8px 16px;border:2px solid #e5e7eb;border-radius:8px;background-color:white;cursor:pointer;transition:all .2s;font-weight:500}
-        .amount-button:hover{border-color:#4f46e5;background-color:#eef2ff}
-        .amount-button.selected{border-color:#4f46e5;background-color:#4f46e5;color:white}
-        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-        .toast{background:white;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.15);padding:16px 20px;display:flex;align-items:center;gap:12px;min-width:320px;max-width:420px;pointer-events:auto;transform:translateX(120%);transition:transform .4s cubic-bezier(.68,-.55,.265,1.55);border-left:4px solid}
-        .toast.show{transform:translateX(0)}
-        .toast.success{border-left-color:#22c55e}
-        .toast.error{border-left-color:#ef4444}
-        .toast.warning{border-left-color:#f59e0b}
-        .toast-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-        .toast.success .toast-icon{background-color:#dcfce7;color:#16a34a}
-        .toast.error .toast-icon{background-color:#fee2e2;color:#dc2626}
-        .toast.warning .toast-icon{background-color:#fef3c7;color:#d97706}
-        .toast-content{flex:1}
-        .toast-title{font-weight:600;font-size:16px;margin-bottom:4px}
-        .toast.success .toast-title{color:#16a34a}
-        .toast.error .toast-title{color:#dc2626}
-        .toast.warning .toast-title{color:#d97706}
-        .toast-message{color:#6b7280;font-size:14px}
-        .toast-close{background:none;border:none;color:#9ca3af;cursor:pointer;font-size:20px;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .2s}
-        .toast-close:hover{background-color:#f3f4f6;color:#4b5563}osition:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(4px)}
-        .loader-overlay.active{display:flex}
-        .loader-container{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px}
-        .loader{width:112px;height:112px;position:relative}
-        .box1,.box2,.box3{border:16px solid #f5f5f5;box-sizing:border-box;position:absolute;display:block}
-        .box1{width:112px;height:48px;margin-top:64px;margin-left:0;animation:abox1 4s 1s forwards ease-in-out infinite}
-        .box2{width:48px;height:48px;margin-top:0;margin-left:0;animation:abox2 4s 1s forwards ease-in-out infinite}
-        .box3{width:48px;height:48px;margin-top:0;margin-left:64px;animation:abox3 4s 1s forwards ease-in-out infinite}
-        @keyframes abox1{0%{width:112px;height:48px;margin-top:64px;margin-left:0}12.5%,25%,37.5%,50%,62.5%{width:48px;height:48px;margin-top:64px;margin-left:0}75%{width:48px;height:112px;margin-top:0;margin-left:0}87.5%,100%{width:48px;height:48px;margin-top:0;margin-left:0}}
-        @keyframes abox2{0%,12.5%,25%,37.5%{width:48px;height:48px;margin-top:0;margin-left:0}50%{width:112px;height:48px;margin-top:0;margin-left:0}62.5%,75%,87.5%,100%{width:48px;height:48px;margin-top:0;margin-left:64px}}
-        @keyframes abox3{0%,12.5%{width:48px;height:48px;margin-top:0;margin-left:64px}25%{width:48px;height:112px;margin-top:0;margin-left:64px}37.5%,50%,62.5%,75%,87.5%{width:48px;height:48px;margin-top:64px;margin-left:64px}100%{width:112px;height:48px;margin-top:64px;margin-left:0}}
-        .loader-text{color:#fff;font-size:16px;font-weight:500;text-align:center}
-        body.loading{pointer-events:none;user-select:none}
-        body.loading .loader-overlay{pointer-events:auto}
+        .spreadsheet-cell {
+            padding: 5px 8px;
+            border-right: 1px solid #e5e7eb;
+            min-width: 100px;
+            text-align: left;
+            font-size: 1.08rem;
+            height: 30px;
+            white-space: nowrap
+        }
+
+        .header-cell {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .row-number-cell {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: center;
+            min-width: 50px;
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            border-right: 2px solid #d1d5db
+        }
+
+        .data-row:hover .spreadsheet-cell {
+            background-color: #f9fafb
+        }
+
+        .bet-button {
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 9999px;
+            padding: 2px 6px;
+            font-size: .7rem;
+            margin-left: 4px;
+            cursor: pointer
+        }
+
+        .bet-button:hover {
+            background-color: #4338ca
+        }
+
+        .delete-button {
+            background-color: #ef4444;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: .75rem;
+            margin-left: 8px;
+            cursor: pointer;
+            border: none
+        }
+
+        .delete-button:hover {
+            background-color: #dc2626
+        }
+
+        .amount-button {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: all .2s;
+            font-weight: 500
+        }
+
+        .amount-button:hover {
+            border-color: #4f46e5;
+            background-color: #eef2ff
+        }
+
+        .amount-button.selected {
+            border-color: #4f46e5;
+            background-color: #4f46e5;
+            color: white
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .15);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 420px;
+            pointer-events: auto;
+            transform: translateX(120%);
+            transition: transform .4s cubic-bezier(.68, -.55, .265, 1.55);
+            border-left: 4px solid
+        }
+
+        .toast.show {
+            transform: translateX(0)
+        }
+
+        .toast.success {
+            border-left-color: #22c55e
+        }
+
+        .toast.error {
+            border-left-color: #ef4444
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .toast.success .toast-icon {
+            background-color: #dcfce7;
+            color: #16a34a
+        }
+
+        .toast.error .toast-icon {
+            background-color: #fee2e2;
+            color: #dc2626
+        }
+
+        .toast.warning .toast-icon {
+            background-color: #fef3c7;
+            color: #d97706
+        }
+
+        .toast-content {
+            flex: 1
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px
+        }
+
+        .toast.success .toast-title {
+            color: #16a34a
+        }
+
+        .toast.error .toast-title {
+            color: #dc2626
+        }
+
+        .toast.warning .toast-title {
+            color: #d97706
+        }
+
+        .toast-message {
+            color: #6b7280;
+            font-size: 14px
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all .2s
+        }
+
+        .toast-close:hover {
+            background-color: #f3f4f6;
+            color: #4b5563
+        }
+
+        osition:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background-color:rgba(0, 0, 0, .7);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        z-index:99999;
+        backdrop-filter:blur(4px)
+        }
+
+        .loader-overlay.active {
+            display: flex
+        }
+
+        .loader-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px
+        }
+
+        .loader {
+            width: 112px;
+            height: 112px;
+            position: relative
+        }
+
+        .box1,
+        .box2,
+        .box3 {
+            border: 16px solid #f5f5f5;
+            box-sizing: border-box;
+            position: absolute;
+            display: block
+        }
+
+        .box1 {
+            width: 112px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0;
+            animation: abox1 4s 1s forwards ease-in-out infinite
+        }
+
+        .box2 {
+            width: 48px;
+            height: 48px;
+            margin-top: 0;
+            margin-left: 0;
+            animation: abox2 4s 1s forwards ease-in-out infinite
+        }
+
+        .box3 {
+            width: 48px;
+            height: 48px;
+            margin-top: 0;
+            margin-left: 64px;
+            animation: abox3 4s 1s forwards ease-in-out infinite
+        }
+
+        @keyframes abox1 {
+            0% {
+                width: 112px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0
+            }
+
+            12.5%,
+            25%,
+            37.5%,
+            50%,
+            62.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0
+            }
+
+            75% {
+                width: 48px;
+                height: 112px;
+                margin-top: 0;
+                margin-left: 0
+            }
+
+            87.5%,
+            100% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0;
+                margin-left: 0
+            }
+        }
+
+        @keyframes abox2 {
+
+            0%,
+            12.5%,
+            25%,
+            37.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0;
+                margin-left: 0
+            }
+
+            50% {
+                width: 112px;
+                height: 48px;
+                margin-top: 0;
+                margin-left: 0
+            }
+
+            62.5%,
+            75%,
+            87.5%,
+            100% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0;
+                margin-left: 64px
+            }
+        }
+
+        @keyframes abox3 {
+
+            0%,
+            12.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 0;
+                margin-left: 64px
+            }
+
+            25% {
+                width: 48px;
+                height: 112px;
+                margin-top: 0;
+                margin-left: 64px
+            }
+
+            37.5%,
+            50%,
+            62.5%,
+            75%,
+            87.5% {
+                width: 48px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 64px
+            }
+
+            100% {
+                width: 112px;
+                height: 48px;
+                margin-top: 64px;
+                margin-left: 0
+            }
+        }
+
+        .loader-text {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center
+        }
+
+        body.loading {
+            pointer-events: none;
+            user-select: none
+        }
+
+        body.loading .loader-overlay {
+            pointer-events: auto
+        }
+
         .modal-content {
             max-height: 85vh;
             display: flex;
             flex-direction: column;
         }
+
         .modal-body-scrollable {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
         }
+
         /* Checkbox label styling - highlight when checked */
         label:has(input[type="checkbox"]:checked) {
             border-color: currentColor !important;
             background-color: rgba(var(--tw-color-rgb), 0.1);
         }
+
         /* Sidebar Styles */
         .sidebar-overlay {
             position: fixed;
@@ -85,10 +428,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .sidebar-overlay.active {
             display: block;
             opacity: 1;
         }
+
         .sidebar {
             position: fixed;
             top: 0;
@@ -102,9 +447,11 @@
             transition: right 0.3s ease;
             overflow-y: auto;
         }
+
         .sidebar.active {
             right: 0;
         }
+
         .hamburger-btn {
             display: flex;
             flex-direction: column;
@@ -117,6 +464,7 @@
             padding: 0;
             z-index: 10;
         }
+
         .hamburger-btn span {
             width: 28px;
             height: 3px;
@@ -124,23 +472,29 @@
             border-radius: 2px;
             transition: all 0.3s ease;
         }
+
         .hamburger-btn:hover span {
             background: #6366f1;
         }
+
         .hamburger-btn.active span:nth-child(1) {
             transform: rotate(45deg) translate(8px, 8px);
         }
+
         .hamburger-btn.active span:nth-child(2) {
             opacity: 0;
         }
+
         .hamburger-btn.active span:nth-child(3) {
             transform: rotate(-45deg) translate(8px, -8px);
         }
+
         .highlight-limit {
             background-color: #d5db82 !important;
         }
     </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen font-sans">
     <div id="toastContainer" class="toast-container"></div>
     <!-- Sidebar Overlay -->
@@ -259,12 +613,14 @@
             <!-- Master Delete Button -->
             <button onclick="showMasterDeleteConfirmation()"
                 class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-700 text-white font-bold rounded-lg shadow-lg hover:from-rose-700 hover:to-red-800 transition-all transform hover:scale-105 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Master Delete All Bets
             </button>
-            
+
             <!-- Logout Button -->
             <a href="{% url 'userbaseapp:logout' %}"
                 class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105">
@@ -279,80 +635,82 @@
     </div>
     <!-- Loader Overlay -->
     {% include 'userbaseapp/loader.html' %}
-    
+
     <!-- Master Delete Confirmation Modal -->
-    <div id="masterDeleteModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-[100000]" style="backdrop-filter: blur(8px);">
+    <div id="masterDeleteModal"
+        class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-[100000]"
+        style="backdrop-filter: blur(8px);">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
             <!-- Header -->
             <div class="bg-gradient-to-r from-rose-600 to-red-700 text-white p-6 rounded-t-2xl">
                 <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                     <h3 class="text-2xl font-bold">Master Delete Warning</h3>
                 </div>
             </div>
-            
+
             <!-- Body -->
             <div class="p-6">
                 <div class="mb-6">
                     <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
                         <div class="flex items-start">
-                            <svg class="h-6 w-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            <svg class="h-6 w-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <div>
                                 <p class="text-red-800 font-semibold mb-2">⚠️ CRITICAL ACTION</p>
                                 <p class="text-red-700 text-sm leading-relaxed">
-                                    This will <strong>permanently delete ALL your bets</strong> from the database. 
+                                    This will <strong>permanently delete ALL your bets</strong> from the database.
                                     This action <strong>CANNOT be undone</strong>!
                                 </p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <p class="text-gray-700 mb-4 font-medium">
-                        Total bets to be deleted: <span id="totalBetsCount" class="text-red-600 font-bold text-lg">0</span>
+                        Total bets to be deleted: <span id="totalBetsCount"
+                            class="text-red-600 font-bold text-lg">0</span>
                     </p>
-                    
+
                     <div class="space-y-4">
                         <!-- First Layer: Confirmation Checkbox -->
                         <label class="flex items-start cursor-pointer">
-                            <input type="checkbox" id="confirmDeleteCheckbox" class="mt-1 h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded cursor-pointer">
+                            <input type="checkbox" id="confirmDeleteCheckbox"
+                                class="mt-1 h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded cursor-pointer">
                             <span class="ml-3 text-sm text-gray-700">
-                                I understand this will <strong>permanently delete all my bets</strong> and this action cannot be undone
+                                I understand this will <strong>permanently delete all my bets</strong> and this action
+                                cannot be undone
                             </span>
                         </label>
-                        
+
                         <!-- Second Layer: Password Verification -->
                         <div>
                             <label for="deletePassword" class="block text-sm font-medium text-gray-700 mb-2">
                                 Enter your password to confirm:
                             </label>
-                            <input 
-                                type="password" 
-                                id="deletePassword" 
+                            <input type="password" id="deletePassword"
                                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
-                                placeholder="Your account password"
-                                disabled
-                            >
+                                placeholder="Your account password" disabled>
                             <p class="text-xs text-gray-500 mt-2">
                                 🔒 Password verification required for security
                             </p>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Action Buttons -->
                 <div class="flex gap-3">
-                    <button 
-                        onclick="cancelMasterDelete()" 
+                    <button onclick="cancelMasterDelete()"
                         class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-all">
                         Cancel
                     </button>
-                    <button 
-                        id="confirmMasterDeleteBtn"
-                        onclick="executeMasterDelete()" 
+                    <button id="confirmMasterDeleteBtn" onclick="executeMasterDelete()"
                         class="flex-1 px-6 py-3 bg-gradient-to-r from-rose-600 to-red-700 text-white font-bold rounded-lg hover:from-rose-700 hover:to-red-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled>
                         Delete All Bets
@@ -382,9 +740,12 @@
                     class="hidden sm:flex px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-300 shadow-sm flex-col">
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-xs font-medium text-yellow-600">Count</span>
-                        <button id="refreshBalanceBtn" title="Refresh Balance" class="text-yellow-600 hover:text-yellow-800 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <button id="refreshBalanceBtn" title="Refresh Balance"
+                            class="text-yellow-600 hover:text-yellow-800 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                         </button>
                     </div>
@@ -395,9 +756,12 @@
                     class="sm:hidden px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg border-2 border-yellow-300 shadow-sm">
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-xs font-medium text-yellow-600">Balance</span>
-                        <button id="refreshBalanceBtnMobile" title="Refresh Balance" class="text-yellow-600 hover:text-yellow-800 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <button id="refreshBalanceBtnMobile" title="Refresh Balance"
+                            class="text-yellow-600 hover:text-yellow-800 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                         </button>
                     </div>
@@ -436,9 +800,11 @@
                     class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All SP</strong>
                 </button>
-                <div class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
-                    <label for="sp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">SP Limit</label>
-                    <input type="number" id="sp-limit-input" 
+                <div
+                    class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
+                    <label for="sp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">SP
+                        Limit</label>
+                    <input type="number" id="sp-limit-input"
                         class="w-20 px-2 py-1 text-sm border-2 border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         placeholder="0" min="0">
                 </div>
@@ -446,17 +812,27 @@
                     class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <strong>All DP</strong>
                 </button>
-                <div class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
-                    <label for="dp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">DP Limit</label>
-                    <input type="number" id="dp-limit-input" 
+                <div
+                    class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border-2 border-red-300 shadow-md">
+                    <label for="dp-limit-input" class="text-xs font-semibold text-red-700 whitespace-nowrap">DP
+                        Limit</label>
+                    <input type="number" id="dp-limit-input"
                         class="w-20 px-2 py-1 text-sm border-2 border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         placeholder="0" min="0">
                 </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-3">
+                <button id="group-bet-btn"
+                    class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Group Bet
+                </button>
                 <button id="column-bet-btn"
                     class="text-white bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-emerald-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     Column Bet
+                </button>
+                <button id="set-pana-btn"
+                    class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Set Pana
                 </button>
             </div>
         </div>
@@ -565,10 +941,10 @@
                 class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Common Bet
             </button>
-            <button id="set-pana-btn"
+            <!-- <button id="set-pana-btn"
                 class="text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 shadow-lg font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Set Pana
-            </button>
+            </button> -->
         </div>
     </div>
     <!-- Bulk Action History Modal (Full Screen) -->
@@ -580,7 +956,7 @@
                 <button id="closeHistoryModal"
                     class="text-gray-500 hover:text-gray-700 text-3xl font-bold">&times;</button>
             </div>
-            
+
             <!-- Tab Navigation -->
             <div class="flex border-b border-gray-200 px-6 pt-4 flex-shrink-0">
                 <button id="bulkActionsTab"
@@ -592,7 +968,7 @@
                     Individual Bets
                 </button>
             </div>
-            
+
             <!-- Bulk Actions Content -->
             <div id="bulkActionsContent" class="flex-1 overflow-auto p-6">
                 <div class="overflow-x-auto">
@@ -634,7 +1010,7 @@
                     </table>
                 </div>
             </div>
-            
+
             <!-- Individual Bets Content -->
             <div id="individualBetsContent" class="hidden flex-1 overflow-auto p-6">
                 <div class="overflow-x-auto">
@@ -655,7 +1031,8 @@
                                     Date</th>
                                 <th class="border border-gray-300 px-4 py-3 text-left text-sm font-bold text-gray-700">
                                     Timestamp</th>
-                                <th class="border border-gray-300 px-4 py-3 text-center text-sm font-bold text-gray-700">
+                                <th
+                                    class="border border-gray-300 px-4 py-3 text-center text-sm font-bold text-gray-700">
                                     Action</th>
                             </tr>
                         </thead>
@@ -669,7 +1046,7 @@
                     </table>
                 </div>
             </div>
-            
+
             <!-- Footer with Stats -->
             <div class="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                 <div class="flex justify-between items-center">
@@ -769,7 +1146,8 @@
         </div>
         <!-- Same Amount for All Checkbox -->
         <div class="mt-3 flex items-center gap-2 px-2 py-2 bg-blue-50 rounded-lg border border-blue-200">
-            <input type="checkbox" id="sameAmountCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+            <input type="checkbox" id="sameAmountCheckbox"
+                class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
             <label for="sameAmountCheckbox" class="text-sm font-medium text-gray-700 cursor-pointer">
                 Use same amount for all numbers
             </label>
@@ -1208,6 +1586,47 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Group Bet Options -->
+                        <div id="groupBetOptions" class="hidden space-y-4">
+                            <div class="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
+                                <p class="text-sm font-semibold text-purple-800 mb-3">
+                                    Enter 2 digits to place bets on all 3-digit numbers containing both digits
+                                </p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block mb-2 text-xs font-medium text-gray-700">First Digit
+                                            (0-9)</label>
+                                        <input type="number" id="groupBetDigit1" min="0" max="9"
+                                            class="w-full px-3 py-2 text-center text-lg font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            placeholder="0-9">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 text-xs font-medium text-gray-700">Second Digit
+                                            (0-9)</label>
+                                        <input type="number" id="groupBetDigit2" min="0" max="9"
+                                            class="w-full px-3 py-2 text-center text-lg font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            placeholder="0-9">
+                                    </div>
+                                </div>
+                                <div class="mt-4 p-3 bg-white border border-purple-200 rounded-lg">
+                                    <p class="text-xs font-medium text-gray-700 mb-2">Preview matching numbers:</p>
+                                    <div id="groupBetPreview" class="text-xs text-gray-600 max-h-32 overflow-y-auto">
+                                        Enter two digits to see matching numbers
+                                    </div>
+                                    <p class="text-xs text-purple-600 mt-2">
+                                        Total: <span id="groupBetCount" class="font-bold">0</span> numbers
+                                    </p>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-xs text-gray-500">
+                                        <strong>Example:</strong> Enter 5 and 5 → Places bets on 155, 255, 355, 455,
+                                        556, 557, 558, 559, 550, etc.<br>
+                                        <strong>Example:</strong> Enter 3 and 9 → Places bets on 139, 239, 339, 349,
+                                        359, 369, 379, 389, 390, 391, etc.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Column Bet Options -->
                         <div id="columnBetOptions" class="hidden space-y-4">
                             <div>
@@ -1340,9 +1759,9 @@
     <script>
         /* eslint-disable */
         // Django template variables - rendered server-side before JavaScript execution
-        const bazarNamesJSON = {{ bazar_names_json|safe }};
-        const rowLabelsJSON = {{ row_labels|safe }};
-        const allColumnDataJSON = {{ ALL_COLUMN_DATA|safe }};
+        const bazarNamesJSON = {{ bazar_names_json| safe }};
+        const rowLabelsJSON = {{ row_labels| safe }};
+        const allColumnDataJSON = {{ ALL_COLUMN_DATA| safe }};
         /* eslint-enable */
         document.addEventListener('DOMContentLoaded', async () => {
             const API = {
@@ -1359,6 +1778,7 @@
                 PLACE_MOTAR: '/place-motar-bet/',
                 PLACE_COMMAN_PANA: '/place-comman-pana-bet/',
                 PLACE_SET_PANA: '/place-set-pana-bet/',
+                PLACE_GROUP: '/place-group-bet/',
                 GET_BULK_HISTORY: '/get-bulk-action-history/',
                 GET_DATABASE_STORAGE: '/get-database-storage/',
                 PLACE_COLUMN_BET: '/place-column-bet/',
@@ -1425,15 +1845,15 @@
                 return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
             }
             function showToast(title, message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icons = {
-                success: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-                error: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
-                warning: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
-            };
-            toast.innerHTML = `
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icons = {
+                    success: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+                    error: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+                    warning: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+                };
+                toast.innerHTML = `
                     <div class="toast-icon">${icons[type] || icons.success}</div>
                     <div class="toast-content">
                         <div class="toast-title">${title}</div>
@@ -1441,13 +1861,13 @@
                     </div>
                     <button class="toast-close">&times;</button>
                 `;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            const timeoutId = setTimeout(() => removeToast(toast), 3000);
-            toast.querySelector('.toast-close').onclick = () => {
-                clearTimeout(timeoutId);
-                removeToast(toast);
-            };
+                container.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                const timeoutId = setTimeout(() => removeToast(toast), 3000);
+                toast.querySelector('.toast-close').onclick = () => {
+                    clearTimeout(timeoutId);
+                    removeToast(toast);
+                };
             }
             function removeToast(toast) {
                 toast.classList.remove('show');
@@ -1479,6 +1899,8 @@
                 commanPanaOptions.classList.add('hidden');
                 setPanaOptions.classList.add('hidden');
                 document.getElementById('columnBetOptions').classList.add('hidden');
+                document.getElementById('groupBetOptions').classList.add('hidden');
+                document.getElementById('groupBetOptions').classList.add('hidden');
                 if (motarOptions) {
                     document.getElementById('motarNumberInput').value = '';
                     document.getElementById('motarGeneratedNumbers').classList.add('hidden');
@@ -1517,6 +1939,22 @@
                 } else if (betType === 'COLUMN') {
                     document.getElementById('columnBetOptions').classList.remove('hidden');
                     selectAllContainer.classList.add('hidden');
+                } else if (betType === 'GROUP') {
+                    document.getElementById('groupBetOptions').classList.remove('hidden');
+                    selectAllContainer.classList.add('hidden');
+                    // Clear group bet inputs
+                    document.getElementById('groupBetDigit1').value = '';
+                    document.getElementById('groupBetDigit2').value = '';
+                    document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
+                    document.getElementById('groupBetCount').textContent = '0';
+                } else if (betType === 'GROUP') {
+                    document.getElementById('groupBetOptions').classList.remove('hidden');
+                    selectAllContainer.classList.add('hidden');
+                    // Reset group bet inputs
+                    document.getElementById('groupBetDigit1').value = '';
+                    document.getElementById('groupBetDigit2').value = '';
+                    document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
+                    document.getElementById('groupBetCount').textContent = '0';
                 }
                 switchToPlaceTab();
                 updateUndoButton();
@@ -1570,7 +2008,7 @@
                     return;
                 }
                 undoBtn.textContent = 'Undo Last Action';
-                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT', 'JODI_PANEL'].includes(currentBetType)) {
+                if (lastBulkAction && ['SP', 'DP', 'JODI', 'DADAR', 'EKI_BEKI', 'ABR_CUT', 'JODI_PANEL', 'GROUP', 'SET_PANA'].includes(currentBetType)) {
                     if (currentBetType === 'EKI_BEKI') {
                         const selectedType = document.getElementById('ekiBekiType').value;
                         if (lastBulkAction.type === selectedType) {
@@ -2329,6 +2767,74 @@
                         console.error('Error placing Set Pana bets:', err);
                         showToast('Error', 'Failed to place Set Pana bets', 'error');
                     }
+                } else if (currentBetType === 'GROUP') {
+                    const digit1 = document.getElementById('groupBetDigit1').value;
+                    const digit2 = document.getElementById('groupBetDigit2').value;
+
+                    if (digit1 === '' || digit2 === '') {
+                        return showToast('Invalid Input', 'Please enter both digits', 'warning');
+                    }
+
+                    const d1 = parseInt(digit1);
+                    const d2 = parseInt(digit2);
+
+                    if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
+                        return showToast('Invalid Input', 'Please enter valid digits (0-9)', 'warning');
+                    }
+
+                    try {
+                        // Call Django API to place all Group bets in one transaction
+                        const res = await fetch(API.PLACE_GROUP, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken()
+                            },
+                            body: JSON.stringify({
+                                digit1: d1,
+                                digit2: d2,
+                                amount: amount,
+                                bazar: currentBazar,
+                                date: currentDate
+                            })
+                        });
+
+                        const data = await res.json();
+
+                        if (data.success) {
+                            // Update local bets data
+                            data.bets.forEach(bet => {
+                                const num = bet.number;
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += parseFloat(bet.amount);
+                                bets[num].history.push({
+                                    id: bet.bet_id,
+                                    amount: parseFloat(bet.amount),
+                                    bet_type: 'GROUP'
+                                });
+                                updateBetTotal(num);
+                            });
+
+                            lastBulkAction = {
+                                id: data.bulk_action_id,
+                                type: 'GROUP',
+                                total_bets: data.total_bets
+                            };
+
+                            showToast('Success!', `Group Bet: ${data.total_bets} bets placed for digits ${d1} and ${d2}`, 'success');
+                            closeModal();
+                            renderPage(1);
+                            await getLastBulkAction();
+                            await updateTotalAmount();
+                            await refreshAllBetTotals();
+                            updateUndoButton();
+                        } else {
+                            showToast('Error', data.error || 'Failed to place Group bets', 'error');
+                        }
+                    } catch (err) {
+                        console.error('Error placing Group bets:', err);
+                        showToast('Error', 'Failed to place Group bets', 'error');
+                    }
                 } else if (currentBetType === 'COLUMN') {
                     const columns = getSelectedColumns('columnBetCheckbox');
                     if (columns.length === 0) {
@@ -2422,7 +2928,7 @@
                 document.getElementById('dp-limit-input').value = savedDpLimit;
             }
             // SP Limit Input
-            document.getElementById('sp-limit-input').addEventListener('input', function(e) {
+            document.getElementById('sp-limit-input').addEventListener('input', function (e) {
                 const value = e.target.value;
                 if (value === '' || value === '0') {
                     spAmountLimit = null;
@@ -2440,7 +2946,7 @@
                 }
             });
             // DP Limit Input
-            document.getElementById('dp-limit-input').addEventListener('input', function(e) {
+            document.getElementById('dp-limit-input').addEventListener('input', function (e) {
                 const value = e.target.value;
                 if (value === '' || value === '0') {
                     dpAmountLimit = null;
@@ -2505,6 +3011,9 @@
             };
             document.getElementById('column-bet-btn').onclick = () => {
                 openModal('COLUMN', null, 'Place Bet on Column Number');
+            };
+            document.getElementById('group-bet-btn').onclick = () => {
+                openModal('GROUP', null, 'Group Bet - Place on Numbers Containing Two Digits');
             };
             // Motar number input handler - call Django API for preview
             document.getElementById('motarNumberInput').addEventListener('input', async function (e) {
@@ -2702,6 +3211,78 @@
                     });
                 });
             }
+
+            // Group Bet digit input handlers - show preview of matching numbers
+            function updateGroupBetPreview() {
+                const digit1 = document.getElementById('groupBetDigit1').value;
+                const digit2 = document.getElementById('groupBetDigit2').value;
+                const previewDiv = document.getElementById('groupBetPreview');
+                const countSpan = document.getElementById('groupBetCount');
+
+                if (digit1 === '' || digit2 === '') {
+                    previewDiv.textContent = 'Enter two digits to see matching numbers';
+                    countSpan.textContent = '0';
+                    return;
+                }
+
+                // Validate input
+                const d1 = parseInt(digit1);
+                const d2 = parseInt(digit2);
+
+                if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
+                    previewDiv.textContent = 'Please enter valid digits (0-9)';
+                    countSpan.textContent = '0';
+                    return;
+                }
+
+                // Generate all 3-digit numbers containing both digits
+                const matchingNumbers = [];
+
+                // Iterate through all valid numbers and check if they contain both digits
+                validNumbers.forEach(numStr => {
+                    const digits = numStr.split('');
+                    const d1Str = String(d1);
+                    const d2Str = String(d2);
+
+                    // Check if the number contains both digit1 and digit2
+                    if (digits.includes(d1Str) && digits.includes(d2Str)) {
+                        matchingNumbers.push(numStr);
+                    }
+                });
+
+                // Sort and display
+                matchingNumbers.sort();
+
+                if (matchingNumbers.length === 0) {
+                    previewDiv.textContent = 'No matching numbers found';
+                    countSpan.textContent = '0';
+                } else {
+                    // Create badge elements for each number
+                    previewDiv.innerHTML = '';
+                    matchingNumbers.forEach(num => {
+                        const badge = document.createElement('span');
+                        badge.className = 'inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded mr-1 mb-1';
+                        badge.textContent = num;
+                        previewDiv.appendChild(badge);
+                    });
+                    countSpan.textContent = matchingNumbers.length;
+                }
+            }
+
+            document.getElementById('groupBetDigit1').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length > 1) value = value.slice(0, 1);
+                e.target.value = value;
+                updateGroupBetPreview();
+            });
+
+            document.getElementById('groupBetDigit2').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length > 1) value = value.slice(0, 1);
+                e.target.value = value;
+                updateGroupBetPreview();
+            });
+
             // Add listeners for all checkbox types
             addCheckboxListeners('betColumnCheckbox', 'indigo');
             addCheckboxListeners('jodiColumnCheckbox', 'purple');
@@ -2971,45 +3552,45 @@
                 let failCount = 0;
                 const failedBets = [];
                 try {
-                for (const bet of betsToPlace) {
-                    try {
-                        const response = await fetch(API.PLACE_BET, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': getCSRFToken()
-                            },
-                            body: JSON.stringify({
-                                number: bet.number,
-                                amount: bet.amount,
-                                bazar: currentBazar,
-                                date: currentDate
-                            })
-                        });
-                        const result = await response.json();
-                        if (result.success) {
-                            successCount++;
-                            const num = bet.number;
-                            if (!bets[num]) bets[num] = { total: 0, history: [] };
-                            bets[num].total += parseFloat(bet.amount);
-                            bets[num].history.push({
-                                id: result.bet_id,
-                                amount: parseFloat(bet.amount),
-                                created_at: new Date().toISOString(),
-                                bet_type: 'SINGLE'
+                    for (const bet of betsToPlace) {
+                        try {
+                            const response = await fetch(API.PLACE_BET, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken()
+                                },
+                                body: JSON.stringify({
+                                    number: bet.number,
+                                    amount: bet.amount,
+                                    bazar: currentBazar,
+                                    date: currentDate
+                                })
                             });
-                            updateBetTotal(num);
-                        } else {
+                            const result = await response.json();
+                            if (result.success) {
+                                successCount++;
+                                const num = bet.number;
+                                if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                bets[num].total += parseFloat(bet.amount);
+                                bets[num].history.push({
+                                    id: result.bet_id,
+                                    amount: parseFloat(bet.amount),
+                                    created_at: new Date().toISOString(),
+                                    bet_type: 'SINGLE'
+                                });
+                                updateBetTotal(num);
+                            } else {
+                                failCount++;
+                                failedBets.push(`${bet.number} (${bet.amount})`);
+                                console.error('Bet failed:', result.error || 'Unknown error');
+                            }
+                        } catch (error) {
                             failCount++;
                             failedBets.push(`${bet.number} (${bet.amount})`);
-                            console.error('Bet failed:', result.error || 'Unknown error');
+                            console.error('Bet error:', error);
                         }
-                    } catch (error) {
-                        failCount++;
-                        failedBets.push(`${bet.number} (${bet.amount})`);
-                        console.error('Bet error:', error);
                     }
-                }
                 } finally {
                     hideLoader();
                 }
@@ -3146,6 +3727,7 @@
                     else if (record.action_type === 'COMMAN_PANA_36') actionTypeClass = 'bg-blue-100 text-blue-800';
                     else if (record.action_type === 'COMMAN_PANA_56') actionTypeClass = 'bg-indigo-100 text-indigo-800';
                     else if (record.action_type === 'SET_PANA') actionTypeClass = 'bg-violet-100 text-violet-800';
+                    else if (record.action_type === 'GROUP') actionTypeClass = 'bg-fuchsia-100 text-fuchsia-800';
                     // Status badge
                     const statusBadge = record.is_undone
                         ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">Undone</span>'
@@ -3186,17 +3768,17 @@
                 document.getElementById('totalHistoryAmount').textContent = `${totalAmount.toLocaleString('en-IN')}`;
                 document.getElementById('totalHistoryBets').textContent = totalBets;
             }
-            
+
             // Individual Bet History Functions
             const individualBetsTableBody = document.getElementById('individualBetsTableBody');
-            
+
             async function loadIndividualBetHistory() {
                 try {
                     // Load all bets for the current bazar and date, excluding bulk bets
                     let url = `${API.LOAD_BETS}?bazar=${currentBazar}&date=${currentDate}`;
                     const res = await fetch(url);
                     const data = await res.json();
-                    
+
                     if (data.success) {
                         // Filter out bets that are part of bulk actions (have bulk_action_id)
                         const individualBets = [];
@@ -3213,10 +3795,10 @@
                                 });
                             }
                         }
-                        
+
                         // Sort by created_at descending (newest first)
                         individualBets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                        
+
                         renderIndividualBetsTable(individualBets);
                         updateIndividualBetsStats(individualBets);
                     } else {
@@ -3227,10 +3809,10 @@
                     showToast('Error', 'Failed to load individual bets', 'error');
                 }
             }
-            
+
             function renderIndividualBetsTable(bets) {
                 individualBetsTableBody.innerHTML = '';
-                
+
                 if (bets.length === 0) {
                     individualBetsTableBody.innerHTML = `
                         <tr>
@@ -3241,25 +3823,26 @@
                     `;
                     return;
                 }
-                
+
                 bets.forEach((bet, index) => {
                     const row = document.createElement('tr');
                     row.className = index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-gray-50 hover:bg-blue-50';
-                    
+
                     // Bet type with color coding
                     let betTypeClass = 'bg-gray-100 text-gray-800';
                     if (bet.bet_type === 'SINGLE') betTypeClass = 'bg-green-100 text-green-800';
                     else if (bet.bet_type === 'SP') betTypeClass = 'bg-lime-100 text-lime-800';
                     else if (bet.bet_type === 'DP') betTypeClass = 'bg-blue-100 text-blue-800';
                     else if (bet.bet_type === 'JODI') betTypeClass = 'bg-purple-100 text-purple-800';
-                    
+                    else if (bet.bet_type === 'GROUP') betTypeClass = 'bg-fuchsia-100 text-fuchsia-800';
+
                     // Format bazar name
                     const bazarName = bet.bazar ? bazarNames[bet.bazar] || bet.bazar : currentBazar;
                     const displayBazarName = bazarNames[bazarName] || bazarName;
-                    
+
                     // Format date
                     const betDate = bet.bet_date || currentDate;
-                    
+
                     // Format timestamp
                     const timestamp = new Date(bet.created_at).toLocaleString('en-IN', {
                         year: 'numeric',
@@ -3270,7 +3853,7 @@
                         second: '2-digit',
                         hour12: false
                     });
-                    
+
                     // Delete button
                     const deleteButton = `<button onclick="deleteIndividualBet(${bet.id}, '${bet.number}')" 
                         class="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded transition-colors" title="Delete bet">
@@ -3278,7 +3861,7 @@
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
                     </button>`;
-                    
+
                     row.innerHTML = `
                         <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${bet.id}</td>
                         <td class="border border-gray-300 px-4 py-2 text-sm font-mono font-bold">${bet.number}</td>
@@ -3291,27 +3874,27 @@
                         <td class="border border-gray-300 px-4 py-2 text-sm font-mono">${timestamp}</td>
                         <td class="border border-gray-300 px-4 py-2 text-center">${deleteButton}</td>
                     `;
-                    
+
                     individualBetsTableBody.appendChild(row);
                 });
             }
-            
+
             function updateIndividualBetsStats(bets) {
                 const totalRecords = bets.length;
                 const totalAmount = bets.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
                 const totalBets = bets.length;
-                
+
                 document.getElementById('totalRecords').textContent = totalRecords;
                 document.getElementById('totalHistoryAmount').textContent = `${totalAmount.toLocaleString('en-IN')}`;
                 document.getElementById('totalHistoryBets').textContent = totalBets;
             }
-            
+
             // Delete individual bet function
             window.deleteIndividualBet = async function (betId, number) {
                 if (!confirm('Are you sure you want to delete this bet?')) {
                     return;
                 }
-                
+
                 try {
                     const response = await fetch(API.DELETE_BET, {
                         method: 'POST',
@@ -3321,15 +3904,15 @@
                         },
                         body: JSON.stringify({ bet_id: betId })
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         showToast('Deleted!', 'Bet deleted successfully', 'success');
-                        
+
                         // Reload individual bets table
                         await loadIndividualBetHistory();
-                        
+
                         // Reload main bets and update totals
                         await loadBets();
                         await updateTotalAmount();
@@ -3342,13 +3925,13 @@
                     showToast('Error', 'Failed to delete bet', 'error');
                 }
             };
-            
+
             // Tab Switching Functions
             const bulkActionsTab = document.getElementById('bulkActionsTab');
             const individualBetsTab = document.getElementById('individualBetsTab');
             const bulkActionsContent = document.getElementById('bulkActionsContent');
             const individualBetsContent = document.getElementById('individualBetsContent');
-            
+
             function switchToBulkActionsTab() {
                 bulkActionsContent.classList.remove('hidden');
                 individualBetsContent.classList.add('hidden');
@@ -3358,7 +3941,7 @@
                 individualBetsTab.classList.add('border-transparent', 'text-gray-500');
                 loadBulkActionHistory();
             }
-            
+
             function switchToIndividualBetsTab() {
                 bulkActionsContent.classList.add('hidden');
                 individualBetsContent.classList.remove('hidden');
@@ -3368,10 +3951,10 @@
                 bulkActionsTab.classList.add('border-transparent', 'text-gray-500');
                 loadIndividualBetHistory();
             }
-            
+
             bulkActionsTab.addEventListener('click', switchToBulkActionsTab);
             individualBetsTab.addEventListener('click', switchToIndividualBetsTab);
-            
+
             // Delete bulk action function
             window.deleteBulkAction = async function (bulkActionId) {
                 if (!confirm('Are you sure you want to delete this bulk action? All associated bets will be permanently deleted.')) {
@@ -3649,7 +4232,7 @@
             window.addEventListener('beforeunload', () => {
                 clearInterval(syncInterval);
             });
-            
+
             // Initialize
             showLoader('Initializing...');
             try {
@@ -3665,158 +4248,159 @@
             } finally {
                 setTimeout(() => hideLoader(), 500);
             }
-            
+
             // Master Delete Functions
-            window.showMasterDeleteConfirmation = async function() {
-            const modal = document.getElementById('masterDeleteModal');
-            const checkbox = document.getElementById('confirmDeleteCheckbox');
-            const passwordInput = document.getElementById('deletePassword');
-            const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
-            const totalBetsCount = document.getElementById('totalBetsCount');
-            
-            if (!modal || !checkbox || !passwordInput || !confirmBtn || !totalBetsCount) {
-                showToast('Error', 'Modal elements not found. Please refresh the page.', 'error');
-                return;
-            }
-            
-            // Show loading in count while fetching
-            totalBetsCount.textContent = '...';
-            
-            // Fetch actual count from database
-            try {
-                const response = await fetch("{% url 'userbaseapp:get_total_bet_count' %}", {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        totalBetsCount.textContent = data.total_count;
+            window.showMasterDeleteConfirmation = async function () {
+                const modal = document.getElementById('masterDeleteModal');
+                const checkbox = document.getElementById('confirmDeleteCheckbox');
+                const passwordInput = document.getElementById('deletePassword');
+                const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
+                const totalBetsCount = document.getElementById('totalBetsCount');
+
+                if (!modal || !checkbox || !passwordInput || !confirmBtn || !totalBetsCount) {
+                    showToast('Error', 'Modal elements not found. Please refresh the page.', 'error');
+                    return;
+                }
+
+                // Show loading in count while fetching
+                totalBetsCount.textContent = '...';
+
+                // Fetch actual count from database
+                try {
+                    const response = await fetch("{% url 'userbaseapp:get_total_bet_count' %}", {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken()
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            totalBetsCount.textContent = data.total_count;
+                        } else {
+                            totalBetsCount.textContent = '0';
+                            showToast('Error', 'Failed to fetch bet count', 'error');
+                        }
                     } else {
                         totalBetsCount.textContent = '0';
                         showToast('Error', 'Failed to fetch bet count', 'error');
                     }
-                } else {
+                } catch (error) {
+                    console.error('Error fetching bet count:', error);
                     totalBetsCount.textContent = '0';
                     showToast('Error', 'Failed to fetch bet count', 'error');
                 }
-            } catch (error) {
-                console.error('Error fetching bet count:', error);
-                totalBetsCount.textContent = '0';
-                showToast('Error', 'Failed to fetch bet count', 'error');
-            }
-            
-            // Reset form
-            checkbox.checked = false;
-            passwordInput.value = '';
-            passwordInput.disabled = true;
-            confirmBtn.disabled = true;
-            
-            // Show modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Setup checkbox listener
-            checkbox.onchange = function() {
-                passwordInput.disabled = !this.checked;
-                if (this.checked) {
-                    passwordInput.focus();
-                } else {
-                    passwordInput.value = '';
-                }
-                updateDeleteButtonState();
-            };
-            
-            // Setup password input listener
-            passwordInput.oninput = updateDeleteButtonState;
-        }
-        
-        window.updateDeleteButtonState = function() {
-            const checkbox = document.getElementById('confirmDeleteCheckbox');
-            const passwordInput = document.getElementById('deletePassword');
-            const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
-            
-            confirmBtn.disabled = !(checkbox.checked && passwordInput.value.length > 0);
-        }
-        
-        window.cancelMasterDelete = function() {
-            const modal = document.getElementById('masterDeleteModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-        
-        window.executeMasterDelete = async function() {
-            console.log('Execute master delete called');
-            const passwordInput = document.getElementById('deletePassword');
-            const password = passwordInput.value;
-            const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
-            
-            console.log('Password length:', password.length);
-            
-            if (!password) {
-                showToast('Error', 'Please enter your password', 'error');
-                return;
-            }
-            
-            // Disable button and show loading
-            confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Deleting...';
-            showLoader('Deleting all bets...');
-            
-            console.log('Sending delete request...');
-            
-            try {
-                const response = await fetch("{% url 'userbaseapp:master_delete_all_bets' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
-                    body: JSON.stringify({
-                        password: password
-                    })
-                });
-                
-                console.log('Response status:', response.status);
-                const data = await response.json();
-                console.log('Response data:', data);
-                
-                if (data.success) {
-                    // Clear local bets object
-                    if (typeof window.bets !== 'undefined') {
-                        for (const bazar in window.bets) {
-                            delete window.bets[bazar];
-                        }
+
+                // Reset form
+                checkbox.checked = false;
+                passwordInput.value = '';
+                passwordInput.disabled = true;
+                confirmBtn.disabled = true;
+
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // Setup checkbox listener
+                checkbox.onchange = function () {
+                    passwordInput.disabled = !this.checked;
+                    if (this.checked) {
+                        passwordInput.focus();
+                    } else {
+                        passwordInput.value = '';
                     }
-                    
-                    // Reset UI
-                    renderBets();
-                    await updateTotalAmount();
-                    await refreshAllBetTotals();
-                    
-                    // Close modal
-                    cancelMasterDelete();
-                    
-                    // Show success message
-                    showToast('Success', `${data.deleted_count} bets deleted successfully`, 'success');
-                } else {
-                    showToast('Error', data.error || 'Failed to delete bets', 'error');
+                    updateDeleteButtonState();
+                };
+
+                // Setup password input listener
+                passwordInput.oninput = updateDeleteButtonState;
+            }
+
+            window.updateDeleteButtonState = function () {
+                const checkbox = document.getElementById('confirmDeleteCheckbox');
+                const passwordInput = document.getElementById('deletePassword');
+                const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
+
+                confirmBtn.disabled = !(checkbox.checked && passwordInput.value.length > 0);
+            }
+
+            window.cancelMasterDelete = function () {
+                const modal = document.getElementById('masterDeleteModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            window.executeMasterDelete = async function () {
+                console.log('Execute master delete called');
+                const passwordInput = document.getElementById('deletePassword');
+                const password = passwordInput.value;
+                const confirmBtn = document.getElementById('confirmMasterDeleteBtn');
+
+                console.log('Password length:', password.length);
+
+                if (!password) {
+                    showToast('Error', 'Please enter your password', 'error');
+                    return;
+                }
+
+                // Disable button and show loading
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Deleting...';
+                showLoader('Deleting all bets...');
+
+                console.log('Sending delete request...');
+
+                try {
+                    const response = await fetch("{% url 'userbaseapp:master_delete_all_bets' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({
+                            password: password
+                        })
+                    });
+
+                    console.log('Response status:', response.status);
+                    const data = await response.json();
+                    console.log('Response data:', data);
+
+                    if (data.success) {
+                        // Clear local bets object
+                        if (typeof window.bets !== 'undefined') {
+                            for (const bazar in window.bets) {
+                                delete window.bets[bazar];
+                            }
+                        }
+
+                        // Reset UI
+                        renderBets();
+                        await updateTotalAmount();
+                        await refreshAllBetTotals();
+
+                        // Close modal
+                        cancelMasterDelete();
+
+                        // Show success message
+                        showToast('Success', `${data.deleted_count} bets deleted successfully`, 'success');
+                    } else {
+                        showToast('Error', data.error || 'Failed to delete bets', 'error');
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Delete All Bets';
+                    }
+                } catch (error) {
+                    console.error('Master delete error:', error);
+                    showToast('Error', 'Network error. Please try again.', 'error');
                     confirmBtn.disabled = false;
                     confirmBtn.textContent = 'Delete All Bets';
+                } finally {
+                    hideLoader();
                 }
-            } catch (error) {
-                console.error('Master delete error:', error);
-                showToast('Error', 'Network error. Please try again.', 'error');
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Delete All Bets';
-            } finally {
-                hideLoader();
             }
-        }
         }); // End of DOMContentLoaded
-        </script>
+    </script>
 </body>
+
 </html>

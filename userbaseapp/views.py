@@ -1451,6 +1451,114 @@ def place_set_pana_bet(request):
 
 
 @login_required
+@require_http_methods(["POST"])
+def place_group_bet(request):
+    """Place Group bet - bets on all 3-digit numbers containing two specified digits"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        digit1 = data.get('digit1')
+        digit2 = data.get('digit2')
+        amount = data.get('amount')
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
+        
+        # Validate inputs
+        if digit1 is None or digit2 is None:
+            return JsonResponse({'error': 'Missing digit1 or digit2'}, status=400)
+        
+        digit1 = int(digit1)
+        digit2 = int(digit2)
+        
+        if digit1 < 0 or digit1 > 9 or digit2 < 0 or digit2 > 9:
+            return JsonResponse({'error': 'Digits must be between 0 and 9'}, status=400)
+        
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
+        
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            return JsonResponse({'error': 'Amount must be greater than 0'}, status=400)
+        
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+        
+        # Generate all valid 3-digit numbers containing both digits
+        d1_str = str(digit1)
+        d2_str = str(digit2)
+        matching_numbers = []
+        
+        # Get all valid numbers from ALL_COLUMN_DATA (includes SP and DP numbers)
+        all_valid_numbers = set()
+        for column_data in ALL_COLUMN_DATA:
+            for num in column_data:
+                all_valid_numbers.add(str(num))
+        
+        # Filter numbers that contain both digits
+        for num_str in all_valid_numbers:
+            digits = list(num_str)
+            if d1_str in digits and d2_str in digits:
+                matching_numbers.append(num_str)
+        
+        if not matching_numbers:
+            return JsonResponse({
+                'error': f'No valid numbers found containing digits {digit1} and {digit2}'
+            }, status=400)
+        
+        # Sort for consistent ordering
+        matching_numbers.sort()
+        
+        # Create bulk action record
+        bulk_action = BulkBetAction.objects.create(
+            user=request.user,
+            action_type='GROUP',
+            amount=amount,
+            total_bets=len(matching_numbers),
+            bazar=bazar,
+            action_date=bet_date
+        )
+        
+        # Create bets for all matching numbers
+        bet_ids = []
+        bets_created = []
+        
+        for num in matching_numbers:
+            bet = Bet.objects.create(
+                user=request.user,
+                number=num,
+                amount=amount,
+                bet_type='GROUP',
+                bulk_action=bulk_action,
+                bazar=bazar,
+                bet_date=bet_date
+            )
+            bet_ids.append(bet.id)
+            bets_created.append({
+                'bet_id': bet.id,
+                'number': bet.number,
+                'amount': str(bet.amount)
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{len(matching_numbers)} Group bets placed for digits {digit1} and {digit2}',
+            'total_bets': len(matching_numbers),
+            'bet_ids': bet_ids,
+            'bets': bets_created,
+            'matching_numbers': matching_numbers,
+            'bulk_action_id': bulk_action.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
 @require_http_methods(["GET"])
 def get_database_storage(request):
     """Get database storage usage information"""

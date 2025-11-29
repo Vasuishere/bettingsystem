@@ -33,6 +33,7 @@ class Bet(models.Model):
         ('COMMAN_PANA_56', 'Comman Pana 56'),
         ('SET_PANA', 'Set Pana'),
         ('COLUMN', 'Column Bet'),
+        ('GROUP', 'Group Bet'),
     ]
     
     STATUS_CHOICES = [
@@ -147,6 +148,7 @@ class BulkBetAction(models.Model):
         ('COMMAN_PANA_36', 'Comman Pana 36'),
         ('COMMAN_PANA_56', 'Comman Pana 56'),
         ('SET_PANA', 'Set Pana'),
+        ('GROUP', 'Group Bet'),
     ]
     
     STATUS_CHOICES = [

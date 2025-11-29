@@ -42,6 +42,7 @@ urlpatterns = [
     path('place-motar-bet/', views.place_motar_bet, name='place_motar_bet'),
     path('place-comman-pana-bet/', views.place_comman_pana_bet, name='place_comman_pana_bet'),
     path('place-set-pana-bet/', views.place_set_pana_bet, name='place_set_pana_bet'),
+    path('place-group-bet/', views.place_group_bet, name='place_group_bet'),
     
     # Summary/Statistics
     path('get-bet-summary/', views.get_bet_summary, name='get_bet_summary'),

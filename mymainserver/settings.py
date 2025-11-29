@@ -35,6 +35,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://35.200.208.215',
     'http://localhost',
     'http://127.0.0.1',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 # Add custom domains if provided
 if config('CSRF_TRUSTED_ORIGINS', default=''):
