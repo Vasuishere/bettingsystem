@@ -225,13 +225,14 @@ dmypy.json
 # DOCUMENTATION (SENSITIVE)
 # ==========================================
 
-# Production guides with credentials
+# Production guides with credentials (contains passwords, IPs, sensitive info)
 PRODUCTION_GUIDE.md
 DEPLOYMENT_CREDENTIALS.md
 SERVER_ACCESS.md
 
-# Keep generic guides
+# Keep generic guides (safe to commit)
 !DEPLOYMENT_GUIDE.md
+!DEPLOYMENT_UPDATE_GUIDE.md
 !SPEED_OPTIMIZATION_CHECKLIST.md
 !README.md
 

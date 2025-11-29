@@ -272,6 +272,71 @@ def logout_view(request):
 
 @login_required
 @require_http_methods(["POST"])
+def master_delete_all_bets(request):
+    """Master delete function to clear all bets from database with password verification"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        password = data.get('password')
+        
+        if not password:
+            return JsonResponse({
+                'success': False,
+                'error': 'Password is required for verification'
+            }, status=400)
+        
+        # Verify user password
+        user = request.user
+        if not user.check_password(password):
+            return JsonResponse({
+                'success': False,
+                'error': 'Incorrect password. Master delete cancelled.'
+            }, status=403)
+        
+        # Delete all bets for this user
+        with transaction.atomic():
+            deleted_count = Bet.objects.filter(user=user).count()
+            Bet.objects.filter(user=user).delete()
+            
+            # Also delete bulk action history for this user
+            BulkBetAction.objects.filter(user=user).delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deleted {deleted_count} bets from database',
+            'deleted_count': deleted_count
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid request format'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error during master delete: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_total_bet_count(request):
+    """Get total count of all bets for the current user"""
+    try:
+        total_count = Bet.objects.filter(user=request.user).count()
+        return JsonResponse({
+            'success': True,
+            'total_count': total_count
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
 def place_bet(request):
     """Save a single bet to the database"""
     try:
