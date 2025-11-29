@@ -29,16 +29,16 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-ewp)6*&#cx!)d%fd49=xs
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
-# Add Render.com domain
-if 'RENDER' in os.environ:
-    ALLOWED_HOSTS.append(os.environ.get('RENDER_EXTERNAL_HOSTNAME'))
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-    'https://bettingsystem-1.onrender.com',
-    'https://*.onrender.com',
-    'https://bettingsystem-main-c89f941.kuberns.cloud',
+    'http://35.200.208.215',
+    'http://localhost',
+    'http://127.0.0.1',
 ]
+# Add custom domains if provided
+if config('CSRF_TRUSTED_ORIGINS', default=''):
+    CSRF_TRUSTED_ORIGINS.extend(config('CSRF_TRUSTED_ORIGINS').split(','))
 
 
 # Application definition
@@ -100,21 +100,36 @@ WSGI_APPLICATION = 'mymainserver.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Use Aiven PostgreSQL in production, SQLite locally
-if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=config('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-    DATABASES['default']['ATOMIC_REQUESTS'] = True
-    DATABASES['default']['OPTIONS'] = {
-        'connect_timeout': 10,
-        'options': '-c statement_timeout=30000',
-    }
+# Use PostgreSQL in Docker/production, SQLite for local development
+if 'DATABASE_URL' in os.environ or 'POSTGRES_HOST' in os.environ:
+    # Docker/Production PostgreSQL configuration
+    if 'DATABASE_URL' in os.environ:
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=config('DATABASE_URL'),
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+    else:
+        # Manual PostgreSQL configuration for Docker
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': config('POSTGRES_DB', default='bettingdb'),
+                'USER': config('POSTGRES_USER', default='postgres'),
+                'PASSWORD': config('POSTGRES_PASSWORD'),
+                'HOST': config('POSTGRES_HOST', default='db'),
+                'PORT': config('POSTGRES_PORT', default='5432'),
+                'ATOMIC_REQUESTS': True,
+                'CONN_MAX_AGE': 600,
+                'OPTIONS': {
+                    'connect_timeout': 10,
+                },
+            }
+        }
 else:
+    # Local SQLite for development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -196,12 +211,15 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 # Production Security Settings
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # Only enable HTTPS redirect if not behind a reverse proxy
+    # Coolify handles SSL termination
+    SECURE_SSL_REDIRECT = False  # Set to True if using direct HTTPS
+    SESSION_COOKIE_SECURE = False  # Set to True when using HTTPS
+    CSRF_COOKIE_SECURE = False  # Set to True when using HTTPS
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    # Disable HSTS for now, enable when HTTPS is confirmed working
+    # SECURE_HSTS_SECONDS = 31536000  # 1 year
+    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
