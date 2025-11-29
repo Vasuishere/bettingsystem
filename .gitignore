@@ -68,10 +68,6 @@ env.bak/
 venv.bak/
 .venv
 
-# PyInstaller
-*.manifest
-*.spec
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -96,12 +92,12 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-# Static files
+# Static and media files
 /staticfiles/
+/media/
 /static/
 /media/
 staticfiles/
-collected_static/
 
 # Django migrations (optional - uncomment if you want to hide)
 # */migrations/*.py
@@ -112,33 +108,13 @@ celerybeat-schedule
 celerybeat.pid
 
 # ==========================================
-# DEPLOYMENT & SERVER
+# DEPLOYMENT & DOCKER
 # ==========================================
 
-# Gunicorn
-gunicorn.pid
-gunicorn.sock
-
-# Supervisor logs
-supervisor.log
-supervisor.pid
-
-# Nginx logs
-nginx-access.log
-nginx-error.log
-
-# Application logs
-logs/
-*.log
-log/
-
-# Backup files
-*.sql
-*.dump
-*.backup
-backups/
-*.tar.gz
-*.zip
+# Docker volumes
+postgres_data/
+static_volume/
+media_volume/
 
 # ==========================================
 # IDE & EDITORS
@@ -146,34 +122,9 @@ backups/
 
 # VS Code
 .vscode/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
 
 # PyCharm
 .idea/
-*.iml
-*.iws
-.idea_modules/
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Vim
-*.swp
-*.swo
-*~
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
 
 # ==========================================
 # OPERATING SYSTEM
@@ -181,23 +132,10 @@ backups/
 
 # macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-._*
 
 # Windows
 Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
 *.stackdump
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.lnk
-
-# Linux
-.Trash-*
-.nfs*
 
 # ==========================================
 # TEMPORARY & CACHE FILES
@@ -205,36 +143,14 @@ $RECYCLE.BIN/
 
 # Temporary files
 *.tmp
-*.temp
 *.bak
 *.swp
-*.cache
 tmp/
-temp/
 
 # Cache directories
 .cache/
 __pycache__/
 .mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-.pytype/
-
-# ==========================================
-# DOCUMENTATION (SENSITIVE)
-# ==========================================
-
-# Production guides with credentials (contains passwords, IPs, sensitive info)
-PRODUCTION_GUIDE.md
-DEPLOYMENT_CREDENTIALS.md
-SERVER_ACCESS.md
-
-# Keep generic guides (safe to commit)
-!DEPLOYMENT_GUIDE.md
-!DEPLOYMENT_UPDATE_GUIDE.md
-!SPEED_OPTIMIZATION_CHECKLIST.md
-!README.md
 
 # ==========================================
 # PROJECT SPECIFIC
@@ -247,63 +163,14 @@ local_settings.py
 
 # Test data
 test_data/
-fixtures/private/
 
-# User uploads
+# User uploads (if any)
 uploads/
-user_files/
+media/
 
 # Node modules (if using frontend tools)
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # ==========================================
-# CLOUD & DEPLOYMENT
+# END
 # ==========================================
-
-# Google Cloud
-.gcloud/
-gcloud-credentials.json
-
-# AWS
-.aws/
-*.pem
-
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-
-# Docker
-*.dockerignore
-docker-compose.override.yml
-
-# ==========================================
-# OTHER
-# ==========================================
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# Spyder
-.spyderproject
-.spyproject
-
-# Rope
-.ropeproject
-
-# mkdocs
-/site
-
-# End of .gitignore
