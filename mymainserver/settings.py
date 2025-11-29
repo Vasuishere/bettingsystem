@@ -101,33 +101,32 @@ WSGI_APPLICATION = 'mymainserver.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Use PostgreSQL in Docker/production, SQLite for local development
-if 'DATABASE_URL' in os.environ or 'POSTGRES_HOST' in os.environ:
-    # Docker/Production PostgreSQL configuration
-    if 'DATABASE_URL' in os.environ:
-        DATABASES = {
-            'default': dj_database_url.config(
-                default=config('DATABASE_URL'),
-                conn_max_age=600,
-                conn_health_checks=True,
-            )
+if 'DATABASE_URL' in os.environ:
+    # Use DATABASE_URL if provided (Railway, Render, etc.)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+elif 'POSTGRES_HOST' in os.environ or 'POSTGRES_PASSWORD' in os.environ:
+    # Manual PostgreSQL configuration for Docker
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'bettingdb'),
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST', 'db'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            'ATOMIC_REQUESTS': True,
+            'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'connect_timeout': 10,
+            },
         }
-    else:
-        # Manual PostgreSQL configuration for Docker
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': config('POSTGRES_DB', default='bettingdb'),
-                'USER': config('POSTGRES_USER', default='postgres'),
-                'PASSWORD': config('POSTGRES_PASSWORD'),
-                'HOST': config('POSTGRES_HOST', default='db'),
-                'PORT': config('POSTGRES_PORT', default='5432'),
-                'ATOMIC_REQUESTS': True,
-                'CONN_MAX_AGE': 600,
-                'OPTIONS': {
-                    'connect_timeout': 10,
-                },
-            }
-        }
+    }
 else:
     # Local SQLite for development
     DATABASES = {
