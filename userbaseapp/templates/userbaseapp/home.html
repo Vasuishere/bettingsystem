@@ -3770,24 +3770,22 @@
 
             async function loadIndividualBetHistory() {
                 try {
-                    // Load all bets for the current bazar and date, excluding bulk bets
+                    // Load all bets for the current bazar and date (including bulk bets)
                     let url = `${API.LOAD_BETS}?bazar=${currentBazar}&date=${currentDate}`;
                     const res = await fetch(url);
                     const data = await res.json();
 
                     if (data.success) {
-                        // Filter out bets that are part of bulk actions (have bulk_action_id)
+                        // Include ALL bets (both individual and bulk) so users can delete any bet
                         const individualBets = [];
                         for (const [number, betData] of Object.entries(data.bets)) {
                             if (betData.history && Array.isArray(betData.history)) {
                                 betData.history.forEach(bet => {
-                                    // Only include bets without bulk_action
-                                    if (!bet.bulk_action) {
-                                        individualBets.push({
-                                            ...bet,
-                                            number: number
-                                        });
-                                    }
+                                    // Include all bets - both individual and bulk
+                                    individualBets.push({
+                                        ...bet,
+                                        number: number
+                                    });
                                 });
                             }
                         }
