@@ -327,6 +327,66 @@ def master_delete_all_bets(request):
 
 
 @login_required
+@require_http_methods(["POST"])
+def delete_bazar_bets(request):
+    """Delete all bets for a specific bazar and date"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        bazar = data.get('bazar')
+        date_str = data.get('date')
+        
+        if not bazar or not date_str:
+            return JsonResponse({
+                'success': False,
+                'error': 'Bazar and date are required'
+            }, status=400)
+        
+        # Parse date
+        from datetime import datetime
+        bet_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        
+        user = request.user
+        
+        # Delete all bets for this user, bazar, and date
+        with transaction.atomic():
+            deleted_count = Bet.objects.filter(
+                user=user,
+                bazar=bazar,
+                bet_date=bet_date
+            ).count()
+            
+            Bet.objects.filter(
+                user=user,
+                bazar=bazar,
+                bet_date=bet_date
+            ).delete()
+            
+            # Also delete bulk action history for this bazar and date
+            BulkBetAction.objects.filter(
+                user=user,
+                bazar=bazar,
+                action_date=bet_date
+            ).delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deleted {deleted_count} bets for {bazar} on {date_str}',
+            'deleted_count': deleted_count
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid request format'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f'Error deleting bazar bets: {str(e)}'
+        }, status=500)
+
+
+@login_required
 @require_http_methods(["GET"])
 def get_total_bet_count(request):
     """Get total count of all bets for the current user"""

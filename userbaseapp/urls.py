@@ -24,6 +24,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('logout/', views.logout_view, name='logout'),
     path('master-delete-all-bets/', views.master_delete_all_bets, name='master_delete_all_bets'),
+    path('delete-bazar-bets/', views.delete_bazar_bets, name='delete_bazar_bets'),
     path('get-total-bet-count/', views.get_total_bet_count, name='get_total_bet_count'),
     
     # Betting operations
