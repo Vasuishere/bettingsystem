@@ -57,6 +57,10 @@ class Bet(models.Model):
         ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
         ('MAIN_BAZAR', 'Main Bazar'),
         ('MAIN_BAZAR_CLOSED', 'Main Bazar Closed'),
+        ('CM_9', 'CM-9'),
+        ('CM_10', 'CM-10'),
+        ('CM_11', 'CM-11'),
+        ('CM_12', 'CM-12'),
     ]
     
     # Core fields
@@ -171,6 +175,10 @@ class BulkBetAction(models.Model):
         ('NIGHT_MILAN_CLOSED', 'Night Milan Closed'),
         ('MAIN_BAZAR', 'Main Bazar'),
         ('MAIN_BAZAR_CLOSED', 'Main Bazar Closed'),
+        ('CM_9', 'CM-9'),
+        ('CM_10', 'CM-10'),
+        ('CM_11', 'CM-11'),
+        ('CM_12', 'CM-12'),
     ]
     
     # Core fields

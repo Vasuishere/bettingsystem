@@ -223,6 +223,10 @@ def home(request):
         {'value': 'NIGHT_MILAN_CLOSED', 'label': 'Night Milan Closed'},
         {'value': 'MAIN_BAZAR', 'label': 'Main Bazar'},
         {'value': 'MAIN_BAZAR_CLOSED', 'label': 'Main Bazar Closed'},
+        {'value': 'CM_9', 'label': 'CM-9'},
+        {'value': 'CM_10', 'label': 'CM-10'},
+        {'value': 'CM_11', 'label': 'CM-11'},
+        {'value': 'CM_12', 'label': 'CM-12'},
     ]
     
     # Generate date options (last 30 days + next 7 days)
@@ -252,7 +256,11 @@ def home(request):
         'NIGHT_MILAN_OPEN': 'Night Milan Open',
         'NIGHT_MILAN_CLOSED': 'Night Milan Closed',
         'MAIN_BAZAR': 'Main Bazar',
-        'MAIN_BAZAR_CLOSED': 'Main Bazar Closed'
+        'MAIN_BAZAR_CLOSED': 'Main Bazar Closed',
+        'CM_9': 'CM-9',
+        'CM_10': 'CM-10',
+        'CM_11': 'CM-11',
+        'CM_12': 'CM-12'
     }
     
     return render(request, 'userbaseapp/home.html', {
