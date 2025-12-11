@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Base App with Bets</title>
+    <!-- Preconnect to CDN for faster loading -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -16,6 +19,7 @@
         }
     </script>
     <style>
+        /* Critical CSS - loaded immediately */
         .spreadsheet-cell {
             padding: 5px 8px;
             border-right: 1px solid #e5e7eb;
@@ -1848,6 +1852,66 @@
         const rowLabelsJSON = {{ row_labels|safe }};
         const allColumnDataJSON = {{ ALL_COLUMN_DATA|safe }};
         /* eslint-enable */
+
+        // ========== PERFORMANCE UTILITIES ==========
+        // Debounce function - prevents rapid repeated calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Throttle function - limits execution rate
+        function throttle(func, limit) {
+            let inThrottle;
+            return function(...args) {
+                if (!inThrottle) {
+                    func.apply(this, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+
+        // Run non-critical tasks when browser is idle
+        function runWhenIdle(callback) {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(callback, { timeout: 2000 });
+            } else {
+                setTimeout(callback, 100);
+            }
+        }
+
+        // Batch DOM updates using requestAnimationFrame
+        const pendingUpdates = [];
+        let updateScheduled = false;
+        function batchDOMUpdate(updateFn) {
+            pendingUpdates.push(updateFn);
+            if (!updateScheduled) {
+                updateScheduled = true;
+                requestAnimationFrame(() => {
+                    const updates = pendingUpdates.splice(0);
+                    updates.forEach(fn => fn());
+                    updateScheduled = false;
+                });
+            }
+        }
+
+        // Lazy feature initialization tracker
+        const initializedFeatures = new Set();
+        function initFeatureOnce(featureName, initFn) {
+            if (!initializedFeatures.has(featureName)) {
+                initializedFeatures.add(featureName);
+                initFn();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const API = {
                 PLACE_BET: '/place-bet/',
@@ -2436,12 +2500,33 @@
                     console.error('Error fetching total amount:', err);
                 }
             }
+
+            // Cache for bet total elements to avoid repeated DOM queries
+            const betTotalElementCache = new Map();
+            function getBetTotalElement(number) {
+                if (!betTotalElementCache.has(number)) {
+                    betTotalElementCache.set(number, document.getElementById(`bet-total-${number}`));
+                }
+                return betTotalElementCache.get(number);
+            }
+
             function updateBetTotal(number) {
-                const el = document.getElementById(`bet-total-${number}`);
+                const el = getBetTotalElement(number);
                 if (el) {
                     el.textContent = bets[number]?.total ? `${bets[number].total}` : '';
                 }
             }
+
+            // Batch update bet totals for better performance
+            function updateAllBetTotals() {
+                batchDOMUpdate(() => {
+                    for (const number in bets) {
+                        updateBetTotal(number);
+                    }
+                    highlightCellsByLimit();
+                });
+            }
+
             async function refreshAllBetTotals() {
                 try {
                     const res = await fetch(`${API.GET_ALL_BET_TOTALS}?bazar=${currentBazar}&date=${currentDate}`);
@@ -2457,10 +2542,7 @@
                             }
                             bets[number].total = dbTotals[number];
                         }
-                        for (const number in bets) {
-                            updateBetTotal(number);
-                        }
-                        highlightCellsByLimit();
+                        updateAllBetTotals();
                     }
                 } catch (err) {
                     console.error('Error refreshing bet totals:', err);
@@ -4197,6 +4279,8 @@
                     // Close sidebar
                     closeSidebar();
                     bets = {};
+                    // Clear element cache on bazar change
+                    betTotalElementCache.clear();
                     tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
                     currentPage = 1;
                     // Reload all data for new bazar in parallel
@@ -4242,6 +4326,8 @@
                     // Close sidebar
                     closeSidebar();
                     bets = {};
+                    // Clear element cache on date change
+                    betTotalElementCache.clear();
                     tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-500">Loading...</td></tr>';
                     currentPage = 1;
                     // Reload all data for new date in parallel
@@ -4301,36 +4387,67 @@
                     showToast('Balance Updated', 'Total balance has been refreshed', 'success');
                 });
             }
-            // Load database storage info
-            loadDatabaseStorage();
+            // Load database storage info (defer to idle time)
+            runWhenIdle(() => loadDatabaseStorage());
             renderPage(1);
             refreshColumnTotals();
+
             // Set up periodic polling for multi-device synchronization
-            let syncInterval = setInterval(async () => {
-                try {
-                    await refreshAllBetTotals();
-                } catch (err) {
-                    console.error('Sync error:', err);
+            // Use longer interval and throttle to reduce server load
+            let syncInterval = null;
+            let isPageVisible = true;
+
+            // Only sync when page is visible
+            document.addEventListener('visibilitychange', () => {
+                isPageVisible = !document.hidden;
+                if (isPageVisible && !syncInterval) {
+                    startSync();
+                } else if (!isPageVisible && syncInterval) {
+                    clearInterval(syncInterval);
+                    syncInterval = null;
                 }
-            }, 10000); // 10 seconds
-            window.addEventListener('beforeunload', () => {
-                clearInterval(syncInterval);
             });
 
-            // Initialize
+            function startSync() {
+                syncInterval = setInterval(async () => {
+                    if (isPageVisible) {
+                        try {
+                            await refreshAllBetTotals();
+                        } catch (err) {
+                            console.error('Sync error:', err);
+                        }
+                    }
+                }, 15000); // 15 seconds (increased from 10)
+            }
+
+            startSync();
+
+            window.addEventListener('beforeunload', () => {
+                if (syncInterval) clearInterval(syncInterval);
+            });
+
+            // Initialize - load critical data first, defer non-critical
             showLoader('Initializing...');
             try {
                 updateLoader('Loading bets...');
-                await loadBets(); // This will update bet totals and re-render the page
-                await refreshAllBetTotals(); // Initial fetch from database
+                // Load critical data in parallel
+                const [betsResult, totalsResult] = await Promise.allSettled([
+                    loadBets(),
+                    refreshAllBetTotals()
+                ]);
+                
                 updateLoader('Loading settings...');
-                await getLastBulkAction();
-                await updateTotalAmount();
+                // Load secondary data
+                await Promise.allSettled([
+                    getLastBulkAction(),
+                    updateTotalAmount()
+                ]);
+                
                 updateLoader('Ready!');
             } catch (err) {
                 console.error('Initialization error:', err);
             } finally {
-                setTimeout(() => hideLoader(), 500);
+                setTimeout(() => hideLoader(), 300);
             }
 
             // Master Delete Functions
