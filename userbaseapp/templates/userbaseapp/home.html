@@ -916,6 +916,93 @@
                 </div>
             </div>
         </div>
+        <div id="quickBetContainer"
+            class="hidden mt-6 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 mx-auto" style="max-width: 400px;">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-indigo-700">Quick Bet Entry</h3>
+                <button id="closeQuickBetBtn" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
+            </div>
+            <div class="overflow-auto" style="max-height: 400px;">
+                <table class="w-full border-collapse text-sm">
+                    <thead class="bg-indigo-100 sticky top-0">
+                        <tr>
+                            <th class="border border-gray-300 px-1 py-1 text-xs font-semibold text-gray-700 w-8">Row</th>
+                            <th class="border border-gray-300 px-1 py-1 text-xs font-semibold text-gray-700">Number</th>
+                            <th class="border border-gray-300 px-1 py-1 text-xs font-semibold text-gray-700">Amount</th>
+                            <th class="border border-gray-300 px-1 py-1 text-xs font-semibold text-gray-700 w-8"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="quickBetTableBody">
+                        <tr data-row="1">
+                            <td class="border border-gray-300 px-1 py-1 text-center text-xs font-medium text-gray-600">1</td>
+                            <td class="border border-gray-300 p-1">
+                                <input type="text"
+                                    class="quick-bet-number w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    placeholder="3-digit" maxlength="3" data-row="1">
+                            </td>
+                            <td class="border border-gray-300 p-1">
+                                <input type="number"
+                                    class="quick-bet-amount w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    placeholder="Amt" min="1" data-row="1">
+                            </td>
+                            <td class="border border-gray-300 p-0 text-center">
+                                <button
+                                    class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-0.5 transition"
+                                    title="Remove row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr data-row="2">
+                            <td class="border border-gray-300 px-1 py-1 text-center text-xs font-medium text-gray-600">2</td>
+                            <td class="border border-gray-300 p-1">
+                                <input type="text"
+                                    class="quick-bet-number w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    placeholder="3-digit" maxlength="3" data-row="2">
+                            </td>
+                            <td class="border border-gray-300 p-1">
+                                <input type="number"
+                                    class="quick-bet-amount w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    placeholder="Amt" min="1" data-row="2">
+                            </td>
+                            <td class="border border-gray-300 p-0 text-center">
+                                <button
+                                    class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-0.5 transition"
+                                    title="Remove row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Same Amount for All Checkbox -->
+            <div class="mt-3 flex items-center gap-2 px-2 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                <input type="checkbox" id="sameAmountCheckbox"
+                    class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                <label for="sameAmountCheckbox" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    Use same amount for all numbers
+                </label>
+            </div>
+            <div class="mt-3 flex gap-2">
+                <button id="quickBetOkayBtn"
+                    class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md transition">
+                    Place Bets
+                </button>
+                <button id="quickBetClearBtn"
+                    class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-md transition">
+                    Clear
+                </button>
+            </div>
+        </div>
         <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
             <div class="overflow-x-auto">
                 <table id="spreadsheet-table" class="min-w-full divide-y divide-gray-200 border-collapse table-auto">
@@ -1034,6 +1121,7 @@
                 Set Pana
             </button>
         </div>
+        <!-- Quick Bet Entry Table -->
     </div>
     <!-- Bulk Action History Modal (Full Screen) -->
     <div id="historyModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -1158,97 +1246,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Quick Bet Entry Table (Bottom Right) -->
-    <div id="quickBetContainer"
-        class="hidden fixed bottom-4 right-4 bg-white rounded-xl shadow-2xl border-2 border-indigo-500 p-4 z-40"
-        style="width: 320px;">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="text-lg font-bold text-indigo-700">Quick Bet Entry</h3>
-            <button id="closeQuickBetBtn" class="text-gray-500 hover:text-gray-700 text-xl font-bold">&times;</button>
-        </div>
-        <div class="overflow-auto" style="max-height: 300px;">
-            <table class="w-full border-collapse">
-                <thead class="bg-indigo-100 sticky top-0">
-                    <tr>
-                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700 w-12">Row</th>
-                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700">A (Number)</th>
-                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700">B (Amount)</th>
-                        <th class="border border-gray-300 px-2 py-2 text-sm font-semibold text-gray-700 w-10"></th>
-                    </tr>
-                </thead>
-                <tbody id="quickBetTableBody">
-                    <tr data-row="1">
-                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">1
-                        </td>
-                        <td class="border border-gray-300 p-1">
-                            <input type="text"
-                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="3-digit" maxlength="3" data-row="1">
-                        </td>
-                        <td class="border border-gray-300 p-1">
-                            <input type="number"
-                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Amount" min="1" data-row="1">
-                        </td>
-                        <td class="border border-gray-300 p-1 text-center">
-                            <button
-                                class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
-                                title="Remove row">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr data-row="2">
-                        <td class="border border-gray-300 px-2 py-2 text-center text-sm font-medium text-gray-600">2
-                        </td>
-                        <td class="border border-gray-300 p-1">
-                            <input type="text"
-                                class="quick-bet-number w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="3-digit" maxlength="3" data-row="2">
-                        </td>
-                        <td class="border border-gray-300 p-1">
-                            <input type="number"
-                                class="quick-bet-amount w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                placeholder="Amount" min="1" data-row="2">
-                        </td>
-                        <td class="border border-gray-300 p-1 text-center">
-                            <button
-                                class="remove-row-btn text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1 transition"
-                                title="Remove row">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!-- Same Amount for All Checkbox -->
-        <div class="mt-3 flex items-center gap-2 px-2 py-2 bg-blue-50 rounded-lg border border-blue-200">
-            <input type="checkbox" id="sameAmountCheckbox"
-                class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
-            <label for="sameAmountCheckbox" class="text-sm font-medium text-gray-700 cursor-pointer">
-                Use same amount for all numbers
-            </label>
-        </div>
-        <div class="mt-3 flex gap-2">
-            <button id="quickBetOkayBtn"
-                class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md transition">
-                Place Bets
-            </button>
-            <button id="quickBetClearBtn"
-                class="bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-md transition">
-                Clear
-            </button>
         </div>
     </div>
     <!-- Universal Modal -->
@@ -1686,24 +1683,12 @@
                         <!-- Group Bet Options -->
                         <div id="groupBetOptions" class="hidden space-y-4">
                             <div class="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
-                                <p class="text-sm font-semibold text-purple-800 mb-3">
-                                    Enter 2 digits to place bets on all 3-digit numbers containing both digits
-                                </p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block mb-2 text-xs font-medium text-gray-700">First Digit
-                                            (0-9)</label>
-                                        <input type="number" id="groupBetDigit1" min="0" max="9"
-                                            class="w-full px-3 py-2 text-center text-lg font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="0-9">
-                                    </div>
-                                    <div>
-                                        <label class="block mb-2 text-xs font-medium text-gray-700">Second Digit
-                                            (0-9)</label>
-                                        <input type="number" id="groupBetDigit2" min="0" max="9"
-                                            class="w-full px-3 py-2 text-center text-lg font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            placeholder="0-9">
-                                    </div>
+                                <div>
+                                    <label class="block mb-2 text-xs font-medium text-gray-700">Enter Two Digits (e.g., 35, 99, 07)</label>
+                                    <input type="text" id="groupBetDigitsInput" maxlength="2" minlength="2"
+                                        class="w-full px-3 py-3 text-center text-2xl font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        placeholder="00">
+                                    <p class="text-xs text-gray-500 mt-1">Enter exactly 2 digits (0-9). First digit and second digit will be used for matching.</p>
                                 </div>
                                 <div class="mt-4 p-3 bg-white border border-purple-200 rounded-lg">
                                     <p class="text-xs font-medium text-gray-700 mb-2">Preview matching numbers:</p>
@@ -1712,14 +1697,6 @@
                                     </div>
                                     <p class="text-xs text-purple-600 mt-2">
                                         Total: <span id="groupBetCount" class="font-bold">0</span> numbers
-                                    </p>
-                                </div>
-                                <div class="mt-3">
-                                    <p class="text-xs text-gray-500">
-                                        <strong>Example:</strong> Enter 5 and 5 → Places bets on 155, 255, 355, 455,
-                                        556, 557, 558, 559, 550, etc.<br>
-                                        <strong>Example:</strong> Enter 3 and 9 → Places bets on 139, 239, 339, 349,
-                                        359, 369, 379, 389, 390, 391, etc.
                                     </p>
                                 </div>
                             </div>
@@ -2101,17 +2078,8 @@
                 } else if (betType === 'GROUP') {
                     document.getElementById('groupBetOptions').classList.remove('hidden');
                     selectAllContainer.classList.add('hidden');
-                    // Clear group bet inputs
-                    document.getElementById('groupBetDigit1').value = '';
-                    document.getElementById('groupBetDigit2').value = '';
-                    document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
-                    document.getElementById('groupBetCount').textContent = '0';
-                } else if (betType === 'GROUP') {
-                    document.getElementById('groupBetOptions').classList.remove('hidden');
-                    selectAllContainer.classList.add('hidden');
-                    // Reset group bet inputs
-                    document.getElementById('groupBetDigit1').value = '';
-                    document.getElementById('groupBetDigit2').value = '';
+                    // Clear group bet input
+                    document.getElementById('groupBetDigitsInput').value = '';
                     document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
                     document.getElementById('groupBetCount').textContent = '0';
                 }
@@ -3033,15 +3001,14 @@
                         showToast('Error', 'Failed to place Set Pana bets', 'error');
                     }
                 } else if (currentBetType === 'GROUP') {
-                    const digit1 = document.getElementById('groupBetDigit1').value;
-                    const digit2 = document.getElementById('groupBetDigit2').value;
+                    const digitsInput = document.getElementById('groupBetDigitsInput').value;
 
-                    if (digit1 === '' || digit2 === '') {
-                        return showToast('Invalid Input', 'Please enter both digits', 'warning');
+                    if (digitsInput.length !== 2) {
+                        return showToast('Invalid Input', 'Please enter exactly 2 digits', 'warning');
                     }
 
-                    const d1 = parseInt(digit1);
-                    const d2 = parseInt(digit2);
+                    const d1 = parseInt(digitsInput[0]);
+                    const d2 = parseInt(digitsInput[1]);
 
                     if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
                         return showToast('Invalid Input', 'Please enter valid digits (0-9)', 'warning');
@@ -3564,22 +3531,21 @@
                 });
             }
 
-            // Group Bet digit input handlers - show preview of matching numbers
+            // Group Bet digit input handler - show preview of matching numbers
             function updateGroupBetPreview() {
-                const digit1 = document.getElementById('groupBetDigit1').value;
-                const digit2 = document.getElementById('groupBetDigit2').value;
+                const digitsInput = document.getElementById('groupBetDigitsInput').value;
                 const previewDiv = document.getElementById('groupBetPreview');
                 const countSpan = document.getElementById('groupBetCount');
 
-                if (digit1 === '' || digit2 === '') {
+                if (digitsInput.length !== 2) {
                     previewDiv.textContent = 'Enter two digits to see matching numbers';
                     countSpan.textContent = '0';
                     return;
                 }
 
                 // Validate input
-                const d1 = parseInt(digit1);
-                const d2 = parseInt(digit2);
+                const d1 = parseInt(digitsInput[0]);
+                const d2 = parseInt(digitsInput[1]);
 
                 if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
                     previewDiv.textContent = 'Please enter valid digits (0-9)';
@@ -3621,16 +3587,9 @@
                 }
             }
 
-            document.getElementById('groupBetDigit1').addEventListener('input', function (e) {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                if (value.length > 1) value = value.slice(0, 1);
-                e.target.value = value;
-                updateGroupBetPreview();
-            });
-
-            document.getElementById('groupBetDigit2').addEventListener('input', function (e) {
-                let value = e.target.value.replace(/[^0-9]/g, '');
-                if (value.length > 1) value = value.slice(0, 1);
+            document.getElementById('groupBetDigitsInput').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
+                if (value.length > 2) value = value.slice(0, 2); // Max 2 digits
                 e.target.value = value;
                 updateGroupBetPreview();
             });
