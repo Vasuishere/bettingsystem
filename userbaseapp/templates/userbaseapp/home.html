@@ -1683,16 +1683,24 @@
                         <!-- Group Bet Options -->
                         <div id="groupBetOptions" class="hidden space-y-4">
                             <div class="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
+                                <!-- Multiple Group Checkbox -->
+                                <div class="mb-3 flex items-center gap-2 px-2 py-2 bg-rose-50 rounded-lg border border-rose-200">
+                                    <input type="checkbox" id="multipleGroupCheckbox"
+                                        class="w-4 h-4 text-rose-600 rounded focus:ring-2 focus:ring-rose-500">
+                                    <label for="multipleGroupCheckbox" class="text-xs font-medium text-gray-700 cursor-pointer">
+                                        Multiple Group (comma separated)
+                                    </label>
+                                </div>
                                 <div>
-                                    <label class="block mb-2 text-xs font-medium text-gray-700">Enter Two Digits (e.g., 35, 99, 07)</label>
+                                    <label id="groupInputLabel" class="block mb-2 text-xs font-medium text-gray-700">Enter Two Digits (e.g., 35, 99, 07)</label>
                                     <input type="text" id="groupBetDigitsInput" maxlength="2" minlength="2"
                                         class="w-full px-3 py-3 text-center text-2xl font-bold border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         placeholder="00">
-                                    <p class="text-xs text-gray-500 mt-1">Enter exactly 2 digits (0-9). First digit and second digit will be used for matching.</p>
+                                    <p id="groupInputHint" class="text-xs text-gray-500 mt-1">Enter exactly 2 digits (0-9). First digit and second digit will be used for matching.</p>
                                 </div>
                                 <div class="mt-4 p-3 bg-white border border-purple-200 rounded-lg">
                                     <p class="text-xs font-medium text-gray-700 mb-2">Preview matching numbers:</p>
-                                    <div id="groupBetPreview" class="text-xs text-gray-600 max-h-32 overflow-y-auto">
+                                    <div id="groupBetPreview" class="text-xs text-gray-600 max-h-60 overflow-y-auto">
                                         Enter two digits to see matching numbers
                                     </div>
                                     <p class="text-xs text-purple-600 mt-2">
@@ -2110,6 +2118,19 @@
                     document.getElementById('motarInputLabel').textContent = 'Enter Number (4-10 digits)';
                     document.getElementById('motarInputHint').textContent = 'Enter 4-10 digit number. Only digits 0-9 allowed.';
                 }
+                // Reset multiple group checkbox and input state
+                const multipleGroupCheckbox = document.getElementById('multipleGroupCheckbox');
+                if (multipleGroupCheckbox) {
+                    multipleGroupCheckbox.checked = false;
+                    const groupInput = document.getElementById('groupBetDigitsInput');
+                    groupInput.placeholder = '00';
+                    groupInput.maxLength = 2;
+                    document.getElementById('groupInputLabel').textContent = 'Enter Two Digits (e.g., 35, 99, 07)';
+                    document.getElementById('groupInputHint').textContent = 'Enter exactly 2 digits (0-9). First digit and second digit will be used for matching.';
+                }
+                document.getElementById('groupBetDigitsInput').value = '';
+                document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
+                document.getElementById('groupBetCount').textContent = '0';
                 const selectAllCheckbox = document.getElementById('selectAllColumnsCheckbox');
                 selectAllCheckbox.checked = false;
             }
@@ -3002,70 +3023,147 @@
                     }
                 } else if (currentBetType === 'GROUP') {
                     const digitsInput = document.getElementById('groupBetDigitsInput').value;
+                    const isMultipleMode = document.getElementById('multipleGroupCheckbox').checked;
 
-                    if (digitsInput.length !== 2) {
-                        return showToast('Invalid Input', 'Please enter exactly 2 digits', 'warning');
-                    }
+                    if (isMultipleMode) {
+                        // Multiple group mode
+                        const groups = digitsInput.split(',').map(g => g.trim()).filter(g => g !== '');
+                        const validGroups = groups.filter(g => g.length === 2 && /^[0-9]{2}$/.test(g));
 
-                    const d1 = parseInt(digitsInput[0]);
-                    const d2 = parseInt(digitsInput[1]);
+                        if (validGroups.length === 0) {
+                            return showToast('Invalid Input', 'Please enter at least one valid 2-digit group', 'warning');
+                        }
 
-                    if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
-                        return showToast('Invalid Input', 'Please enter valid digits (0-9)', 'warning');
-                    }
+                        try {
+                            let totalBetsPlaced = 0;
+                            let allBetsData = [];
+                            let processedGroups = [];
 
-                    try {
-                        // Call Django API to place all Group bets in one transaction
-                        const res = await fetch(API.PLACE_GROUP, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': getCSRFToken()
-                            },
-                            body: JSON.stringify({
-                                digit1: d1,
-                                digit2: d2,
-                                amount: amount,
-                                bazar: currentBazar,
-                                date: currentDate
-                            })
-                        });
+                            // Place bets for each group
+                            for (const group of validGroups) {
+                                const d1 = parseInt(group[0]);
+                                const d2 = parseInt(group[1]);
 
-                        const data = await res.json();
-
-                        if (data.success) {
-                            // Update local bets data
-                            data.bets.forEach(bet => {
-                                const num = bet.number;
-                                if (!bets[num]) bets[num] = { total: 0, history: [] };
-                                bets[num].total += parseFloat(bet.amount);
-                                bets[num].history.push({
-                                    id: bet.bet_id,
-                                    amount: parseFloat(bet.amount),
-                                    bet_type: 'GROUP'
+                                const res = await fetch(API.PLACE_GROUP, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': getCSRFToken()
+                                    },
+                                    body: JSON.stringify({
+                                        digit1: d1,
+                                        digit2: d2,
+                                        amount: amount,
+                                        bazar: currentBazar,
+                                        date: currentDate
+                                    })
                                 });
-                                updateBetTotal(num);
+                                const data = await res.json();
+                                if (data.success) {
+                                    totalBetsPlaced += data.total_bets;
+                                    allBetsData.push(data);
+                                    processedGroups.push(group);
+
+                                    data.bets.forEach(bet => {
+                                        const num = bet.number;
+                                        if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                        bets[num].total += parseFloat(bet.amount);
+                                        bets[num].history.push({
+                                            id: bet.bet_id,
+                                            amount: parseFloat(bet.amount),
+                                            bet_type: 'GROUP'
+                                        });
+                                        updateBetTotal(num);
+                                    });
+                                }
+                            }
+
+                            if (totalBetsPlaced > 0) {
+                                lastBulkAction = {
+                                    id: allBetsData[allBetsData.length - 1].bulk_action_id,
+                                    type: 'GROUP',
+                                    total_bets: totalBetsPlaced
+                                };
+                                showToast('Success!', `Multiple Group: ${totalBetsPlaced} bets placed from ${processedGroups.length} groups (${processedGroups.join(', ')})`, 'success');
+                                closeModal();
+                                renderPage(1);
+                                await getLastBulkAction();
+                                await updateTotalAmount();
+                                await refreshAllBetTotals();
+                                updateUndoButton();
+                            } else {
+                                showToast('Error', 'Failed to place any Group bets', 'error');
+                            }
+                        } catch (err) {
+                            console.error('Error placing Multiple Group bets:', err);
+                            showToast('Error', 'Failed to place Group bets', 'error');
+                        }
+                    } else {
+                        // Single group mode - original behavior
+                        if (digitsInput.length !== 2) {
+                            return showToast('Invalid Input', 'Please enter exactly 2 digits', 'warning');
+                        }
+
+                        const d1 = parseInt(digitsInput[0]);
+                        const d2 = parseInt(digitsInput[1]);
+
+                        if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
+                            return showToast('Invalid Input', 'Please enter valid digits (0-9)', 'warning');
+                        }
+
+                        try {
+                            // Call Django API to place all Group bets in one transaction
+                            const res = await fetch(API.PLACE_GROUP, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken()
+                                },
+                                body: JSON.stringify({
+                                    digit1: d1,
+                                    digit2: d2,
+                                    amount: amount,
+                                    bazar: currentBazar,
+                                    date: currentDate
+                                })
                             });
 
-                            lastBulkAction = {
-                                id: data.bulk_action_id,
-                                type: 'GROUP',
-                                total_bets: data.total_bets
-                            };
+                            const data = await res.json();
 
-                            showToast('Success!', `Group Bet: ${data.total_bets} bets placed for digits ${d1} and ${d2}`, 'success');
-                            closeModal();
-                            renderPage(1);
-                            await getLastBulkAction();
-                            await updateTotalAmount();
-                            await refreshAllBetTotals();
-                            updateUndoButton();
-                        } else {
-                            showToast('Error', data.error || 'Failed to place Group bets', 'error');
+                            if (data.success) {
+                                // Update local bets data
+                                data.bets.forEach(bet => {
+                                    const num = bet.number;
+                                    if (!bets[num]) bets[num] = { total: 0, history: [] };
+                                    bets[num].total += parseFloat(bet.amount);
+                                    bets[num].history.push({
+                                        id: bet.bet_id,
+                                        amount: parseFloat(bet.amount),
+                                        bet_type: 'GROUP'
+                                    });
+                                    updateBetTotal(num);
+                                });
+
+                                lastBulkAction = {
+                                    id: data.bulk_action_id,
+                                    type: 'GROUP',
+                                    total_bets: data.total_bets
+                                };
+
+                                showToast('Success!', `Group Bet: ${data.total_bets} bets placed for digits ${d1} and ${d2}`, 'success');
+                                closeModal();
+                                renderPage(1);
+                                await getLastBulkAction();
+                                await updateTotalAmount();
+                                await refreshAllBetTotals();
+                                updateUndoButton();
+                            } else {
+                                showToast('Error', data.error || 'Failed to place Group bets', 'error');
+                            }
+                        } catch (err) {
+                            console.error('Error placing Group bets:', err);
+                            showToast('Error', 'Failed to place Group bets', 'error');
                         }
-                    } catch (err) {
-                        console.error('Error placing Group bets:', err);
-                        showToast('Error', 'Failed to place Group bets', 'error');
                     }
                 } else if (currentBetType === 'COLUMN') {
                     const columns = getSelectedColumns('columnBetCheckbox');
@@ -3531,66 +3629,154 @@
                 });
             }
 
+            // Multiple Group checkbox handler
+            document.getElementById('multipleGroupCheckbox').addEventListener('change', function() {
+                const groupInput = document.getElementById('groupBetDigitsInput');
+                const inputLabel = document.getElementById('groupInputLabel');
+                const inputHint = document.getElementById('groupInputHint');
+                
+                if (this.checked) {
+                    groupInput.placeholder = 'e.g. 23,56,89';
+                    groupInput.maxLength = 100; // Allow longer input for multiple groups
+                    inputLabel.textContent = 'Enter Multiple Groups (comma separated)';
+                    inputHint.textContent = 'Enter multiple 2-digit groups separated by commas. Only digits and commas allowed.';
+                } else {
+                    groupInput.placeholder = '00';
+                    groupInput.maxLength = 2;
+                    inputLabel.textContent = 'Enter Two Digits (e.g., 35, 99, 07)';
+                    inputHint.textContent = 'Enter exactly 2 digits (0-9). First digit and second digit will be used for matching.';
+                }
+                // Clear input and preview when toggling
+                groupInput.value = '';
+                document.getElementById('groupBetPreview').textContent = 'Enter two digits to see matching numbers';
+                document.getElementById('groupBetCount').textContent = '0';
+            });
+
             // Group Bet digit input handler - show preview of matching numbers
             function updateGroupBetPreview() {
                 const digitsInput = document.getElementById('groupBetDigitsInput').value;
                 const previewDiv = document.getElementById('groupBetPreview');
                 const countSpan = document.getElementById('groupBetCount');
+                const isMultipleMode = document.getElementById('multipleGroupCheckbox').checked;
 
-                if (digitsInput.length !== 2) {
-                    previewDiv.textContent = 'Enter two digits to see matching numbers';
-                    countSpan.textContent = '0';
-                    return;
-                }
+                if (isMultipleMode) {
+                    // Multiple mode - parse comma-separated groups
+                    const groups = digitsInput.split(',').map(g => g.trim()).filter(g => g !== '');
+                    const validGroups = groups.filter(g => g.length === 2 && /^[0-9]{2}$/.test(g));
 
-                // Validate input
-                const d1 = parseInt(digitsInput[0]);
-                const d2 = parseInt(digitsInput[1]);
-
-                if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
-                    previewDiv.textContent = 'Please enter valid digits (0-9)';
-                    countSpan.textContent = '0';
-                    return;
-                }
-
-                // Generate all 3-digit numbers containing both digits
-                const matchingNumbers = [];
-
-                // Iterate through all valid numbers and check if they contain both digits
-                validNumbers.forEach(numStr => {
-                    const digits = numStr.split('');
-                    const d1Str = String(d1);
-                    const d2Str = String(d2);
-
-                    // Check if the number contains both digit1 and digit2
-                    if (digits.includes(d1Str) && digits.includes(d2Str)) {
-                        matchingNumbers.push(numStr);
+                    if (validGroups.length === 0) {
+                        previewDiv.textContent = 'Enter 2-digit groups separated by commas';
+                        countSpan.textContent = '0';
+                        return;
                     }
-                });
 
-                // Sort and display
-                matchingNumbers.sort();
+                    // Collect unique matching numbers from all groups
+                    const allMatchingNumbers = new Set();
+                    const groupBreakdown = [];
 
-                if (matchingNumbers.length === 0) {
-                    previewDiv.textContent = 'No matching numbers found';
-                    countSpan.textContent = '0';
-                } else {
-                    // Create badge elements for each number
-                    previewDiv.innerHTML = '';
-                    matchingNumbers.forEach(num => {
-                        const badge = document.createElement('span');
-                        badge.className = 'inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded mr-1 mb-1';
-                        badge.textContent = num;
-                        previewDiv.appendChild(badge);
+                    validGroups.forEach(group => {
+                        const d1 = parseInt(group[0]);
+                        const d2 = parseInt(group[1]);
+                        const d1Str = String(d1);
+                        const d2Str = String(d2);
+                        let groupCount = 0;
+
+                        validNumbers.forEach(numStr => {
+                            const digits = numStr.split('');
+                            if (digits.includes(d1Str) && digits.includes(d2Str)) {
+                                allMatchingNumbers.add(numStr);
+                                groupCount++;
+                            }
+                        });
+                        groupBreakdown.push(`${group}: ${groupCount}`);
                     });
-                    countSpan.textContent = matchingNumbers.length;
+
+                    const matchingArray = Array.from(allMatchingNumbers).sort();
+
+                    if (matchingArray.length === 0) {
+                        previewDiv.textContent = 'No matching numbers found';
+                        countSpan.textContent = '0';
+                    } else {
+                        previewDiv.innerHTML = '';
+                        // Show breakdown
+                        const breakdownDiv = document.createElement('div');
+                        breakdownDiv.className = 'mb-2 text-xs text-gray-500';
+                        breakdownDiv.textContent = `Breakdown: ${groupBreakdown.join(', ')}`;
+                        previewDiv.appendChild(breakdownDiv);
+                        // Show numbers
+                        matchingArray.forEach(num => {
+                            const badge = document.createElement('span');
+                            badge.className = 'inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded mr-1 mb-1';
+                            badge.textContent = num;
+                            previewDiv.appendChild(badge);
+                        });
+                        countSpan.textContent = matchingArray.length;
+                    }
+                } else {
+                    // Single mode - original behavior
+                    if (digitsInput.length !== 2) {
+                        previewDiv.textContent = 'Enter two digits to see matching numbers';
+                        countSpan.textContent = '0';
+                        return;
+                    }
+
+                    // Validate input
+                    const d1 = parseInt(digitsInput[0]);
+                    const d2 = parseInt(digitsInput[1]);
+
+                    if (isNaN(d1) || isNaN(d2) || d1 < 0 || d1 > 9 || d2 < 0 || d2 > 9) {
+                        previewDiv.textContent = 'Please enter valid digits (0-9)';
+                        countSpan.textContent = '0';
+                        return;
+                    }
+
+                    // Generate all 3-digit numbers containing both digits
+                    const matchingNumbers = [];
+
+                    // Iterate through all valid numbers and check if they contain both digits
+                    validNumbers.forEach(numStr => {
+                        const digits = numStr.split('');
+                        const d1Str = String(d1);
+                        const d2Str = String(d2);
+
+                        // Check if the number contains both digit1 and digit2
+                        if (digits.includes(d1Str) && digits.includes(d2Str)) {
+                            matchingNumbers.push(numStr);
+                        }
+                    });
+
+                    // Sort and display
+                    matchingNumbers.sort();
+
+                    if (matchingNumbers.length === 0) {
+                        previewDiv.textContent = 'No matching numbers found';
+                        countSpan.textContent = '0';
+                    } else {
+                        // Create badge elements for each number
+                        previewDiv.innerHTML = '';
+                        matchingNumbers.forEach(num => {
+                            const badge = document.createElement('span');
+                            badge.className = 'inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded mr-1 mb-1';
+                            badge.textContent = num;
+                            previewDiv.appendChild(badge);
+                        });
+                        countSpan.textContent = matchingNumbers.length;
+                    }
                 }
             }
 
             document.getElementById('groupBetDigitsInput').addEventListener('input', function (e) {
-                let value = e.target.value.replace(/[^0-9]/g, ''); // Only allow digits
-                if (value.length > 2) value = value.slice(0, 2); // Max 2 digits
-                e.target.value = value;
+                const isMultipleMode = document.getElementById('multipleGroupCheckbox').checked;
+                if (isMultipleMode) {
+                    // Allow digits and commas in multiple mode
+                    let value = e.target.value.replace(/[^0-9,]/g, '');
+                    e.target.value = value;
+                } else {
+                    // Only digits in single mode
+                    let value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length > 2) value = value.slice(0, 2);
+                    e.target.value = value;
+                }
                 updateGroupBetPreview();
             });
 
