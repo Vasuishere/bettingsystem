@@ -30,6 +30,7 @@ urlpatterns = [
     # Betting operations
     path('place-bet/', views.place_bet, name='place_bet'),
     path('place-bulk-bet/', views.place_bulk_bet, name='place_bulk_bet'),
+    path('place-quick-bets/', views.place_quick_bets, name='place_quick_bets'),
     path('load-bets/', views.load_bets, name='load_bets'),
     path('delete-bet/', views.delete_bet, name='delete_bet'),
     

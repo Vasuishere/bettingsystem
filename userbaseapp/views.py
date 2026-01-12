@@ -1782,3 +1782,74 @@ def get_column_totals(request):
             'success': False,
             'error': str(e)
         }, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+@transaction.atomic
+def place_quick_bets(request):
+    """Place multiple quick bets at once (used for voice input and manual quick entry)"""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        bets = data.get('bets', [])
+        bazar = data.get('bazar', 'SRIDEVI_OPEN')
+        date_str = data.get('date')
+
+        if not bets or not isinstance(bets, list):
+            return JsonResponse({'error': 'Missing or invalid bets array'}, status=400)
+
+        # Parse date if provided
+        from django.utils import timezone
+        bet_date = timezone.now().date()
+        if date_str:
+            from datetime import datetime
+            bet_date = datetime.fromisoformat(date_str).date()
+
+        created_bets = []
+        errors = []
+
+        for bet_item in bets:
+            number = bet_item.get('number')
+            amount = bet_item.get('amount')
+
+            if not number or not amount:
+                errors.append({'number': number, 'error': 'Missing number or amount'})
+                continue
+
+            try:
+                amount = Decimal(str(amount))
+                if amount <= 0:
+                    errors.append({'number': number, 'error': 'Amount must be greater than 0'})
+                    continue
+
+                # Pad number to 3 digits
+                number_str = str(number).zfill(3)
+
+                bet = Bet.objects.create(
+                    user=request.user,
+                    number=number_str,
+                    amount=amount,
+                    bet_type='SINGLE',
+                    bazar=bazar,
+                    bet_date=bet_date
+                )
+                created_bets.append({
+                    'id': bet.id,
+                    'number': bet.number,
+                    'amount': str(bet.amount)
+                })
+            except Exception as e:
+                errors.append({'number': number, 'error': str(e)})
+
+        return JsonResponse({
+            'success': len(created_bets) > 0,
+            'message': f'{len(created_bets)} bet(s) placed successfully',
+            'bets_placed': len(created_bets),
+            'created_bets': created_bets,
+            'errors': errors
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
