@@ -1196,12 +1196,23 @@
 
                     <!-- Voice Button -->
                     <div class="flex flex-col items-center mb-4">
+                        <!-- Start Button -->
                         <button id="voiceInputBtn" class="voice-btn mb-3">
                             <svg id="voiceMicIcon" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                             </svg>
                             <div id="voiceWaveAnimation" class="voice-wave hidden">
                                 <span></span><span></span><span></span><span></span><span></span>
+                            </div>
+                        </button>
+                        <!-- Stop Button (shown when listening) -->
+                        <button id="voiceStopBtn" class="hidden mb-3 w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-lg flex items-center justify-center transition-all duration-200 transform hover:scale-105">
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                                </svg>
+                                <span class="text-xs font-bold mt-1">STOP</span>
                             </div>
                         </button>
                         <p id="voiceStatusText" class="text-sm font-medium text-gray-600">Tap to start speaking</p>
@@ -4800,6 +4811,7 @@
             let voiceRecognition = null;
             let voiceDetectedNumbers = [];
             let isVoiceListening = false;
+            let voiceContinuousMode = false; // Keep listening until manually stopped
 
             // Check if voice input is supported
             const voiceSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
@@ -4817,27 +4829,48 @@
 
                 voiceRecognition.onstart = function() {
                     isVoiceListening = true;
+                    voiceContinuousMode = true; // Enable continuous mode when starting
                     const voiceBtn = document.getElementById('voiceInputBtn');
+                    const stopBtn = document.getElementById('voiceStopBtn');
                     const micIcon = document.getElementById('voiceMicIcon');
                     const waveAnimation = document.getElementById('voiceWaveAnimation');
                     const statusText = document.getElementById('voiceStatusText');
                     
                     voiceBtn.classList.add('listening');
+                    voiceBtn.classList.add('hidden'); // Hide start button
+                    stopBtn?.classList.remove('hidden'); // Show stop button
                     micIcon.classList.add('hidden');
                     waveAnimation.classList.remove('hidden');
-                    statusText.textContent = 'Listening... Speak now';
+                    statusText.textContent = 'Listening... Speak your bets';
                     statusText.classList.add('text-green-600');
                     statusText.classList.remove('text-gray-600');
                 };
 
                 voiceRecognition.onend = function() {
                     isVoiceListening = false;
+                    
+                    // Auto-restart if continuous mode is enabled
+                    if (voiceContinuousMode) {
+                        setTimeout(() => {
+                            try {
+                                voiceRecognition.start();
+                            } catch (e) {
+                                console.log('Restart failed, retrying...', e);
+                                setTimeout(() => voiceRecognition.start(), 100);
+                            }
+                        }, 50);
+                        return; // Don't update UI, keep showing listening state
+                    }
+                    
                     const voiceBtn = document.getElementById('voiceInputBtn');
+                    const stopBtn = document.getElementById('voiceStopBtn');
                     const micIcon = document.getElementById('voiceMicIcon');
                     const waveAnimation = document.getElementById('voiceWaveAnimation');
                     const statusText = document.getElementById('voiceStatusText');
                     
                     voiceBtn.classList.remove('listening', 'processing');
+                    voiceBtn.classList.remove('hidden');
+                    stopBtn?.classList.add('hidden');
                     micIcon.classList.remove('hidden');
                     waveAnimation.classList.add('hidden');
                     statusText.textContent = 'Tap to start speaking';
@@ -4871,27 +4904,43 @@
                     console.error('Voice recognition error:', event.error);
                     const transcriptDisplay = document.getElementById('voiceTranscript');
                     const statusText = document.getElementById('voiceStatusText');
+                    const voiceBtn = document.getElementById('voiceInputBtn');
+                    const stopBtn = document.getElementById('voiceStopBtn');
                     
                     let errorMessage = 'Error occurred';
+                    let shouldStopContinuous = false;
+                    
                     switch(event.error) {
                         case 'no-speech':
-                            errorMessage = 'No speech detected. Try again.';
+                            errorMessage = 'No speech detected. Still listening...';
+                            // Don't stop continuous mode for no-speech, it will auto-restart
                             break;
                         case 'audio-capture':
                             errorMessage = 'No microphone found.';
+                            shouldStopContinuous = true;
                             break;
                         case 'not-allowed':
                             errorMessage = 'Microphone access denied. Please allow microphone.';
+                            shouldStopContinuous = true;
                             break;
                         case 'network':
                             errorMessage = 'Network error. Check your connection.';
+                            shouldStopContinuous = true;
                             break;
+                        case 'aborted':
+                            // User stopped, don't show error
+                            return;
                     }
                     
-                    transcriptDisplay.textContent = errorMessage;
-                    transcriptDisplay.classList.add('error');
-                    statusText.textContent = 'Error - Tap to retry';
-                    showToast('Voice Error', errorMessage, 'error');
+                    if (shouldStopContinuous) {
+                        voiceContinuousMode = false;
+                        voiceBtn?.classList.remove('hidden');
+                        stopBtn?.classList.add('hidden');
+                        transcriptDisplay.textContent = errorMessage;
+                        transcriptDisplay.classList.add('error');
+                        statusText.textContent = 'Error - Tap to retry';
+                        showToast('Voice Error', errorMessage, 'error');
+                    }
                 };
             }
 
@@ -4974,7 +5023,7 @@
                 }
             }
 
-            // Voice button click handler
+            // Voice button click handler - Start listening
             document.getElementById('voiceInputBtn')?.addEventListener('click', function() {
                 if (!voiceSupported) {
                     showToast('Not Supported', 'Voice input is not supported in this browser', 'error');
@@ -4988,13 +5037,19 @@
                     return;
                 }
 
+                // Update language before starting
+                voiceRecognition.lang = document.getElementById('voiceLanguageSelector')?.value || 'en-US';
+                voiceContinuousMode = true;
+                voiceRecognition.start();
+            });
+
+            // Voice Stop button click handler - Stop listening
+            document.getElementById('voiceStopBtn')?.addEventListener('click', function() {
+                voiceContinuousMode = false; // Disable continuous mode
                 if (isVoiceListening) {
                     voiceRecognition.stop();
-                } else {
-                    // Update language before starting
-                    voiceRecognition.lang = document.getElementById('voiceLanguageSelector')?.value || 'en-US';
-                    voiceRecognition.start();
                 }
+                showToast('Stopped', 'Voice input stopped', 'success');
             });
 
             // Voice language selector change handler
