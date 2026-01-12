@@ -172,5 +172,47 @@ media/
 node_modules/
 
 # ==========================================
+# NEXT.JS (nextjs-app)
+# ==========================================
+
+# Dependencies
+nextjs-app/node_modules/
+
+# Next.js build output
+nextjs-app/.next/
+nextjs-app/out/
+nextjs-app/
+.playwright-mcp
+# Production build
+nextjs-app/build/
+
+# Debug logs
+nextjs-app/npm-debug.log*
+nextjs-app/yarn-debug.log*
+nextjs-app/yarn-error.log*
+
+# Env files
+nextjs-app/.env
+nextjs-app/.env.local
+nextjs-app/.env.development.local
+nextjs-app/.env.test.local
+nextjs-app/.env.production.local
+
+# Vercel
+nextjs-app/.vercel
+
+# TypeScript
+nextjs-app/*.tsbuildinfo
+nextjs-app/next-env.d.ts
+
+# Database (Prisma)
+nextjs-app/prisma/*.db
+nextjs-app/prisma/*.db-journal
+nextjs-app/*.sqlite3
+
+# Playwright MCP screenshots
+nextjs-app/.playwright-mcp/
+
+# ==========================================
 # END
 # ==========================================
