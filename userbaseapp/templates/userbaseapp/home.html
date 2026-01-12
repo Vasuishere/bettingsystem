@@ -1256,14 +1256,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div class="text-xs text-gray-700">
-                                <p class="font-semibold mb-1">Format: <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">.</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">+</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">*</span>amount</code></p>
-                                <p class="text-gray-500">Example: <code class="bg-white px-1 py-0.5 rounded">488.35</code> or <code class="bg-white px-1 py-0.5 rounded">488+35</code> or <code class="bg-white px-1 py-0.5 rounded">488*35</code> = Number 488, Amount ₹35</p>
+                                <p class="font-semibold mb-1">Format: <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">.</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">+</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">*</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">x</span>amount</code> or <code class="bg-white px-1 py-0.5 rounded text-indigo-700">number<span class="text-amber-600">/</span>amount</code></p>
+                                <p class="text-gray-500">Example: <code class="bg-white px-1 py-0.5 rounded">488.35</code> <code class="bg-white px-1 py-0.5 rounded">488+35</code> <code class="bg-white px-1 py-0.5 rounded">488*35</code> <code class="bg-white px-1 py-0.5 rounded">488x35</code> <code class="bg-white px-1 py-0.5 rounded">488/35</code></p>
                             </div>
                         </div>
                     </div>
                     <textarea id="bulkPasteTextarea" 
                         class="w-full h-48 px-3 py-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono resize-none"
-                        placeholder="Paste your bet data here...&#10;&#10;Supported formats: . + *&#10;Example:&#10;488.35&#10;677+35&#10;668*35&#10;389.35&#10;280+20"></textarea>
+                        placeholder="Paste your bet data here...&#10;&#10;Supported formats: . + * x /&#10;Example:&#10;488.35&#10;677+35&#10;668*35&#10;389x35&#10;280/20"></textarea>
                     <div class="mt-3 flex gap-2">
                         <button id="parseBulkDataBtn"
                             class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md transition flex items-center justify-center gap-2">
@@ -2246,12 +2246,11 @@
         </div>
     </div>
     <script>
-        /* eslint-disable */
         // Django template variables - rendered server-side before JavaScript execution
+        // These are false-positive errors from VS Code - Django renders these as valid JS
         const bazarNamesJSON = {{ bazar_names_json|safe }};
         const rowLabelsJSON = {{ row_labels|safe }};
         const allColumnDataJSON = {{ ALL_COLUMN_DATA|safe }};
-        /* eslint-enable */
 
         // ========== PERFORMANCE UTILITIES ==========
         // Debounce function - prevents rapid repeated calls
@@ -5199,14 +5198,14 @@
                     let isValid = true;
                     let error = '';
 
-                    // Try to parse the line - supports . + * as delimiters
-                    const delimiterMatch = trimmedLine.match(/^(\d+)[.+*](\d+)$/);
+                    // Try to parse the line - supports . + * x / as delimiters
+                    const delimiterMatch = trimmedLine.match(/^(\d+)[.+*x\/](\d+)$/i);
                     if (delimiterMatch) {
                         number = delimiterMatch[1].trim();
                         amount = parseFloat(delimiterMatch[2]) || 0;
-                    } else if (/[.+*]/.test(trimmedLine)) {
+                    } else if (/[.+*x\/]/i.test(trimmedLine)) {
                         // Has delimiter but invalid format
-                        const parts = trimmedLine.split(/[.+*]/);
+                        const parts = trimmedLine.split(/[.+*x\/]/i);
                         number = parts[0].trim();
                         amount = parseFloat(parts[1]) || 0;
                     } else {
