@@ -3173,7 +3173,7 @@
                     columns = columns.length > 0 ? columns : null;
                     const result = await placeBulkBet(currentBetType, amount, columns);
                     if (result.success) {
-                        let message = `${successCount} bets placed successfully`;
+                        let message = `${result.total_bets} ${currentBetType} bets placed successfully`;
                         if (columns && columns.length > 0) {
                             const columnText = columns.length > 1
                                 ? `${columns.length} columns (${columns.join(', ')})`
